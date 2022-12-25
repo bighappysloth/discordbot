@@ -1,0 +1,92 @@
+\usepackage{import}
+\import{./}{packages.tex}
+\import{./}{headers.tex}
+% Commands
+
+    % Essentials
+    \renewcommand{\Re}{\operatorname{Re}} % Real Part
+    \renewcommand{\Im}{\operatorname{Im}} % Imaginary Part
+    \newcommand{\defined}{\coloneqq} % := sign
+    
+    % Fonts
+    \newcommand{\bb}[1]{\mathbb{#1}} %shortcut for mathbb
+    \renewcommand{\cal}[1]{\mathcal{#1}} %shortcut for mathcal
+    \renewcommand{\bf}[1]{\mathbf{#1}}
+    
+    % Wiggle
+    \newcommand{\wig}[1]{\widetilde{#1}}
+    
+    % Common Sets
+    \newcommand{\real}{\mathbb{R}}
+    \newcommand{\realn}{{\mathbb{R}^n}}
+    \newcommand{\nat}{\mathbb{N}}
+    \newcommand{\natplus}{\mathbb{N}}
+    \newcommand{\integer}{\mathbb{Z}}
+    \newcommand{\rat}{\mathbb{Q}}
+    
+    % Operators
+    \newcommand{\range}{\operatorname{range}} %Range of a function
+    \newcommand{\dom}{\operatorname{dom}} %Domain of a Function
+    \newcommand{\codom}{\operatorname{codom}} % Codomain
+    \newcommand{\id}[1]{\operatorname{id}_{#1}} % Identity Mapping
+    \newcommand{\sgn}{\operatorname{sgn}} %Signum function
+    
+    \newcommand{\wt}{\operatorname{wt}} %Hamming weight
+    \newcommand{\image}{\operatorname{im}} %Image of a linear map or any map in general
+    
+    \newcommand{\least}{\operatorname{least}} %Well Ordering Property
+    %\providecommand{\diam}{\operatorname{diam}} %diameter of a set
+    
+    % Norms
+    \newcommand{\norm}[1]{\lVert {#1} \rVert} % || . ||
+    \newcommand{\bignorm}[1]{\left\lVert {#1} \right\rVert} % || . || but larger
+    
+    % Topology
+    \newcommand{\acc}{\operatorname{acc}} % Set of Accumulation Points
+    \newcommand{\abrackets}[1]{\langle {#1} \rangle} % Angled Brackets for Nets
+    \newcommand{\nb}[1]{\mathcal{N}_B({#1})} %N_b(x) is a neighbourhood of x
+    \newcommand{\Tau}{\mathcal{T}} % Big Tau Denoting Topological Space
+    \newcommand{\cl}[1]{\overline{#1}} % Closure of a set
+    \newcommand{\clc}[1]{(\overline{#1})^c} %  Complement of the Closure
+    \newcommand{\Epsilon}{\mathcal{E}} % Base, generating set for Topology and Sigma algebras
+    \newcommand{\cpt}{\quaver} %Compact set
+    
+    % Fourier Analysis
+    \newcommand{\szz}{\mathcal{S}} % Schwartz Space
+    \newcommand{\cinf}{C^{\infty}} % We do not specify the domain
+    \newcommand{\ccinf}{C_c^{\infty}} % We do not specify the domain
+    \newcommand{\cnv}{\ast} % convolutions
+    
+    % Projection Maps
+    \newcommand{\pmap}[2]{\pi_{#1}({#2})} % projection maps 
+    \newcommand{\pnv}[2]{\pi_{#1}^{-1}({#2})} %inverse projection maps
+    
+    % Functions on a Topological Space
+    \newcommand{\bc}[1]{\operatorname{BC}({#1})} %Bounded and Continuous Functions
+    \newcommand{\cc}[1]{\operatorname{C}_c({#1})} %Continuous on a Compact Set
+    \newcommand{\cnot}[1]{\operatorname{C}_0({#1})} %Vanishes at Infinity
+    \newcommand{\supp}[1]{\operatorname{supp}{(#1)}} %Support of a function
+
+    %Measure Theory
+    \providecommand{\mcal}{\mathcal{M}}
+    \providecommand{\ncal}{\mathcal{N}}
+
+    %Bigger Brackets    
+    \providecommand{\bigset}[1]{\biggl\{{#1}\biggr\}}
+
+    %Linear Algebra
+    \providecommand{\diam}{\operatorname{diam}}
+    \providecommand{\dim}{\operatorname{dim}}
+    \providecommand{\rank}{\operatorname{rank}}
+    \providecommand{\col}{\operatorname{col}}
+    \providecommand{\row}{\operatorname{row}}
+    \providecommand{\lin}{\operatorname{lin}}
+    \providecommand{\span}{\operatorname{span}}
+
+% Settings
+\setlength{\parindent}{0pt} %default no indent
+
+% \titleformat{\section}{\normalfont\Large\bfseries}{}{0em}{#1\thesection}
+
+%always put this at last
+\usepackage{subfiles}

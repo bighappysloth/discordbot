@@ -1,0 +1,94 @@
+%Packages
+% \usepackage{tabular}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{pgfplots}
+\pgfplotsset{width=10cm,compat=1.9}
+\captionsetup{justification=justified,singlelinecheck=false,font=small}
+
+\usepackage{listings}
+\usepackage{xcolor}
+
+%New colors defined below
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+%Code
+\definecolor{light-gray}{gray}{0.90} \newcommand{\code}[1]{\colorbox{backcolour}{\texttt{#1}}}
+
+
+%Code listing style named "mystyle"
+% I can’t get rid of line numbers in subsequent listings. ‘numbers=none’ turns them off.
+\lstdefinestyle{main}{
+  backgroundcolor=\color{backcolour},   commentstyle=\color{codegreen},
+  keywordstyle=\color{magenta},
+  numberstyle=\ttfamily\tiny\color{codegray},
+  stringstyle=\color{codepurple},
+  basicstyle=\ttfamily\footnotesize,
+  breakatwhitespace=false,         
+  breaklines=true,                 
+  captionpos=b,
+  texcl=false,
+  frame=single,% adds a frame around the code
+  keepspaces=true,                 
+  numbers=left,                    
+  numbersep=5pt,                  
+  showspaces=false,                
+  showstringspaces=false,
+  showtabs=false,    
+  showlines=true,
+  tabsize=2,
+  gobble=2 %experimental
+}
+
+\lstdefinestyle{nofrills}{
+  backgroundcolor=\color{backcolour},   
+  commentstyle=\color{codegreen},
+  keywordstyle=\color{magenta},
+  numberstyle=\ttfamily\tiny\color{codegray},
+  stringstyle=\color{codepurple},
+  basicstyle=\ttfamily\footnotesize,
+  breakatwhitespace=false,         
+  breaklines=true,                 
+  captionpos=b,
+  texcl=false,
+  frame=none,% adds a frame around the code
+  keepspaces=true,                 
+  numbers=none,                    
+  numbersep=0pt,                  
+  showspaces=false,                
+  showstringspaces=false,
+  showtabs=false,    
+  showlines=true,
+  tabsize=2,
+  gobble=2 %experimental
+}
+
+\lstdefinestyle{hexdump}{
+  backgroundcolor=\color{white},   
+  numberstyle=\ttfamily\tiny\color{codegray},
+  basicstyle=\ttfamily\footnotesize,
+  breakatwhitespace=false,         
+  breaklines=false,
+  captionpos=b,
+  texcl=false,
+  frame=lines,% adds a frame around the code
+  xleftmargin=10pt,
+  xrightmargin=10pt,
+  keepspaces=true,                 
+  numbers=left,                    
+  numbersep=5pt,                  
+  showspaces=false,                
+  showstringspaces=false,
+  tabsize=2,
+  gobble=2 %experimental
+}
+
+% Use the default style mystle
+\lstset{style=main}
+
+%Engineering Commands
+\newcommand{\pow}[1]{\times 10^{#1}}
+\newcommand{\sinc}{\operatorname{sinc}}

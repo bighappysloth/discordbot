@@ -1,0 +1,35 @@
+%Headers and Sections
+
+    %Want to show we want it to be numbered with the section at a later date
+    \newtheorem*{wts}{WTS}
+    
+    % \newtheorem*{answer}{Answer} removed
+    \newtheorem{theorem}{Theorem}[section]%Theorem
+    \newtheorem{corollary}{Corollary}[theorem]%Corollary, numbered by the theorem? resets the counter
+    
+    \newtheorem{lemma}[theorem]{Lemma} %Lemma
+    
+    \newtheorem*{remark}{Remark} %unnumbered remark
+    
+    % Problem Number for assignents, phantomsection prevents a compilation warning form
+    % hyperref, and \markright allows our fancyhead to read from the problem number.
+    \newcommand{\problem}[1]{\phantomsection\subsection*{Problem #1}\markright{Problem #1}\addcontentsline{toc}{subsection}{Problem #1}} 
+    
+    % Definition
+    \theoremstyle{definition}
+    \newtheorem*{definition}{Definition}
+
+    %What to remember
+    \newtheorem*{wtr}{What to Remember}
+    
+    % Custom Enumerate Environments
+
+        % Labelling by a, b, c
+        \newenvironment{enumalpha}{\begin{enumerate}[label=(\alph*)]}{\end{enumerate}}
+        
+        % Labelling by i, ii, iii
+        \newenvironment{enumroman}{\begin{enumerate}[label=(\roman*)]}{\end{enumerate}}
+
+
+%for putting chapter numbers after the title
+%\titleformat{\section}[hang]{\normalfont\Large\bfseries}{Chapter }{0em}{}{}

@@ -1,0 +1,56 @@
+%Packages
+
+    %Basics
+    \usepackage[utf8]{inputenc}
+    \usepackage{amsmath}
+    \usepackage{amssymb}
+    \usepackage{amsfonts}
+    
+    %Custom Theorems
+    \usepackage{amsthm}
+
+    %Custom enumerate environments (roman numerals)
+    \usepackage{enumitem}
+    
+    %Custom Title Sections
+    \usepackage{titlesec}
+
+    %Graphics/Images
+    \usepackage{graphicx}
+    %\usepackage{epstopdf}
+    %\graphicspath{ {./images/} }
+
+    %Font adjustment
+    %\usepackage{fourier} not that good
+    \usepackage{mlmodern}
+    
+    %Forgot what these two do
+    \usepackage{pifont}
+    \usepackage{mathtools}
+    
+    %Fancy Headers
+    \usepackage{fancyhdr}
+    
+    % Timezone management
+    \usepackage{datetime}
+    \usepackage{datetime2}
+    
+    %Music symbols
+    \usepackage{fontspec} % Is necessary to access OpenType fonts 
+    \usepackage{lilyglyphs} 
+    
+    %Hyperlinks in PDFs and Table of Contents, eqref and ref URLs
+    \usepackage[]{hyperref}
+    \hypersetup{
+        pdftitle={Your title here},
+        pdfauthor={Your name here},
+        pdfsubject={Your subject here},
+        pdfkeywords={keyword1, keyword2},
+        bookmarksnumbered=true,     
+        bookmarksopen=true,         
+        bookmarksopenlevel=1,       
+        colorlinks=true,            
+        pdfstartview=Fit,           
+        pdfpagemode=UseOutlines,    % this is the option you were lookin for
+        pdfpagelayout=TwoPageRight
+    }
