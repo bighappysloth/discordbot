@@ -2,10 +2,14 @@ import discord
 from discord.ext import commands
 from config import __DISCORD_API_KEY__
 
-
-
+from pathlib import Path
 from typing import List
 import datetime
+
+
+import logging
+import traceback 
+
 
 import io
 import re
@@ -14,6 +18,7 @@ import argparse
 import platform
 import sys
 import time
+
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -25,6 +30,7 @@ from sympy import *
 from sympy.core import sympify
 from sympy.abc import x
 
+
 # Bot Modules
 import user_configuration
 from bot_helpers import *
@@ -33,6 +39,7 @@ from bot_flags import *
 
 
 from latex2sympy2 import latex2sympy as latex_to_sympy
+
 
 """
 List of Commands
@@ -142,7 +149,7 @@ async def inline_print(m,use_ln_over_log=True):
     return temp
 
 
-async def gen_plot(args) -> str:
+async def gen_plot(args):
     print(f'gen_plot receives the following: {args}')
     print(f'Function: {args.function})')
     myFunction = latex_to_sympy(args.function)
@@ -152,7 +159,7 @@ async def gen_plot(args) -> str:
     userFunction = sympify(myFunction, convert_xor=True) # use subs(x,x_i) to evaluate.
 
     fig, ax = plt.subplots()  # Create a figure containing a single axes.
-
+    plt.show(block=False)
     # Plot Title
     # Want to extend this to multiple curves we can plot ont he same figure.
     # How would we scale the axes and domain?
@@ -202,20 +209,27 @@ async def gen_plot(args) -> str:
     ax.legend(loc='upper right') # apply legend after we are done plotting lines and their labels.
     ax.set_xlabel(r'$x$')
     ax.set_ylabel(r'$y=f(x)$')
+
     #fig.savefig('function_plot.pdf',transparent=True, backend='pgf')
-    plot_image_filename = f'{datetime.datetime.now().strftime("Plot %Y-%m-%d at %H.%M.%S.png")}'
     
-    print(f'Saving to {plot_image_filename}...')
+    plot_image_filename = f'{datetime.datetime.now().strftime("Plot %Y-%m-%d at %H.%M.%S.png")}'
 
-    fig.savefig(f'{plot_image_filename}',transparent=false, backend='pgf',dpi=300)
-
-    return plot_image_filename
-
-# The Discord Bot Part
-
-
-# Manage plotFunction Flag
-
+    p = Path('.')
+    plot_image_path = p/plot_image_filename
+    
+    print(f'Saving to {plot_image_path}...')
+    try:
+        fig.savefig(f'{plot_image_path}',transparent=false, backend='pgf',dpi=300)
+    except Exception as E:
+        return {
+            'status': 'failure',
+            'reason': E.args
+        }
+    return {
+        'status': 'success',
+        'image_path': plot_image_path,
+        'plot_titles': [title_1, title_2],
+    }
 
 # Bot Subscription to Particular Events
 intents = discord.Intents.default()
@@ -251,11 +265,11 @@ async def plot(ctx, *, flags: plotFunctionFlags):
     await ctx.send(f'plotFunction invoked w/ `{temp}`')
     print(f'PLOTFUNCTION ARRAY: {temp}')
     print(f'args: {parser.parse_args(temp)}')
-    im_location = await gen_plot(parser.parse_args(temp))
-    print(f'Image Saved to {im_location}')
+    result = await gen_plot(parser.parse_args(temp))
+    print(f'Image Saved to {result["image_path"]}')
     
-    with open(im_location, 'rb') as fp:
-        await ctx.send(file=discord.File(fp,f'{im_location}'))
+    with open(result["image_path"], 'rb') as fp:
+        await ctx.send(file=discord.File(fp,f'{result["image_path"]}'))
 
 
 # For the following three functions, no parsing is done.
@@ -313,47 +327,30 @@ async def latex2sympy(ctx, *, flags: latex2sympyFlags):
     await ctx.send(f'`{z}`') #send result
 
 
-@bot.command()
-async def latex2png(ctx, *, flags: latex2pngFlags):
-    await ctx.send(f'latex2png invoked w/ `{flags.xinput}`')
-    result = await latex_to_png(
-    flags.xinput,
-    tex_mode=flags.latex_mode,
-    alt_mode=flags.alternate,
-    DENSITY=flags.dpi)
-    if result['status'] == 'success':
-        im_location = result['image_path']
-        with open(im_location, 'rb') as fp:
-            await ctx.send(file=discord.File(fp,f'{im_location}'))
-    else:
-        # Error Detected
-        raise commands.CommandError(f'latex2png Error: {result["reason"]}')
+# @bot.command()
+# async def latex2png(ctx, *, flags: latex2pngFlags):
+#     await ctx.send(f'latex2png invoked w/ `{flags.xinput}`')
+#     result = await latex_to_png(
+#     flags.xinput,
+#     tex_mode=flags.latex_mode,
+#     alt_mode=flags.alternate,
+#     DENSITY=flags.dpi)
+#     if result['status'] == 'success':
+#         im_location = result['image_path']
+#         with open(im_location, 'rb') as fp:
+#             await ctx.send(file=discord.File(fp,f'{im_location}'))
+#     else:
+#         # Error Detected
+#         raise commands.CommandError(f'latex2png Error: {result["reason"]}')
 
 """
 latex2png default inline mode
 """
-@bot.command()
-async def tt(ctx, *, z):
-    await ctx.send(f'latex2png invoked w/ `{z}`')
+@bot.command(name='t')
+async def _make_latex_to_png(ctx, *, z):
+    await ctx.send(f'{ctx.author}: TT invoked w/ `{z}`')
     
-    result = await latex_to_png(z,tex_mode = 'inline', alt_mode=True,DENSITY=2400)
-    
-    if result['status'] == 'success':
-        im_location = result['image_path']
-        with open(im_location, 'rb') as fp:
-            await ctx.send(file=discord.File(fp,f'{im_location}'))
-    else:
-        # Error Detected
-        raise commands.CommandError(f'latex2png Error: {result["reason"]}')
-
-"""
-latex2png default display mode 
-"""
-@bot.command()
-async def td(ctx, *, z):
-    await ctx.send(f'latex2png invoked w/ `{z}`')
-    
-    result = await latex_to_png(z,tex_mode = 'display', alt_mode=True,DENSITY=4800)
+    result = await latex_to_png.converter(z,tex_mode = 'inline', alt_mode=True,DENSITY=2400)
     
     if result['status'] == 'success':
         im_location = result['image_path']
@@ -361,31 +358,7 @@ async def td(ctx, *, z):
             await ctx.send(file=discord.File(fp,f'{im_location}'))
     else:
         # Error Detected
-        raise commands.CommandError(f'latex2png Error: {result["reason"]}')
-
-
-"""
-simplify engine with latex output
-"""
-@bot.command()
-async def s(ctx, *, z):
-    #await ctx.send(f'simplif invoked w/ `{z}`')
-    
-
-
-    result = await latex_to_png(await xprint(
-                        sym.simplify(latex_to_sympy(z)
-                        )
-                        )
-                        ) # needs a better name
-    
-    if result['status'] == 'success':
-        im_location = result['image_path']
-        with open(im_location, 'rb') as fp:
-            await ctx.send(file=discord.File(fp,f'{im_location}'))
-    else:
-        # Error Detected
-        raise commands.CommandError(f'simplify w/ latex2png Error: {result["reason"]}')
+        raise commands.CommandError(result["reason"])
 
 
 
@@ -399,13 +372,18 @@ async def s(ctx, *, z):
 
 @bot.event
 async def on_ready():
+    print(f"ccE's Discord Bot")
+    print(f'Current Time: {current_time()}')
     print('We have logged in as {0.user}'.format(bot))
+
 
 @bot.event
 async def on_command_error(ctx, error):
-    z = f'Error: `{error}`'
-    print(z)
+    z = f'Command Error: `{error}`'
+    
     await ctx.send(f'{z}')
+
+
 # @bot.event
 # async def on_message(message):
 #     if message.author == bot.user: # Prevent loops
@@ -415,11 +393,16 @@ async def on_command_error(ctx, error):
 #     #     await message.channel.send('Hello!')
 #     #     await bot.process_commands(message)
 #     #     return
- 
-bot.run(__DISCORD_API_KEY__)
+
+
+# Run Bot
+handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
+bot.run(__DISCORD_API_KEY__,log_handler=handler)
+
 
 # TODO: how to reply to the previous user
 # FEATURE: click for latex output.
+# REQUIRE: Detection of Edits, and Reactions
 
 # Matrix Converter. Accepts different notation (e,g MatLab Notation)
 # Table Maker in Latex

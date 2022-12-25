@@ -151,7 +151,7 @@ Generate Config
 
 
 
-def user_settings_path(user=__DEFAULT_USER__):
+def user_settings_path(user):
     """
     Helper Method to generate user settings path.
     """
@@ -159,7 +159,7 @@ def user_settings_path(user=__DEFAULT_USER__):
     return p/(user + r'_settings.json')
 
 
-def getUserConfig(user=__DEFAULT_USER__, user_option='usage'):
+def getUserConfig(user, user_option='usage'):
     settings_path = user_settings_path(user)
     try:
         with settings_path.open('r') as f: 
@@ -173,7 +173,7 @@ def getUserConfig(user=__DEFAULT_USER__, user_option='usage'):
             raise KeyError(f'Option "{user_option}" does not exist.')
 
 
-def viewUserConfig(user=__DEFAULT_USER__, user_option='usage'):
+def viewUserConfig(user, user_option='usage'):
     settings_path = user_settings_path(user)
     try:
         value = getUserConfig(user,user_option)
@@ -182,7 +182,7 @@ def viewUserConfig(user=__DEFAULT_USER__, user_option='usage'):
         return E.args
 
 
-def viewFullUserConfig(user=__DEFAULT_USER__):
+def viewFullUserConfig(user):
     settings_path = user_settings_path(user)
     try:
         with settings_path.open('r') as fp:
@@ -244,6 +244,12 @@ def editUserConfig(user:str, user_option:str, new_value):
         }
         
         
+def restoreUserConfig(user):
+    Z = {'usage','last_used'} # do not wipe these entries.
+    for k in DEFAULT_CONFIG:
+        if not k in Z:
+            editUserConfig(user, k, DEFAULT_CONFIG[k]) # wipe all config.
+    # Call our incrementing function
 
 
 # with settings_path.open('w') as f:
@@ -263,18 +269,21 @@ result = helper_add_subparsers(subparsers, C)
 
 
 # print(viewFullUserConfig(__DEFAULT_USER__))
+if __name__ == '__main__':
+    args = parser.parse_args()
+    current_user = __DEFAULT_USER__
 
-args = parser.parse_args()
-if args.command == 'view':
-    print(f'Command Selected: {args.command}')
-    print(viewFullUserConfig(user=__DEFAULT_USER__))
+    if args.command == 'view':
+        print(f'Command Selected: {args.command}')
+        print(viewFullUserConfig(user=current_user))
 
-elif args.command =='edit':
-    print(f'Command Selected: {args.command} w/ {args}')
-    print(editUserConfig(user=__DEFAULT_USER__, user_option = args.user_option, new_value = args.new_value))
+    elif args.command =='edit':
+        print(f'Command Selected: {args.command} w/ {args}')
+        print(editUserConfig(user=current_user, user_option = args.user_option, new_value = args.new_value))
 
-elif args.command == 'restore':
-    print(f'Command Selected: {args.command}')
+    elif args.command == 'restore':
+        print(f'Command Selected: {args.command}')
+        print(restoreUserConfig(user=current_user))
 
 # TODO: Load all User Configurations at Startup, then
 # on editing any of the files, save it to disk. And reload.

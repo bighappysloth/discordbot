@@ -8,7 +8,8 @@ import subprocess
 import os
 import asyncio
 
-
+__TEX_OUT_DIRECTORY__ = \
+'latex_out'
 
 COMMAND_PDF_COMPILE = \
 'latexmk -quiet -silent -cd -f -xelatex "{0}"'
@@ -90,18 +91,18 @@ def check_dir(dirname):
     if not Path(dirname): Path.mkdir(dirname)
 
 
-async def latex_to_png_conversion( userInput, 
+async def converter( userInput, 
                 tex_fname=datetime.datetime.now().strftime("Snippet %Y-%m-%d at %H.%M.%S.tex"),
-                tex_dir = 'latex_out', 
+                tex_dir = __TEX_OUT_DIRECTORY__, 
                 DENSITY = 1200, 
                 QUALITY = 100, 
                 alt_mode = False,
                 save_pdf = False,
                 tex_mode = 'inline'):
 
-
+    
     file_contents = TEX_ALT_FILE_HEADER if alt_mode else TEX_FILE_HEADER
-
+    if not userInput: userInput = r'\,'
 
     p = Path('.')
     p = p / tex_dir / tex_fname
@@ -178,8 +179,6 @@ async def latex_to_png_conversion( userInput,
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
-    coroutine = latex_to_png_conversion(r'\dfrac{\alpha}{2}',tex_mode='display')
+    coroutine = converter(r'\dfrac{\alpha}{2}',tex_mode='display')
     
     loop.run_until_complete(coroutine)
-    
-    

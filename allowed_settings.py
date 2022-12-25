@@ -15,7 +15,10 @@ def helper_set_check(x,required_set:set,user_option):
 def helper_type_check(x,required_type,user_option):
     if not isinstance(x, required_type): raise TypeError(f'Value {user_option} must be of type {required_type}.')
     
-
+    
+"""
+Maps a field to a lambda expression that raises exceptions. Use with ALLOWED_CONFIG[field](new_value, field) perhaps after checking with ALLOWED_CONFIG.get(field)
+"""
 ALLOWED_CONFIG = {\
     'latex_mode': 			lambda x, y: helper_set_check(x,{'inline','display'},y),
 
@@ -25,7 +28,7 @@ ALLOWED_CONFIG = {\
 
     'usage': 			    lambda x, y: helper_type_check(x, int,y),
 
-    'last_used': 			lambda x, y: (helper_type_check(x, datetime.datetime) or x==None,y),
+    'last_used': 			lambda x, y: (helper_type_check(x, datetime.datetime,y) or x==None),
 
     'background': 			lambda x, y: helper_type_check(x, str,y),
 

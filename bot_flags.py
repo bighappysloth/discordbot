@@ -6,7 +6,7 @@ import discord
 from discord.ext import commands
 
 import user_configuration
-from bot_helpers import *
+from bot_helpers import __ALLOWED_MATRIX_ENVIRONMENTS__, __ALLOWED_LATEX_MODES__
 import latex_to_png
 
 class plotFunctionFlags(commands.FlagConverter, delimiter=' ', prefix = '-'):
@@ -54,6 +54,7 @@ class matlab2latexFlags(commands.FlagConverter, delimiter=' ', prefix = '-'):
 class latex2sympyFlags(commands.FlagConverter, delimiter=' ', prefix = '-'):
     xinput: str = commands.flag(name = 'input',
     description='latex (input)')
+
 
 class latex2pngFlags(commands.FlagConverter, delimiter=' ', prefix = '-'):
     xinput: str = commands.flag(name = 'input',

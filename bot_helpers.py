@@ -6,7 +6,26 @@ from sympy.abc import epsilon
 
 import numpy as np
 
+import datetime
+
+
 from latex2sympy2 import latex2sympy
+
+__ALLOWED_MATRIX_ENVIRONMENTS__ = {'mini': 'bsmallmatrix',
+    'regular': 'bmatrix',
+    'rounded': 'pmatrix',
+    'mini_rounded': 'psmallmatrix'
+    }
+
+__ALLOWED_LATEX_MODES__ = {'inline', 
+'title_display',
+'display',
+'equation',
+'equation*'}
+
+
+def current_time():
+    return datetime.datetime.now().strftime("%Y-%m-%d at %H.%M.%S")
 
 class fstring_helper:
     """
@@ -95,18 +114,6 @@ async def matlab_to_sympy(x):
     temp = latex2sympy(await h.wrapenv(await h.decode(x), 'bmatrix'))
     print(f'matlab2sympy execution: {temp}')
     return temp
-
-__ALLOWED_MATRIX_ENVIRONMENTS__ = {'mini': 'bsmallmatrix',
-    'regular': 'bmatrix',
-    'rounded': 'pmatrix',
-    'mini_rounded': 'psmallmatrix'
-    }
-
-__ALLOWED_LATEX_MODES__ = {'inline', 
-'title_display',
-'display',
-'equation',
-'equation*'}
 
 
 sym.init_printing() 
