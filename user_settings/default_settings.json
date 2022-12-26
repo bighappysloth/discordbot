@@ -1,7 +1,7 @@
 {
     "background": "white",
     "framing": "wide",
-    "last_used": "2022-12-26 at 14.54.08",
+    "last_used": "2022-12-26 at 15.16.42",
     "latex_mode": "inline",
     "latex_preamble": "",
     "matplotlib_settings": {
@@ -21,7 +21,7 @@
         10
     ],
     "png_dpi": 2400,
-    "usage": 38,
+    "usage": 39,
     "xprint_settings": {
         "env": "regular",
         "latex_mode": "inline",

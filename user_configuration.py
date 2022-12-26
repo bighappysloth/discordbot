@@ -1,8 +1,6 @@
-import argparse
-import datetime
 from pathlib import Path
 import json
-import os
+import logging
 
 from allowed_settings import ALLOWED_CONFIG
 from dictionary_searching import getEntryRecursive_dictionary # Recursive Methods for parsing hierarchical expressions.
@@ -178,8 +176,8 @@ class Configuration:
             new_usage = x.getEntry('usage')['msg'] + 1
             z1=x.editEntry('usage',new_usage,write=True)
             z2=x.editEntry('last_used',bot_helpers.current_time(),write = True)
-            print(f'First, Second: {z1}, {z2}')
-            print(f'new_usage: {new_usage}, type={type(new_usage)}')
+            logging.debug(f'First, Second: {z1}, {z2}')
+            logging.debug(f'new_usage: {new_usage}, type={type(new_usage)}')
             return
         raise ValueError('Default User cannot be incremented.')
 
@@ -189,11 +187,15 @@ class Configuration:
 def user_settings_path(user):
     """
     Helper Method to generate user settings path.
+    TODO: implement as static method within Configurations
     """
     return __CONFIG_FOLDER_PATH__/(user + r'_settings.json')
 
 
 def getUserConfig(user, user_option='usage'):
+    """
+    TODO: implement this as a static method within Configurations
+    """
     settings_path = user_settings_path(user)
     try:
         with settings_path.open('r') as f: 
@@ -209,6 +211,9 @@ def getUserConfig(user, user_option='usage'):
 
 
 def viewFullUserConfig(user):
+    """
+    TODO: implement this as a static method within Configurations
+    """
     settings_path = user_settings_path(user)
     try:
         with settings_path.open('r') as fp:
@@ -236,7 +241,9 @@ def viewFullUserConfig(user):
             'payload': json.loads(j)    
         }
             
-
+"""
+This function is outdated and should be removed as soon as possible.
+"""
 def editUserConfig(user:str, user_option:str, new_value):
     settings_path = user_settings_path(user)
     try:
