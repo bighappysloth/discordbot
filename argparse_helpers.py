@@ -1,5 +1,9 @@
 #argparse helpers
 #json/dictionary -> fast subparsers and commands.
+
+"""
+Takes in a dictionary and creates the necessary argparse subparsers and commands.
+"""
 import argparse
 def safeMerge(D:dict,K:str,L:list):
     """

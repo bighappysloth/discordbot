@@ -7,6 +7,7 @@ import os
 from allowed_settings import ALLOWED_CONFIG
 from dictionary_searching import getEntryRecursive_dictionary # Recursive Methods for parsing hierarchical expressions.
 import bot_helpers
+import module_configs.matplotlib_args as matplotlib_args
 
 __DEFAULT_USER__ = 'default' # name of the default user
 
@@ -86,6 +87,9 @@ class Configuration:
             self.user=__DEFAULT_USER__ # reset to default user
         
         self.settings=temp['payload']
+        # print(f'see here{self.settings}')
+        z = json.dumps(self.settings,sort_keys=True,indent=4)
+        # print(f'Configuration Init: {user} --> {z}')
                 
 
         
@@ -111,7 +115,7 @@ class Configuration:
         if z['status']!='success':
             return {
                 'status': 'failure',
-                'msg': f'Option {selected_option} not found.'
+                'msg': f'Option `{selected_option}` not found.'
             }
         else:
             # There exists such an option to edit. Now we have to check for validity.
@@ -122,19 +126,24 @@ class Configuration:
                     entry_validation_test['msg'](new_value,selected_option)
             
             except (ValueError,TypeError) as E:
+                print(f'E: {E.args}, {type(E.args)}')
                 return {
                     'status': 'failure',
-                    'msg': E.args
+                    'msg': '```' + matplotlib_args.HelperString.list_printer([str(z) for z in E.args]) + '```'
                 }
             else:
                 """
                 Enters this block if and only if we pass the test or if there is no test at all. 
                 """
-
+                temp_query = selected_option.split('.')
+                temp_dictionary = self.settings
+                while len(temp_query)!=1:
+                    temp_dictionary = temp_dictionary[temp_query[0]]
+                    temp_query = temp_query[1:]
                 old_value = self.settings.get(selected_option)
 
                 
-                self.settings[selected_option]=new_value # updates self.settings
+                temp_dictionary[temp_query[0]]=new_value # updates self.settings
                 path_to_settings = user_settings_path(self.user) 
                 
                 
@@ -145,7 +154,7 @@ class Configuration:
                         fp.close()
                 return {
                     'status': 'success',
-                    'msg': f'{selected_option}: {old_value if old_value!=None else (f"{DEFAULT_CONFIG.get(selected_option)} (default)")} -> {new_value}.'
+                    'msg': f'{selected_option}: {old_value if old_value!=None else (f"{Configuration(__DEFAULT_USER__).getEntry(selected_option)} (default)")} -> {new_value}.'
                 }
             
 
@@ -203,7 +212,11 @@ def viewFullUserConfig(user):
     settings_path = user_settings_path(user)
     try:
         with settings_path.open('r') as fp:
+            
             j = json.dumps(json.loads(fp.read()),sort_keys=True, indent=4)
+            
+            # print(f'JSON DUMP View Full user Config:\n{j}')
+            
             return {
                 'status': 'success',
                 'msg': j,
@@ -213,6 +226,14 @@ def viewFullUserConfig(user):
         return {
             'status': 'failure',
             'msg': f'User {user} has no config file. Default parameters are used instead. !config [option] [new_value] to edit, and {__COMMAND_DEFAULT_SETTINGS__} for help.',
+        }
+    except json.decoder.JSONDecodeError:
+        j = viewFullUserConfig(__DEFAULT_USER__)['msg']
+        
+        return{
+            'status': 'failure',
+            'msg':  j,
+            'payload': json.loads(j)    
         }
             
 

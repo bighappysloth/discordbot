@@ -8,18 +8,11 @@ import datetime
 
 
 import logging
-import traceback 
-import shlex
-
-import io
-import re
-import pathlib
 import argparse
-import platform
-import sys
-import time
-import json
 
+import sys
+import json
+from functools import reduce
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -37,7 +30,6 @@ from user_configuration import Configuration, __DEFAULT_USER__
 from bot_helpers import *
 import latex_to_png
 from bot_flags import *
-
 
 from latex2sympy2 import latex2sympy as latex_to_sympy
 
@@ -247,46 +239,7 @@ async def time(ctx):
     temp = f'{datetime.datetime.now().strftime("Date %Y-%m-%d at %H.%M.%S")}'
 
 
-    if isinstance(ctx.channel,discord.DMChannel):
-        name = f'dm_{ctx.channel.recipient}'
-        id = ctx.channel.id
-        result = {
-            'name': f'dm_{ctx.channel.recipient.id}',
-            'title': f'dm_{ctx.channel.recipient.name}',
-            'id': str(ctx.channel.recipient.id),
-            
-            'type': 'dm'
-        }
-    elif isinstance(ctx.channel, (discord.TextChannel,
-    discord.GroupChannel, discord.WelcomeChannel)):
-        result = {\
-            'name': f'channel_{ctx.channel.id}',
-            'title': f'channel_{ctx.channel.name}',
-
-            'id': str(ctx.channel.id),
-            'guild_id': str(ctx.guild.id),
-            'guild_title': str(ctx.guild.name),
-
-            'type': 'channel',
-        }
-    elif isinstance(ctx.channel, discord.Thread):
-        result={\
-            'name': f'thread_{ctx.channel.id}',
-            'title': f'channel_{ctx.channel.name}',
-            
-            'id': ctx.channel.id,
-            'guild_id': str(ctx.guild.id),
-            'guild_title': str(ctx.guild.name),
-
-            'parent_channel': ctx.channel.parent.id,
-            'type': 'thread',
-        }
-    if ctx.message.reference:
-        print(f'Reference Detected: {ctx.message.reference}')
-        result['reference']={\
-        'referenced_id': ctx.message.reference.message_id,
-        'referenced_message': ctx.message.reference.cached_message,
-        }
+    
     temp = json.dumps(result,sort_keys=True,indent=4)
     print(f'{temp}')
     print(f'reference? {ctx.message.reference}')
@@ -315,10 +268,12 @@ async def plot(ctx, *, flags: plotFunctionFlags):
     if flags.samples: temp.append(f'-samples={flags.samples}')
     if flags.grid!=None: temp.append(f'-grid={str(flags.grid)}')
 
-    await ctx.send(f'plotFunction invoked w/ `{temp}`')
-    print(f'PLOTFUNCTION ARRAY: {temp}')
-    print(f'args: {parser.parse_args(temp)}')
+    await ctx.send(f'plot invoked w/ `{temp}`')
+    
+    logging.debug(f'plot raw_args {temp}')
+    logging.debug(f'plot parsed_args: {parser.parse_args(temp)}')
     result = await gen_plot(parser.parse_args(temp))
+    
     print(f'Image Saved to {result["image_path"]}')
     
     with open(result["image_path"], 'rb') as fp:
@@ -409,9 +364,9 @@ async def _make_latex_to_png(ctx, *, z):
     
     result = await latex_to_png.converter(\
                     z,
-                    DENSITY  = Config.getEntry('png_dpi'),
-                    tex_mode = Config.getEntry('latex_mode'),
-                    framing  = Config.getEntry('framing'),
+                    DENSITY  = Config.getEntry('png_dpi')['msg'],
+                    tex_mode = Config.getEntry('latex_mode')['msg'],
+                    framing  = Config.getEntry('framing')['msg'],
             )    
     
 
@@ -439,29 +394,38 @@ async def _view_defaults(ctx):
         logging.warning(f"`{result['status']}: {result['msg']}`")   
 
 
-@bot.command(name='config')
-async def _edit_config(ctx, selected_option:str='', new_value:str=''):
+@bot.command(name='config', rest_is_raw=True)
+async def _edit_config(ctx, *, arg:str):
+
     u = str(ctx.author.id)
     
-    if (not selected_option) and (not new_value):
+    if not arg:
         """
         If the user invokes with empty arguments, we show them their own configuration.
         """
         logging.info('No args detected')
-
-        await ctx.reply(f"{ctx.author.name}'s config:\n```{json.dumps(Configuration(str(ctx.author.id)).settings,sort_keys=True,indent=4)}```")
+        uc = Configuration(u)
+        print(f'UC: {uc}')
+        await ctx.reply(f"{ctx.author.name}'s config:\n```{json.dumps(Configuration(u).settings,sort_keys=True,indent=4)}```")
         
-    else:    
+    else:
+        split = arg.split(' ')
+        print(f'Split: {split}')
+        split = split[1:]
+        if len(split)==1: raise commands.CommandError(f'!config [selected_option] [new_value], "new_value" is missing.')
+        selected_option = split[0]; new_value = reduce((lambda y,z: y + ' ' + z),split[1:])
+        
         temp = Configuration(u)
         result = temp.editEntry(selected_option,new_value)
-        await ctx.reply(f"`{result['status']}: {result['msg']}`")
+        
+        await ctx.reply(f"{result['status']}: {result['msg']}")
         
 
 
 @bot.command(name='restore')
 async def _restore_config(ctx):
     u = str(ctx.author.id)
-    user_configuration.restoreUserConfig(u)
+    Configuration.restoreUserConfig(u)
     await ctx.reply(f"Restored {ctx.author.name}'s config to defaults.")
     logging.info(f"Restored {ctx.author.name}'s config to defaults.")
 
@@ -473,11 +437,12 @@ async def on_ready():
     logging.info('We have logged in as {0.user}'.format(bot))
 
 
-@bot.event
-async def on_command_error(ctx, error):
-    z = f'Command Error: `{error}`'
+# @bot.event
+# async def on_command_error(ctx, error):
+#     z = f'Command Error: `{error}`'
     
-    await ctx.send(f'{z}')
+#     await ctx.send(f'{z}')
+#     logging.warning(f'{z}, {error.args} {type(error)}')
 
 @bot.event
 async def on_command(ctx):
@@ -505,6 +470,8 @@ async def on_message_edit(before, after):
 @bot.event
 async def on_reaction_add(reaction, user):
     logging.info('Reaction Detected: {reaction.Message}, by {user}')
+
+
 # @bot.event
 # async def on_message(message):
 #     if message.author == bot.user: # Prevent loops

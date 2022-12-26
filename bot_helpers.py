@@ -24,6 +24,7 @@ __ALLOWED_LATEX_MODES__ = {'inline',
 'equation*'}
 
 
+
 def current_time():
     return datetime.datetime.now().strftime("%Y-%m-%d at %H.%M.%S")
 

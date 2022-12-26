@@ -1,1 +1,30 @@
-{"latex_mode": "inline", "framing": "regular", "latex_preamble": "", "usage": 0, "last_used": null, "background": "white", "png_dpi": 2400, "plot_samples": 100, "plot_grid": true, "plot_xlimits": [0, 10], "matplotlib_settings": {"plot": {"color": "tab:orange", "linewidth": 2.5}, "legend": {"loc": "upper right"}}, "xprint_settings": {"verb": true, "env": "regular", "latex_mode": "inline"}}
+{
+    "background": "white",
+    "framing": "wide",
+    "last_used": "2022-12-26 at 14.54.08",
+    "latex_mode": "inline",
+    "latex_preamble": "",
+    "matplotlib_settings": {
+        "legend": {
+            "loc": "lower right"
+        },
+        "plot": {
+            "color": "tab:orange",
+            "linewidth": 2.5
+        }
+    },
+    "matplotlib_settings.legend.loc": "lower",
+    "plot_grid": true,
+    "plot_samples": 100,
+    "plot_xlimits": [
+        0,
+        10
+    ],
+    "png_dpi": 2400,
+    "usage": 38,
+    "xprint_settings": {
+        "env": "regular",
+        "latex_mode": "inline",
+        "verb": true
+    }
+}

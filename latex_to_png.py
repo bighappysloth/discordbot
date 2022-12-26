@@ -101,7 +101,7 @@ async def converter( userInput,
                 save_pdf = False,
                 tex_mode = 'inline'):
 
-#    print('Converter invoked')    
+    print(f'Converter invoked with args: {DENSITY}, {tex_mode}, {framing}')    
     file_contents = TEX_FILE_HEADER[framing] if TEX_FILE_HEADER.get(framing) else TEX_FILE_HEADER['regular']
     
     if not userInput: userInput = r'\,'
