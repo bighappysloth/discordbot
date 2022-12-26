@@ -28,7 +28,7 @@ ALLOWED_CONFIG = {\
 
     'usage': 			    lambda x, y: helper_type_check(x, int,y),
 
-    'last_used': 			lambda x, y: (helper_type_check(x, datetime.datetime,y) or x==None),
+    'last_used': 			lambda x, y: (helper_type_check(x, str,y) or x==None),
 
     'background': 			lambda x, y: helper_type_check(x, str,y),
 

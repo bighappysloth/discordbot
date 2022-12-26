@@ -18,6 +18,7 @@ import argparse
 import platform
 import sys
 import time
+import json
 
 
 import matplotlib as mpl
@@ -32,7 +33,7 @@ from sympy.abc import x
 
 
 # Bot Modules
-import user_configuration
+from user_configuration import Configuration, __DEFAULT_USER__
 from bot_helpers import *
 import latex_to_png
 from bot_flags import *
@@ -242,9 +243,57 @@ intents.message_content = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 
 @bot.command()
-async def time(ctx,* , arg):
+async def time(ctx):
     temp = f'{datetime.datetime.now().strftime("Date %Y-%m-%d at %H.%M.%S")}'
-    await ctx.send(f'Time is {temp}')
+
+
+    if isinstance(ctx.channel,discord.DMChannel):
+        name = f'dm_{ctx.channel.recipient}'
+        id = ctx.channel.id
+        result = {
+            'name': f'dm_{ctx.channel.recipient.id}',
+            'title': f'dm_{ctx.channel.recipient.name}',
+            'id': str(ctx.channel.recipient.id),
+            
+            'type': 'dm'
+        }
+    elif isinstance(ctx.channel, (discord.TextChannel,
+    discord.GroupChannel, discord.WelcomeChannel)):
+        result = {\
+            'name': f'channel_{ctx.channel.id}',
+            'title': f'channel_{ctx.channel.name}',
+
+            'id': str(ctx.channel.id),
+            'guild_id': str(ctx.guild.id),
+            'guild_title': str(ctx.guild.name),
+
+            'type': 'channel',
+        }
+    elif isinstance(ctx.channel, discord.Thread):
+        result={\
+            'name': f'thread_{ctx.channel.id}',
+            'title': f'channel_{ctx.channel.name}',
+            
+            'id': ctx.channel.id,
+            'guild_id': str(ctx.guild.id),
+            'guild_title': str(ctx.guild.name),
+
+            'parent_channel': ctx.channel.parent.id,
+            'type': 'thread',
+        }
+    if ctx.message.reference:
+        print(f'Reference Detected: {ctx.message.reference}')
+        result['reference']={\
+        'referenced_id': ctx.message.reference.message_id,
+        'referenced_message': ctx.message.reference.cached_message,
+        }
+    temp = json.dumps(result,sort_keys=True,indent=4)
+    print(f'{temp}')
+    print(f'reference? {ctx.message.reference}')
+    await ctx.send(f'Time: {current_time()}')
+    await ctx.send(f'{temp}')
+
+    
     
 
 @bot.command()
@@ -331,6 +380,8 @@ async def latex2sympy(ctx, *, flags: latex2sympyFlags):
     await ctx.send(f'`{z}`') #send result
 
 
+
+
 # @bot.command()
 # async def latex2png(ctx, *, flags: latex2pngFlags):
 #     await ctx.send(f'latex2png invoked w/ `{flags.xinput}`')
@@ -354,7 +405,7 @@ latex2png default inline mode
 async def _make_latex_to_png(ctx, *, z):
     await ctx.reply(f'Generating Image from `{z}`')
 
-    Config = user_configuration.Configuration(str(ctx.author.id)) 
+    Config = Configuration(str(ctx.author.id)) 
     
     result = await latex_to_png.converter(\
                     z,
@@ -398,14 +449,11 @@ async def _edit_config(ctx, selected_option:str='', new_value:str=''):
         """
         logging.info('No args detected')
 
-        result = user_configuration.viewFullUserConfig(u)
-        if result['status'] == 'success':
-            await ctx.reply(f"{ctx.author}'s config: \n```{result['msg']}```!defaults to see options")
-        else:
-            await ctx.reply(f"`{result['status']}: {result['msg']}`") 
-
+        await ctx.reply(f"{ctx.author.name}'s config:\n```{json.dumps(Configuration(str(ctx.author.id)).settings,sort_keys=True,indent=4)}```")
+        
     else:    
-        result = user_configuration.editUserConfig(u,selected_option,new_value)
+        temp = Configuration(u)
+        result = temp.editEntry(selected_option,new_value)
         await ctx.reply(f"`{result['status']}: {result['msg']}`")
         
 
@@ -444,9 +492,19 @@ async def on_command_completion(ctx):
     """
     Increments the user's config.usage and config.last_used.
     """
-    userid = ctx.author.id
-    user_configuration.incrementUserConfig(str(userid))
+    userid = str(ctx.author.id)
+    Configuration.incrementUserConfig(str(userid))
+    
 
+
+@bot.event
+async def on_message_edit(before, after):
+    logging.info('Edit Detected: {before} -> {after}')
+
+
+@bot.event
+async def on_reaction_add(reaction, user):
+    logging.info('Reaction Detected: {reaction.Message}, by {user}')
 # @bot.event
 # async def on_message(message):
 #     if message.author == bot.user: # Prevent loops
@@ -484,5 +542,7 @@ bot.run(__DISCORD_API_KEY__,log_handler=handler_filelog)
 # TODO Domain Restrictions. for plotFunction
 # itemizeMe, enumerateMe
 # string num string
+
+# TODO Pinbot, Pseudo Pins.
 
 # Simplify Function, collect polynomials

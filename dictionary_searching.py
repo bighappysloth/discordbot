@@ -3,24 +3,7 @@ import argparse
 import json
 from functools import reduce
 
-p = Path('.')/r'user_settings'/r'default_settings.json' # path to default settings.
 
-parser = argparse.ArgumentParser()
-parser.add_argument('input')
-parser.add_argument('new_value')
-
-
-
-# Attemping to search through the dictionary
-#args.arg
-
-try:
-    with p.open() as fp:
-        j = json.loads(fp.read())
-except FileNotFoundError:
-    print(f'File: {p} not found.')
-
-print(f'Dictionary: {json.dumps(j,sort_keys=True,indent=4)}, type = {type(j)}')
 
 # Now Check for Nones.
 
@@ -43,7 +26,10 @@ def getEntryRecursive_dictionary(query, target_dictionary:dict):
     else:
         if isinstance(query,str): query = query.split('.') # split by dots if on first execution.
         try:
-            result = getEntryRecursive_dictionary(query[1:],target_dictionary[query[0]])
+            if len(query)==1:
+                result = getEntryRecursive_dictionary(query,target_dictionary)
+            else:
+                result = getEntryRecursive_dictionary(query[1:],target_dictionary[query[0]])
             return result
         except KeyError:
             return {
@@ -54,6 +40,25 @@ def getEntryRecursive_dictionary(query, target_dictionary:dict):
 
 
 if __name__ == '__main__':
+
+    p = Path('.')/r'user_settings'/r'default_settings.json' # path to default settings.
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('input')
+    parser.add_argument('new_value')
+
+
+
+    # Attemping to search through the dictionary
+    #args.arg
+
+    try:
+        with p.open() as fp:
+            j = json.loads(fp.read())
+    except FileNotFoundError:
+        print(f'File: {p} not found.')
+
+    print(f'Dictionary: {json.dumps(j,sort_keys=True,indent=4)}, type = {type(j)}')
     args=parser.parse_args()
     print(f'args: {args}')
     print(f'Finding "{args.input}" recursively: {getEntryRecursive_dictionary(args.input,j)}')

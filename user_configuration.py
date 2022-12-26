@@ -6,6 +6,7 @@ import os
 
 from allowed_settings import ALLOWED_CONFIG
 from dictionary_searching import getEntryRecursive_dictionary # Recursive Methods for parsing hierarchical expressions.
+import bot_helpers
 
 __DEFAULT_USER__ = 'default' # name of the default user
 
@@ -83,8 +84,8 @@ class Configuration:
             if temp['status']!='success': raise ValueError('Configuration loader has failed.')
 
             self.user=__DEFAULT_USER__ # reset to default user
-        else:
-            self.settings=temp['payload']
+        
+        self.settings=temp['payload']
                 
 
         
@@ -118,7 +119,7 @@ class Configuration:
             entry_validation_test = getEntryRecursive_dictionary(selected_option, ALLOWED_CONFIG)
             try:
                 if entry_validation_test['status']=='success':
-                    entry_validation_test['msg'](selected_option,new_value)
+                    entry_validation_test['msg'](new_value,selected_option)
             
             except (ValueError,TypeError) as E:
                 return {
@@ -138,7 +139,7 @@ class Configuration:
                 
                 
                 if write: # Writes to disk if flag is enabled.
-                    with path_to_settings.open() as fp:
+                    with path_to_settings.open('w') as fp:
                         fp.write(json.dumps(self.settings, sort_keys=True, indent = 4))
                         fp.flush()
                         fp.close()
@@ -164,9 +165,12 @@ class Configuration:
     @staticmethod
     def incrementUserConfig(user):
         if user!=__DEFAULT_USER__:
-            old_usage = getUserConfig(user,'usage')
-            editUserConfig(user,'usage',old_usage + 1)
-            editUserConfig(user,'last_used',datetime.datetime.now())
+            x = Configuration(user)
+            new_usage = x.getEntry('usage')['msg'] + 1
+            z1=x.editEntry('usage',new_usage,write=True)
+            z2=x.editEntry('last_used',bot_helpers.current_time(),write = True)
+            print(f'First, Second: {z1}, {z2}')
+            print(f'new_usage: {new_usage}, type={type(new_usage)}')
             return
         raise ValueError('Default User cannot be incremented.')
 
