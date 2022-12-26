@@ -27,7 +27,7 @@ __ALLOWED_LATEX_MODES__ = {'inline',
 def current_time():
     return datetime.datetime.now().strftime("%Y-%m-%d at %H.%M.%S")
 
-class fstring_helper:
+class Helper_fStrings:
     """
     Replace stings given dictionary, supports encoding and decoding methods.
     """
@@ -110,7 +110,7 @@ async def matlab_to_sympy(x):
     r'\,': '&',
     r';': r'\\' +r'\\'
     } #each r'\\' is one backslash
-    h = fstring_helper(settings = mapping)
+    h = Helper_fStrings(settings = mapping)
     temp = latex2sympy(await h.wrapenv(await h.decode(x), 'bmatrix'))
     print(f'matlab2sympy execution: {temp}')
     return temp
@@ -141,7 +141,7 @@ async def xprint(m, verb=True, env='regular',latex_mode = 'inline', title=None):
 
     """
     
-    h = fstring_helper()
+    h = Helper_fStrings()
     
     tex_print_kwargs = {'full_prec':False, 
         'mat_delim':'',

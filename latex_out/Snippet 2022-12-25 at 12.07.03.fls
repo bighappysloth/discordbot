@@ -2,8 +2,8 @@ PWD /Users/a../repos/discordbot/latex_out
 INPUT /usr/local/texlive/2022/texmf.cnf
 INPUT /usr/local/texlive/2022/texmf-dist/web2c/texmf.cnf
 INPUT /usr/local/texlive/2022/texmf-var/web2c/xetex/xelatex.fmt
-INPUT Snippet 2022-12-24 at 23.39.53.tex
-OUTPUT Snippet 2022-12-24 at 23.39.53.log
+INPUT Snippet 2022-12-25 at 12.07.03.tex
+OUTPUT Snippet 2022-12-25 at 12.07.03.log
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/standalone/standalone.cls
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/standalone/standalone.cls
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/standalone/standalone.cls
@@ -1419,10 +1419,10 @@ INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/listings/listings.cfg
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/listings/listings.cfg
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/listings/listings.cfg
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/xcolor/xcolor.sty
-INPUT ./Snippet 2022-12-24 at 23.39.53.aux
-INPUT Snippet 2022-12-24 at 23.39.53.aux
-INPUT Snippet 2022-12-24 at 23.39.53.aux
-OUTPUT Snippet 2022-12-24 at 23.39.53.aux
+INPUT ./Snippet 2022-12-25 at 12.07.03.aux
+INPUT Snippet 2022-12-25 at 12.07.03.aux
+INPUT Snippet 2022-12-25 at 12.07.03.aux
+OUTPUT Snippet 2022-12-25 at 12.07.03.aux
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/base/ts1cmr.fd
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/base/ts1cmr.fd
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/base/ts1cmr.fd
@@ -1433,15 +1433,15 @@ INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/fmtcount/fc-english.def
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/fmtcount/fc-english.def
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/fmtcount/fc-english.def
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/graphics/color.sty
-INPUT ./Snippet 2022-12-24 at 23.39.53.out
-INPUT Snippet 2022-12-24 at 23.39.53.out
-INPUT ./Snippet 2022-12-24 at 23.39.53.out
-INPUT Snippet 2022-12-24 at 23.39.53.out
-INPUT ./Snippet 2022-12-24 at 23.39.53.out
-INPUT Snippet 2022-12-24 at 23.39.53.out
-INPUT ./Snippet 2022-12-24 at 23.39.53.out
-INPUT Snippet 2022-12-24 at 23.39.53.out
-OUTPUT Snippet 2022-12-24 at 23.39.53.out
+INPUT ./Snippet 2022-12-25 at 12.07.03.out
+INPUT Snippet 2022-12-25 at 12.07.03.out
+INPUT ./Snippet 2022-12-25 at 12.07.03.out
+INPUT Snippet 2022-12-25 at 12.07.03.out
+INPUT ./Snippet 2022-12-25 at 12.07.03.out
+INPUT Snippet 2022-12-25 at 12.07.03.out
+INPUT ./Snippet 2022-12-25 at 12.07.03.out
+INPUT Snippet 2022-12-25 at 12.07.03.out
+OUTPUT Snippet 2022-12-25 at 12.07.03.out
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/mlmodern/omlmlmm.fd
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/mlmodern/omlmlmm.fd
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/mlmodern/omlmlmm.fd
@@ -1475,3 +1475,5 @@ INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/amsfonts/umsb.fd
 INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm
 INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm7.tfm
 INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm5.tfm
+OUTPUT Snippet 2022-12-25 at 12.07.03.xdv
+INPUT Snippet 2022-12-25 at 12.07.03.aux

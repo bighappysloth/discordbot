@@ -2,8 +2,8 @@ PWD /Users/a../repos/discordbot/latex_out
 INPUT /usr/local/texlive/2022/texmf.cnf
 INPUT /usr/local/texlive/2022/texmf-dist/web2c/texmf.cnf
 INPUT /usr/local/texlive/2022/texmf-var/web2c/xetex/xelatex.fmt
-INPUT Snippet 2022-12-24 at 23.39.53.tex
-OUTPUT Snippet 2022-12-24 at 23.39.53.log
+INPUT Snippet 2022-12-25 at 19.02.43.tex
+OUTPUT Snippet 2022-12-25 at 19.02.43.log
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/standalone/standalone.cls
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/standalone/standalone.cls
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/standalone/standalone.cls
@@ -86,10 +86,38 @@ INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/base/article.cls
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/base/article.cls
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/base/article.cls
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/base/article.cls
-INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/base/size10.clo
-INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/base/size10.clo
-INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/base/size10.clo
-INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/base/size10.clo
+INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/base/size12.clo
+INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/base/size12.clo
+INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/base/size12.clo
+INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/base/size12.clo
+INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/preview/preview.sty
+INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/preview/preview.sty
+INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/preview/preview.sty
+INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/preview/preview.sty
+INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/preview/preview.sty
+INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/preview/preview.sty
+INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/preview/preview.sty
+INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/preview/preview.sty
+INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/preview/preview.sty
+INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/preview/preview.sty
+INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/preview/preview.sty
+INPUT /usr/local/texlive/2022/texmf-dist/tex/generic/luatex85/luatex85.sty
+INPUT /usr/local/texlive/2022/texmf-dist/tex/generic/luatex85/luatex85.sty
+INPUT /usr/local/texlive/2022/texmf-dist/tex/generic/luatex85/luatex85.sty
+INPUT /usr/local/texlive/2022/texmf-dist/tex/generic/luatex85/luatex85.sty
+INPUT /usr/local/texlive/2022/texmf-dist/tex/generic/luatex85/luatex85.sty
+INPUT /usr/local/texlive/2022/texmf-dist/tex/generic/luatex85/luatex85.sty
+INPUT /usr/local/texlive/2022/texmf-dist/tex/generic/luatex85/luatex85.sty
+INPUT /usr/local/texlive/2022/texmf-dist/tex/generic/luatex85/luatex85.sty
+INPUT /usr/local/texlive/2022/texmf-dist/tex/generic/luatex85/luatex85.sty
+INPUT /usr/local/texlive/2022/texmf-dist/tex/generic/luatex85/luatex85.sty
+INPUT /usr/local/texlive/2022/texmf-dist/tex/generic/luatex85/luatex85.sty
+INPUT /usr/local/texlive/2022/texmf-dist/tex/generic/luatex85/luatex85.sty
+INPUT /usr/local/texlive/2022/texmf-dist/tex/generic/luatex85/luatex85.sty
+INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/preview/prtightpage.def
+INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/preview/prtightpage.def
+INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/preview/prtightpage.def
+INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/preview/prtightpage.def
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/import/import.sty
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/import/import.sty
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/import/import.sty
@@ -1419,10 +1447,10 @@ INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/listings/listings.cfg
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/listings/listings.cfg
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/listings/listings.cfg
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/xcolor/xcolor.sty
-INPUT ./Snippet 2022-12-24 at 23.39.53.aux
-INPUT Snippet 2022-12-24 at 23.39.53.aux
-INPUT Snippet 2022-12-24 at 23.39.53.aux
-OUTPUT Snippet 2022-12-24 at 23.39.53.aux
+INPUT ./Snippet 2022-12-25 at 19.02.43.aux
+INPUT Snippet 2022-12-25 at 19.02.43.aux
+INPUT Snippet 2022-12-25 at 19.02.43.aux
+OUTPUT Snippet 2022-12-25 at 19.02.43.aux
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/base/ts1cmr.fd
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/base/ts1cmr.fd
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/base/ts1cmr.fd
@@ -1433,29 +1461,29 @@ INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/fmtcount/fc-english.def
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/fmtcount/fc-english.def
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/fmtcount/fc-english.def
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/graphics/color.sty
-INPUT ./Snippet 2022-12-24 at 23.39.53.out
-INPUT Snippet 2022-12-24 at 23.39.53.out
-INPUT ./Snippet 2022-12-24 at 23.39.53.out
-INPUT Snippet 2022-12-24 at 23.39.53.out
-INPUT ./Snippet 2022-12-24 at 23.39.53.out
-INPUT Snippet 2022-12-24 at 23.39.53.out
-INPUT ./Snippet 2022-12-24 at 23.39.53.out
-INPUT Snippet 2022-12-24 at 23.39.53.out
-OUTPUT Snippet 2022-12-24 at 23.39.53.out
+INPUT ./Snippet 2022-12-25 at 19.02.43.out
+INPUT Snippet 2022-12-25 at 19.02.43.out
+INPUT ./Snippet 2022-12-25 at 19.02.43.out
+INPUT Snippet 2022-12-25 at 19.02.43.out
+INPUT ./Snippet 2022-12-25 at 19.02.43.out
+INPUT Snippet 2022-12-25 at 19.02.43.out
+INPUT ./Snippet 2022-12-25 at 19.02.43.out
+INPUT Snippet 2022-12-25 at 19.02.43.out
+OUTPUT Snippet 2022-12-25 at 19.02.43.out
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/mlmodern/omlmlmm.fd
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/mlmodern/omlmlmm.fd
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/mlmodern/omlmlmm.fd
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/mlmodern/omlmlmm.fd
-INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/mlmodern/mlmmi10.tfm
-INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/mlmodern/mlmmi7.tfm
-INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/mlmodern/mlmmi5.tfm
+INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/mlmodern/mlmmi12.tfm
+INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/mlmodern/mlmmi8.tfm
+INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/mlmodern/mlmmi6.tfm
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/mlmodern/omsmlmsy.fd
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/mlmodern/omsmlmsy.fd
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/mlmodern/omsmlmsy.fd
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/mlmodern/omsmlmsy.fd
 INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/mlmodern/mlmsy10.tfm
-INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/mlmodern/mlmsy7.tfm
-INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/mlmodern/mlmsy5.tfm
+INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/mlmodern/mlmsy8.tfm
+INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/mlmodern/mlmsy6.tfm
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/mlmodern/omxmlmex.fd
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/mlmodern/omxmlmex.fd
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/mlmodern/omxmlmex.fd
@@ -1466,12 +1494,17 @@ INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/amsfonts/umsa.fd
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/amsfonts/umsa.fd
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/amsfonts/umsa.fd
 INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam10.tfm
+INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam10.tfm
 INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam7.tfm
-INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam5.tfm
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/amsfonts/umsb.fd
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/amsfonts/umsb.fd
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/amsfonts/umsb.fd
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/amsfonts/umsb.fd
 INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm
+INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm
 INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm7.tfm
-INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm5.tfm
+INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/cm/cmr12.tfm
+INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/cm/cmr8.tfm
+INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/cm/cmr6.tfm
+OUTPUT Snippet 2022-12-25 at 19.02.43.xdv
+INPUT Snippet 2022-12-25 at 19.02.43.aux

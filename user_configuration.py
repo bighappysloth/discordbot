@@ -5,12 +5,19 @@ import json
 import os
 
 from allowed_settings import ALLOWED_CONFIG
+from dictionary_searching import getEntryRecursive_dictionary # Recursive Methods for parsing hierarchical expressions.
+
+__DEFAULT_USER__ = 'default' # name of the default user
+
+__CONFIG_FOLDER_NAME__ = r'user_settings'
+
+__CONFIG_FOLDER_PATH__ = Path('.')/ __CONFIG_FOLDER_NAME__
+
+__DEFAULT_CONFIG_PATH__ = __CONFIG_FOLDER_PATH__/ r'default_settings.json'
 
 
-__DEFAULT_USER__ = 'ccE' #Change this afterwards
+__COMMAND_DEFAULT_SETTINGS__ = '!defaults'
 
-
-__DEFAULT_CONFIG_PATH__ = Path('.') / r'default_settings.json'
 
 DEFAULT_CONFIG = {\
 'latex_mode': 'inline',
@@ -52,111 +59,125 @@ try:
         __DEFAULT__CONFIG__ = json.loads(fp.read())
 except FileNotFoundError: pass
     
-
-
-
-
-
-_COMMAND_DEFAULT_SETTINGS = 'default'
-parser = argparse.ArgumentParser()
-
-subparsers = parser.add_subparsers(dest = 'command',required = True)
-
-"""
-    Make a Function to handle adding subparsers.
-"""
-
-def safeMerge(D:dict,K:str,L:list):
-    """
-    If D[K] does not exist, then do nothing,
-    If D[K] is iterable, then extend L with all elements within D[K]
-    If D[K] is not iterable, then append D[K] to L.
-    """
-    try:
-        iterator = iter(D.get(K))
-    except TypeError:
-        # Not iterable
-        if D.get(K): L.append(D.get(K)) # Check if None
-    else:
-        if isinstance(D.get(K),str): 
-            L.append(D.get(K))
-        else: 
-            L.extend(D.get(K))
-    return L
-
-
-def printAll(*args, **kwargs):
-    print(f'positional: {args}')
-    print(f'keyword: {kwargs}')
-
-def helper_add_subparsers(subparser:argparse._SubParsersAction, payload:dict):
-    result = {}
-    
-    for subcommand in payload:
-
-        temp = subparser.add_parser(subcommand)
-        
-        for arg in payload[subcommand]:
-            positional = [arg] # List with one element. 
-            
-            safeMerge(payload[subcommand][arg], 'aliases', positional)
-
-            # print(f'subcommand: {subcommand}, {positional}, {payload[subcommand][arg]["arg_options"]}')
-            
-            temp.add_argument(*positional, **payload[subcommand][arg]['arg_options'])
-        result[subcommand] = temp
-    return result
-
-
-C = {\
-    'view': {
-        # 'user_option': {
-        #     'arg_options': {
-        #         'type': str,
-        #         'help': 'The option to edit.',
-        #         'default': r'__ALL__',
-        #         'required': False
-        #     } 
-        # },
-        '-verbose': {
-            'arg_options': {
-                'action': 'store_true',
-                'required': False
-            },
-            'aliases': '-v'
-        }   
-    },
-    'edit': {
-        'user_option': {
-            'arg_options': {
-                'type': str,
-                'help': 'The option to edit.'
-            } 
-        },
-        'new_value': {
-            'arg_options': {
-                'type': str,
-                'help': 'The value to change it to.'
-            }
-        }
-    },
-    'restore': {
-    
-    },
-}
-
 """
 Generate Config
 """
+class Configuration:
 
+    @staticmethod
+    def getDefaultConfig():
+        return viewFullUserConfig(__DEFAULT_USER__)['payload']
+    
+    @staticmethod
+    def getPrettyDefaultConfig(): # unused
+        return viewFullUserConfig(__DEFAULT_USER__)['msg']
+
+    def __init__(self, user=__DEFAULT_USER__):
+
+        self.user = user
+        temp = viewFullUserConfig(self.user)
+        if temp['status']!='success': 
+            
+            temp = viewFullUserConfig(__DEFAULT_USER__)
+            
+            if temp['status']!='success': raise ValueError('Configuration loader has failed.')
+
+            self.user=__DEFAULT_USER__ # reset to default user
+        else:
+            self.settings=temp['payload']
+                
+
+        
+    
+    def getEntry(self, selected_option):
+        
+        z = getEntryRecursive_dictionary(selected_option,self.settings)
+
+        if z['status']!='success':
+            
+            if self.user!=__DEFAULT_USER__:
+                # One last try: Searches in Default Config
+                temp = viewFullUserConfig(__DEFAULT_USER__)['payload']
+                default_result = getEntryRecursive_dictionary(selected_option,temp)
+                return default_result
+        return z
+
+
+    def editEntry(self, selected_option, new_value, write=True):
+        
+        z = getEntryRecursive_dictionary(selected_option, 
+        Configuration.getDefaultConfig())
+        if z['status']!='success':
+            return {
+                'status': 'failure',
+                'msg': f'Option {selected_option} not found.'
+            }
+        else:
+            # There exists such an option to edit. Now we have to check for validity.
+
+            entry_validation_test = getEntryRecursive_dictionary(selected_option, ALLOWED_CONFIG)
+            try:
+                if entry_validation_test['status']=='success':
+                    entry_validation_test['msg'](selected_option,new_value)
+            
+            except (ValueError,TypeError) as E:
+                return {
+                    'status': 'failure',
+                    'msg': E.args
+                }
+            else:
+                """
+                Enters this block if and only if we pass the test or if there is no test at all. 
+                """
+
+                old_value = self.settings.get(selected_option)
+
+                
+                self.settings[selected_option]=new_value # updates self.settings
+                path_to_settings = user_settings_path(self.user) 
+                
+                
+                if write: # Writes to disk if flag is enabled.
+                    with path_to_settings.open() as fp:
+                        fp.write(json.dumps(self.settings, sort_keys=True, indent = 4))
+                        fp.flush()
+                        fp.close()
+                return {
+                    'status': 'success',
+                    'msg': f'{selected_option}: {old_value if old_value!=None else (f"{DEFAULT_CONFIG.get(selected_option)} (default)")} -> {new_value}.'
+                }
+            
+
+    def reload(self):
+        self.settings = viewFullUserConfig(self.user)['payload']
+
+
+    @staticmethod
+    def restoreUserConfig(user):
+        Z = {'usage','last_used'} # do not wipe these entries.
+        for k in DEFAULT_CONFIG:
+            if not k in Z:
+                editUserConfig(user, k, DEFAULT_CONFIG[k]) # wipe all config.
+        # Call our incrementing function
+
+
+    @staticmethod
+    def incrementUserConfig(user):
+        if user!=__DEFAULT_USER__:
+            old_usage = getUserConfig(user,'usage')
+            editUserConfig(user,'usage',old_usage + 1)
+            editUserConfig(user,'last_used',datetime.datetime.now())
+            return
+        raise ValueError('Default User cannot be incremented.')
+
+    
 
 
 def user_settings_path(user):
     """
     Helper Method to generate user settings path.
     """
-    p = Path('.')
-    return p/(user + r'_settings.json')
+    return __CONFIG_FOLDER_PATH__/(user + r'_settings.json')
 
 
 def getUserConfig(user, user_option='usage'):
@@ -167,19 +188,11 @@ def getUserConfig(user, user_option='usage'):
             return j[user_option]
     except (FileNotFoundError, KeyError):
         try: 
+            
             # Try resorting to DEFAULT_CONFIG, if the user has not configured this option yet.
-            return DEFAULT_CONFIG[user_option]
+            return getUserConfig(__DEFAULT_USER__)[user_option]
         except KeyError:
             raise KeyError(f'Option "{user_option}" does not exist.')
-
-
-def viewUserConfig(user, user_option='usage'):
-    settings_path = user_settings_path(user)
-    try:
-        value = getUserConfig(user,user_option)
-        return f'{user_option}: {value}'
-    except KeyError as E:
-        return E.args
 
 
 def viewFullUserConfig(user):
@@ -187,9 +200,16 @@ def viewFullUserConfig(user):
     try:
         with settings_path.open('r') as fp:
             j = json.dumps(json.loads(fp.read()),sort_keys=True, indent=4)
-            return j
+            return {
+                'status': 'success',
+                'msg': j,
+                'payload': json.loads(j)
+            }
     except FileNotFoundError:
-        return f'User {user} has no config file. Default parameters are used instead. See {_COMMAND_DEFAULT_SETTINGS}.'
+        return {
+            'status': 'failure',
+            'msg': f'User {user} has no config file. Default parameters are used instead. !config [option] [new_value] to edit, and {__COMMAND_DEFAULT_SETTINGS__} for help.',
+        }
             
 
 def editUserConfig(user:str, user_option:str, new_value):
@@ -201,14 +221,19 @@ def editUserConfig(user:str, user_option:str, new_value):
             temp = DEFAULT_CONFIG[user_option] # Just to trigger the KeyError
 
             if ALLOWED_CONFIG.get(user_option): ALLOWED_CONFIG[user_option](new_value,user_option)
-            fp.flush()
-            fp.close()
-        with settings_path.open('w') as fw:
-
-            j[user_option] = new_value # After checking for Valid Arguments (if there exists a check)
-            fw.write(json.dumps(j))
-
             
+            fp.close()
+            with settings_path.open('w') as fw:
+                old_value = j.get(user_option)
+                j[user_option] = new_value # After checking for Valid Arguments (if there exists a check)
+                fw.write(json.dumps(j))
+                fw.close()
+
+                return {
+                    'status': 'success',
+
+                    'msg': f'{user_option}: {old_value if old_value!=None else (f"{DEFAULT_CONFIG.get(user_option)} (default)")} -> {new_value}.'
+                }
     except FileNotFoundError:
         try:
             if new_value == DEFAULT_CONFIG[user_option]:
@@ -220,6 +245,7 @@ def editUserConfig(user:str, user_option:str, new_value):
                 with settings_path.open('w') as fp:
                     z = json.dumps({user_option: new_value}) #Need to check for TypeError as well.
                     fp.write(z)
+                    fp.close()
         except KeyError:
             return {
             'status': 'failure',
@@ -232,7 +258,7 @@ def editUserConfig(user:str, user_option:str, new_value):
             'msg': f'Unknown option "{user_option}".'
         }
         
-    except (ValueError, TypeError) as E:
+    except (ValueError, TypeError) as E: # fails the restriction imposed.
         return {
             'status': 'failure',
             'msg': E.args,
@@ -244,12 +270,6 @@ def editUserConfig(user:str, user_option:str, new_value):
         }
         
         
-def restoreUserConfig(user):
-    Z = {'usage','last_used'} # do not wipe these entries.
-    for k in DEFAULT_CONFIG:
-        if not k in Z:
-            editUserConfig(user, k, DEFAULT_CONFIG[k]) # wipe all config.
-    # Call our incrementing function
 
 
 # with settings_path.open('w') as f:
@@ -260,7 +280,7 @@ def restoreUserConfig(user):
 #     j = json.loads(f.read())
 #     print(f'Printing JSON Settings: {j},\ntype: {type(j)}')
 
-result = helper_add_subparsers(subparsers, C)
+
 # print(result)
 
 
@@ -269,21 +289,24 @@ result = helper_add_subparsers(subparsers, C)
 
 
 # print(viewFullUserConfig(__DEFAULT_USER__))
-if __name__ == '__main__':
-    args = parser.parse_args()
-    current_user = __DEFAULT_USER__
 
-    if args.command == 'view':
-        print(f'Command Selected: {args.command}')
-        print(viewFullUserConfig(user=current_user))
+# Additional Testing for Configuration
 
-    elif args.command =='edit':
-        print(f'Command Selected: {args.command} w/ {args}')
-        print(editUserConfig(user=current_user, user_option = args.user_option, new_value = args.new_value))
+# if __name__ == '__main__':
+#     args = parser.parse_args()
+#     current_user = __DEFAULT_USER__
 
-    elif args.command == 'restore':
-        print(f'Command Selected: {args.command}')
-        print(restoreUserConfig(user=current_user))
+#     if args.command == 'view':
+#         print(f'Command Selected: {args.command}')
+#         print(viewFullUserConfig(user=current_user))
+
+#     elif args.command =='edit':
+#         print(f'Command Selected: {args.command} w/ {args}')
+#         print(editUserConfig(user=current_user, user_option = args.user_option, new_value = args.new_value))
+
+#     elif args.command == 'restore':
+#         print(f'Command Selected: {args.command}')
+#         print(restoreUserConfig(user=current_user))
 
 # TODO: Load all User Configurations at Startup, then
 # on editing any of the files, save it to disk. And reload.

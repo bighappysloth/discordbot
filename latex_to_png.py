@@ -8,6 +8,8 @@ import subprocess
 import os
 import asyncio
 
+import user_configuration
+
 __TEX_OUT_DIRECTORY__ = \
 'latex_out'
 
@@ -24,33 +26,32 @@ COMMAND_PNG_CONVERT = \
 'convert -density {0}  -colorspace RGB -alpha opaque -background white  -quality {1} "{2}" "{3}"'
 
 COMMAND_CLEANUP3 = \
-'latexmk -c -cd -f {}/*'
+'latexmk -c -cd -f {}/'
 
 COMMAND_IMG_CONVERT_WITHTRIM = \
 'convert -trim -density {0} -quality {1} "{2}" "{3}"'
 
-TEX_FILE_HEADER = r'''\documentclass[preview, border=20pt, 12pt]{standalone}
+
+TEX_FILE_HEADER = {\
+'tight': r'''\documentclass[preview]{standalone}
+\usepackage{import}
+\import{./}{imports}
+\import{./}{engineering_imports} % uncomment if necessary
+\begin{document}''',
+
+'regular': r'''\documentclass[preview, border=10pt, 6pt]{standalone}
+\usepackage{import}
+\import{./}{imports}
+\import{./}{engineering_imports} % uncomment if necessary
+\begin{document}''',
+
+'wide': r'''\documentclass[preview, border=20pt, 12pt]{standalone}
 \usepackage{import}
 \import{./}{imports}
 \import{./}{engineering_imports} % uncomment if necessary
 \begin{document}'''
 
-
-
-TEX_ALT_FILE_HEADER = r'''\documentclass[[preview, border=10pt, 6pt]{standalone}
-\usepackage{import}
-\import{./}{imports}
-\import{./}{engineering_imports} % uncomment if necessary
-\begin{document}'''
-
-
-TEX_ALT_SQUEEZE_FILE_HEADER = r'''\documentclass[[preview]{standalone}
-\usepackage{import}
-\import{./}{imports}
-\import{./}{engineering_imports} % uncomment if necessary
-\begin{document}'''
-
-
+}
 
 TEX_DELIMITERS = {
 'inline': lambda x: '$' + x + '$',
@@ -96,12 +97,13 @@ async def converter( userInput,
                 tex_dir = __TEX_OUT_DIRECTORY__, 
                 DENSITY = 1200, 
                 QUALITY = 100, 
-                alt_mode = False,
+                framing = 'regular',
                 save_pdf = False,
                 tex_mode = 'inline'):
 
+#    print('Converter invoked')    
+    file_contents = TEX_FILE_HEADER[framing] if TEX_FILE_HEADER.get(framing) else TEX_FILE_HEADER['regular']
     
-    file_contents = TEX_ALT_FILE_HEADER if alt_mode else TEX_FILE_HEADER
     if not userInput: userInput = r'\,'
 
     p = Path('.')

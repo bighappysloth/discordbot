@@ -1,119 +1,126 @@
-[2022-12-24 23:39:53] [INFO    ] discord.client: logging in using static token
-[2022-12-24 23:39:55] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: c76a8fee712e74673bf0220cf02ef050).
-[2022-12-25 00:13:41] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
-[2022-12-25 00:13:46] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 5b8b8bb8abc5ce338c2c938579328915).
-[2022-12-25 00:16:59] [INFO    ] discord.gateway: Shard ID None has successfully RESUMED session 5b8b8bb8abc5ce338c2c938579328915.
-[2022-12-25 00:18:35] [ERROR   ] discord.client: Attempting a reconnect in 1.33s
+[2022-12-25 20:41:52] [INFO    ] discord.client: logging in using static token
+[2022-12-25 20:41:53] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 36b5f78affe7ebc4129bfc091daf2dd4).
+[2022-12-25 20:41:55] [ERROR   ] discord.client: Ignoring exception in on_command_completion
+Traceback (most recent call last):
+  File "/Users/a../repos/discordbot/user_configuration.py", line 206, in getUserConfig
+    return j[user_option]
+KeyError: 'usage'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/homebrew/lib/python3.10/site-packages/discord/client.py", line 409, in _run_event
+    await coro(*args, **kwargs)
+  File "/Users/a../repos/discordbot/discord_bot_dec20.py", line 452, in on_command_completion
+    user_configuration.incrementUserConfig(str(userid))
+  File "/Users/a../repos/discordbot/user_configuration.py", line 300, in incrementUserConfig
+    old_usage = getUserConfig(user,'usage')
+  File "/Users/a../repos/discordbot/user_configuration.py", line 211, in getUserConfig
+    return getUserConfig(__DEFAULT_USER__)[user_option]
+TypeError: 'int' object is not subscriptable
+[2022-12-25 20:42:14] [ERROR   ] discord.client: Ignoring exception in on_command_completion
+Traceback (most recent call last):
+  File "/Users/a../repos/discordbot/user_configuration.py", line 206, in getUserConfig
+    return j[user_option]
+KeyError: 'usage'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/homebrew/lib/python3.10/site-packages/discord/client.py", line 409, in _run_event
+    await coro(*args, **kwargs)
+  File "/Users/a../repos/discordbot/discord_bot_dec20.py", line 452, in on_command_completion
+    user_configuration.incrementUserConfig(str(userid))
+  File "/Users/a../repos/discordbot/user_configuration.py", line 300, in incrementUserConfig
+    old_usage = getUserConfig(user,'usage')
+  File "/Users/a../repos/discordbot/user_configuration.py", line 211, in getUserConfig
+    return getUserConfig(__DEFAULT_USER__)[user_option]
+TypeError: 'int' object is not subscriptable
+[2022-12-25 20:42:48] [ERROR   ] discord.client: Ignoring exception in on_command_completion
+Traceback (most recent call last):
+  File "/Users/a../repos/discordbot/user_configuration.py", line 206, in getUserConfig
+    return j[user_option]
+KeyError: 'usage'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/homebrew/lib/python3.10/site-packages/discord/client.py", line 409, in _run_event
+    await coro(*args, **kwargs)
+  File "/Users/a../repos/discordbot/discord_bot_dec20.py", line 452, in on_command_completion
+    user_configuration.incrementUserConfig(str(userid))
+  File "/Users/a../repos/discordbot/user_configuration.py", line 300, in incrementUserConfig
+    old_usage = getUserConfig(user,'usage')
+  File "/Users/a../repos/discordbot/user_configuration.py", line 211, in getUserConfig
+    return getUserConfig(__DEFAULT_USER__)[user_option]
+TypeError: 'int' object is not subscriptable
+[2022-12-25 20:42:51] [ERROR   ] discord.client: Ignoring exception in on_command_completion
+Traceback (most recent call last):
+  File "/Users/a../repos/discordbot/user_configuration.py", line 206, in getUserConfig
+    return j[user_option]
+KeyError: 'usage'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/homebrew/lib/python3.10/site-packages/discord/client.py", line 409, in _run_event
+    await coro(*args, **kwargs)
+  File "/Users/a../repos/discordbot/discord_bot_dec20.py", line 452, in on_command_completion
+    user_configuration.incrementUserConfig(str(userid))
+  File "/Users/a../repos/discordbot/user_configuration.py", line 300, in incrementUserConfig
+    old_usage = getUserConfig(user,'usage')
+  File "/Users/a../repos/discordbot/user_configuration.py", line 211, in getUserConfig
+    return getUserConfig(__DEFAULT_USER__)[user_option]
+TypeError: 'int' object is not subscriptable
+[2022-12-25 20:52:58] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
+[2022-12-25 20:53:04] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 6c579abd3ea73354249729f3f9b0138f).
+[2022-12-25 22:00:36] [INFO    ] discord.gateway: Shard ID None has successfully RESUMED session 6c579abd3ea73354249729f3f9b0138f.
+[2022-12-25 22:12:29] [INFO    ] discord.gateway: Shard ID None has successfully RESUMED session 6c579abd3ea73354249729f3f9b0138f.
+[2022-12-25 22:30:15] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
+[2022-12-25 22:30:21] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 2641b28558faa942278a25a54cf772df).
+[2022-12-25 22:34:08] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
+[2022-12-25 22:34:13] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 313a2887387084c8174f143f959ff434).
+[2022-12-25 22:35:45] [ERROR   ] discord.client: Attempting a reconnect in 1.84s
 Traceback (most recent call last):
   File "/opt/homebrew/lib/python3.10/site-packages/discord/client.py", line 627, in connect
     await self.ws.poll_event()
   File "/opt/homebrew/lib/python3.10/site-packages/discord/gateway.py", line 646, in poll_event
     raise ConnectionClosed(self.socket, shard_id=self.shard_id, code=code) from None
 discord.errors.ConnectionClosed: Shard ID None WebSocket closed with 1000
-[2022-12-25 00:18:37] [INFO    ] discord.gateway: Shard ID None has successfully RESUMED session 5b8b8bb8abc5ce338c2c938579328915.
-[2022-12-25 00:39:27] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
-[2022-12-25 00:39:32] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 15d0573a7abc083631a25d6b1232cb7d).
-[2022-12-25 00:57:02] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
-[2022-12-25 00:57:07] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 41c97290aa6d4cf777aa736186dbcd52).
-[2022-12-25 00:59:06] [INFO    ] discord.gateway: Shard ID None has successfully RESUMED session 41c97290aa6d4cf777aa736186dbcd52.
-[2022-12-25 01:00:42] [ERROR   ] discord.client: Attempting a reconnect in 3.93s
+[2022-12-25 22:35:47] [INFO    ] discord.gateway: Shard ID None has successfully RESUMED session 313a2887387084c8174f143f959ff434.
+[2022-12-25 22:55:09] [ERROR   ] discord.client: Ignoring exception in on_command_completion
 Traceback (most recent call last):
-  File "/opt/homebrew/lib/python3.10/site-packages/discord/client.py", line 627, in connect
-    await self.ws.poll_event()
-  File "/opt/homebrew/lib/python3.10/site-packages/discord/gateway.py", line 646, in poll_event
-    raise ConnectionClosed(self.socket, shard_id=self.shard_id, code=code) from None
-discord.errors.ConnectionClosed: Shard ID None WebSocket closed with 1000
-[2022-12-25 01:00:46] [INFO    ] discord.gateway: Shard ID None has successfully RESUMED session 41c97290aa6d4cf777aa736186dbcd52.
-[2022-12-25 01:03:38] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
-[2022-12-25 01:03:43] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 45a69a005c63088492a9f481fa8f0155).
-[2022-12-25 01:05:29] [ERROR   ] discord.client: Attempting a reconnect in 7.13s
+  File "/Users/a../repos/discordbot/user_configuration.py", line 206, in getUserConfig
+    }
+KeyError: 'usage'
+
+During handling of the above exception, another exception occurred:
+
 Traceback (most recent call last):
-  File "/opt/homebrew/lib/python3.10/site-packages/discord/client.py", line 627, in connect
-    await self.ws.poll_event()
-  File "/opt/homebrew/lib/python3.10/site-packages/discord/gateway.py", line 646, in poll_event
-    raise ConnectionClosed(self.socket, shard_id=self.shard_id, code=code) from None
-discord.errors.ConnectionClosed: Shard ID None WebSocket closed with 1000
-[2022-12-25 01:05:37] [INFO    ] discord.gateway: Shard ID None has successfully RESUMED session 45a69a005c63088492a9f481fa8f0155.
-[2022-12-25 01:22:04] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
-[2022-12-25 01:22:10] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: ecdbeef46879f55ba4651a19bb705488).
-[2022-12-25 01:54:40] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
-[2022-12-25 01:54:46] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 853512b440621999d8d91835466903fc).
-[2022-12-25 01:56:58] [ERROR   ] discord.client: Attempting a reconnect in 4.15s
+  File "/opt/homebrew/lib/python3.10/site-packages/discord/client.py", line 409, in _run_event
+    await coro(*args, **kwargs)
+  File "/Users/a../repos/discordbot/discord_bot_dec20.py", line 452, in on_command_completion
+    #     if message.author == bot.user: # Prevent loops
+  File "/Users/a../repos/discordbot/user_configuration.py", line 300, in incrementUserConfig
+    #         print(viewFullUserConfig(user=current_user))
+  File "/Users/a../repos/discordbot/user_configuration.py", line 211, in getUserConfig
+    }
+TypeError: 'int' object is not subscriptable
+[2022-12-25 22:55:25] [ERROR   ] discord.client: Ignoring exception in on_command_completion
 Traceback (most recent call last):
-  File "/opt/homebrew/lib/python3.10/site-packages/discord/client.py", line 627, in connect
-    await self.ws.poll_event()
-  File "/opt/homebrew/lib/python3.10/site-packages/discord/gateway.py", line 646, in poll_event
-    raise ConnectionClosed(self.socket, shard_id=self.shard_id, code=code) from None
-discord.errors.ConnectionClosed: Shard ID None WebSocket closed with 1000
-[2022-12-25 01:57:03] [INFO    ] discord.gateway: Shard ID None has successfully RESUMED session 853512b440621999d8d91835466903fc.
-[2022-12-25 01:57:58] [ERROR   ] discord.client: Attempting a reconnect in 25.78s
+  File "/Users/a../repos/discordbot/user_configuration.py", line 206, in getUserConfig
+    }
+KeyError: 'usage'
+
+During handling of the above exception, another exception occurred:
+
 Traceback (most recent call last):
-  File "/opt/homebrew/lib/python3.10/site-packages/discord/client.py", line 627, in connect
-    await self.ws.poll_event()
-  File "/opt/homebrew/lib/python3.10/site-packages/discord/gateway.py", line 646, in poll_event
-    raise ConnectionClosed(self.socket, shard_id=self.shard_id, code=code) from None
-discord.errors.ConnectionClosed: Shard ID None WebSocket closed with 1000
-[2022-12-25 01:58:24] [INFO    ] discord.gateway: Shard ID None has successfully RESUMED session 853512b440621999d8d91835466903fc.
-[2022-12-25 01:59:19] [ERROR   ] discord.client: Attempting a reconnect in 49.70s
-Traceback (most recent call last):
-  File "/opt/homebrew/lib/python3.10/site-packages/discord/client.py", line 627, in connect
-    await self.ws.poll_event()
-  File "/opt/homebrew/lib/python3.10/site-packages/discord/gateway.py", line 646, in poll_event
-    raise ConnectionClosed(self.socket, shard_id=self.shard_id, code=code) from None
-discord.errors.ConnectionClosed: Shard ID None WebSocket closed with 1000
-[2022-12-25 02:00:08] [INFO    ] discord.gateway: Shard ID None has successfully RESUMED session 853512b440621999d8d91835466903fc.
-[2022-12-25 02:12:00] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
-[2022-12-25 02:12:06] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 58bdfc6e93fddeb982c92c9d826f00a1).
-[2022-12-25 02:31:38] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
-[2022-12-25 02:31:43] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: bbdd4f9a3c92ea4b5fc73e9eab4ef8fc).
-[2022-12-25 02:40:35] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
-[2022-12-25 02:40:41] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: ce067857baca5b9e4dbfd1890ff1e3fa).
-[2022-12-25 02:42:28] [INFO    ] discord.gateway: Shard ID None has successfully RESUMED session ce067857baca5b9e4dbfd1890ff1e3fa.
-[2022-12-25 02:44:04] [ERROR   ] discord.client: Attempting a reconnect in 119.45s
-Traceback (most recent call last):
-  File "/opt/homebrew/lib/python3.10/site-packages/discord/client.py", line 627, in connect
-    await self.ws.poll_event()
-  File "/opt/homebrew/lib/python3.10/site-packages/discord/gateway.py", line 646, in poll_event
-    raise ConnectionClosed(self.socket, shard_id=self.shard_id, code=code) from None
-discord.errors.ConnectionClosed: Shard ID None WebSocket closed with 1000
-[2022-12-25 03:16:39] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
-[2022-12-25 03:16:44] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 24ade870cf85ba7eb30316276cd2a943).
-[2022-12-25 03:19:45] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
-[2022-12-25 03:19:51] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 5eb35858013010cfb24f0cba0aebe56c).
-[2022-12-25 03:24:56] [INFO    ] discord.gateway: Shard ID None has successfully RESUMED session 5eb35858013010cfb24f0cba0aebe56c.
-[2022-12-25 03:26:32] [ERROR   ] discord.client: Attempting a reconnect in 164.57s
-Traceback (most recent call last):
-  File "/opt/homebrew/lib/python3.10/site-packages/discord/client.py", line 627, in connect
-    await self.ws.poll_event()
-  File "/opt/homebrew/lib/python3.10/site-packages/discord/gateway.py", line 646, in poll_event
-    raise ConnectionClosed(self.socket, shard_id=self.shard_id, code=code) from None
-discord.errors.ConnectionClosed: Shard ID None WebSocket closed with 1000
-[2022-12-25 03:59:15] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
-[2022-12-25 04:02:38] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
-[2022-12-25 04:05:35] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
-[2022-12-25 04:05:41] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: b76125e6587dcce28f24c82a1df73a71).
-[2022-12-25 04:26:41] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
-[2022-12-25 04:34:50] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
-[2022-12-25 04:34:56] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: e7f96490c9f78afca4d524f591a287c9).
-[2022-12-25 06:01:28] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
-[2022-12-25 06:01:34] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: beaee9d8b1574a5858b97fd0181605ca).
-[2022-12-25 07:25:08] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
-[2022-12-25 07:25:14] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: e0a5bb1ad5ca494d43c391d8bccbacc3).
-[2022-12-25 08:28:26] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
-[2022-12-25 08:45:21] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
-[2022-12-25 09:00:03] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
-[2022-12-25 09:16:39] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
-[2022-12-25 09:20:10] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
-[2022-12-25 09:20:15] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 118e9f319f814166326ae10831fab200).
-[2022-12-25 09:34:53] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
-[2022-12-25 09:34:58] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: cf8588ae036426d37614044b4047a6f1).
-[2022-12-25 10:26:19] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
-[2022-12-25 10:42:37] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
-[2022-12-25 10:57:21] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
-[2022-12-25 11:38:40] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
-[2022-12-25 11:40:08] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
-[2022-12-25 11:40:50] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 998080916ac589c31e5dffe07b1698e4).
-[2022-12-25 11:43:12] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
-[2022-12-25 11:43:17] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: a764cb2db7db81e862ba07a0ae40df5d).
-[2022-12-25 12:00:57] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
-[2022-12-25 12:01:03] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: acd5d4e0ea5977f205119f21bbe75788).
+  File "/opt/homebrew/lib/python3.10/site-packages/discord/client.py", line 409, in _run_event
+    await coro(*args, **kwargs)
+  File "/Users/a../repos/discordbot/discord_bot_dec20.py", line 452, in on_command_completion
+    #     if message.author == bot.user: # Prevent loops
+  File "/Users/a../repos/discordbot/user_configuration.py", line 300, in incrementUserConfig
+    #         print(viewFullUserConfig(user=current_user))
+  File "/Users/a../repos/discordbot/user_configuration.py", line 211, in getUserConfig
+    }
+TypeError: 'int' object is not subscriptable

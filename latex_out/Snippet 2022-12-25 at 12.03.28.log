@@ -1,9 +1,9 @@
-This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.12.22)  25 DEC 2022 12:02
+This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.12.22)  25 DEC 2022 12:04
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**"Snippet 2022-12-24 at 23.39.53.tex"
-(./Snippet 2022-12-24 at 23.39.53.tex
+**"Snippet 2022-12-25 at 12.03.28.tex"
+(./Snippet 2022-12-25 at 12.03.28.tex
 LaTeX2e <2022-11-01> patch level 1
 L3 programming layer <2022-12-17> (/usr/local/texlive/2022/texmf-dist/tex/latex
 /standalone/standalone.cls
@@ -1040,8 +1040,8 @@ Package: listings 2020/03/24 1.8d (Carsten Heinz)
 LaTeX Warning: Unused global option(s):
     [[preview,6pt].
 
-(./Snippet 2022-12-24 at 23.39.53.aux)
-\openout1 = `"Snippet 2022-12-24 at 23.39.53.aux"'.
+(./Snippet 2022-12-25 at 12.03.28.aux)
+\openout1 = `"Snippet 2022-12-25 at 12.03.28.aux"'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 5.
 LaTeX Font Info:    ... okay on input line 5.
@@ -1130,9 +1130,9 @@ LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
 (Font)                  OT1/mlmtt/m/n --> TU/lmtt/bx/n on input line 5.
 Package hyperref Info: Link coloring ON on input line 5.
-(./Snippet 2022-12-24 at 23.39.53.out) (./Snippet 2022-12-24 at 23.39.53.out)
+(./Snippet 2022-12-25 at 12.03.28.out) (./Snippet 2022-12-25 at 12.03.28.out)
 \@outlinefile=\write4
-\openout4 = `"Snippet 2022-12-24 at 23.39.53.out"'.
+\openout4 = `"Snippet 2022-12-25 at 12.03.28.out"'.
 
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: listings package is loaded.
@@ -1169,31 +1169,20 @@ File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 LaTeX Font Info:    Trying to load font information for U+msb on input line 6.
 (/usr/local/texlive/2022/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-))
-Runaway argument?
-{\prod _{\alpha \in A] E_\alpha ,\: E_\alpha \in \mcal _\alpha ,\: \alpha \ETC.
-! File ended while scanning use of \bigset.
-<inserted text> 
-                \par 
-<*> "Snippet 2022-12-24 at 23.39.53.tex"
-                                        
-I suspect you have forgotten a `}', causing me
-to read past where you wanted me to stop.
-I'll try to recover; but if the error is serious,
-you'd better type `E' or `X' now and fix your file.
+) [1
 
-! Emergency stop.
-<*> "Snippet 2022-12-24 at 23.39.53.tex"
-                                        
-*** (job aborted, no legal \end found)
-
- 
+] (./Snippet 2022-12-25 at 12.03.28.aux)
+Package rerunfilecheck Info: File `"Snippet 2022-12-25 at 12.03.28".out' has no
+t changed.
+(rerunfilecheck)             Checksum: <no file>.
+ ) 
 Here is how much of TeX's memory you used:
- 41766 strings out of 476778
- 986401 string characters out of 5805974
- 1842979 words of memory out of 5000000
+ 41769 strings out of 476778
+ 986505 string characters out of 5805974
+ 1844979 words of memory out of 5000000
  61204 multiletter control sequences out of 15000+600000
  516815 words of font info for 52 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 96i,3n,127p,1087b,479s stack positions out of 10000i,1000n,20000p,200000b,200000s
-No pages of output.
+ 96i,6n,127p,1087b,479s stack positions out of 10000i,1000n,20000p,200000b,200000s
+
+Output written on Snippet 2022-12-25 at 12.03.28.xdv (1 page, 2020 bytes).

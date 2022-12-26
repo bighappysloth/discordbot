@@ -9,7 +9,7 @@ import datetime
 
 import logging
 import traceback 
-
+import shlex
 
 import io
 import re
@@ -102,6 +102,10 @@ matlab2latex_parser = subparser.add_parser('matlab2latex')
 latex2sympy_parser = subparser.add_parser('latex2sympy')
 
 stringnumstring_parser = subparser.add_parser('stringnumstring')
+
+mt_parser = subparser.add_parser('mt')
+mt_parser.add_argument('xinput') # positional
+mt_parser.add_argument('-m',action='store_true') # store true mode
 
 matlab2sympy_parser.add_argument('-input','--i',
 type=str, 
@@ -348,33 +352,77 @@ latex2png default inline mode
 """
 @bot.command(name='t')
 async def _make_latex_to_png(ctx, *, z):
-    await ctx.send(f'{ctx.author}: TT invoked w/ `{z}`')
+    await ctx.reply(f'Generating Image from `{z}`')
+
+    Config = user_configuration.Configuration(str(ctx.author.id)) 
     
-    result = await latex_to_png.converter(z,tex_mode = 'inline', alt_mode=True,DENSITY=2400)
+    result = await latex_to_png.converter(\
+                    z,
+                    DENSITY  = Config.getEntry('png_dpi'),
+                    tex_mode = Config.getEntry('latex_mode'),
+                    framing  = Config.getEntry('framing'),
+            )    
     
+
     if result['status'] == 'success':
         im_location = result['image_path']
         with open(im_location, 'rb') as fp:
-            await ctx.send(file=discord.File(fp,f'{im_location}'))
+            await ctx.reply(file=discord.File(fp,f'{im_location}'))
     else:
         # Error Detected
-        raise commands.CommandError(result["reason"])
+        raise commands.CommandError(result["msg"])
 
 
 
+@bot.command(name='defaults')
+async def _view_defaults(ctx):
+    # Forget about using Flags, let us try manual parsing with shell
+    # No flags needed
 
-# @bot.command()
-# async def test(ctx):
-#     temp = f'{datetime.datetime.now().strftime("Plot %Y-%m-%d at %H.%M.%S.png")}.png'
-#     print(f'test invoked with {temp}')
-#     await ctx.send(f'test invoked with {temp}')
+    result = user_configuration.viewFullUserConfig(user_configuration.__DEFAULT_USER__)
+        
+    if result['status'] == 'success':
+        await ctx.reply(f"Configuration Options (defaults):\n```{result['msg']}```")
+    else:
+        await ctx.reply(f"`{result['status']}: {result['msg']}`")
+        logging.warning(f"`{result['status']}: {result['msg']}`")   
+
+
+@bot.command(name='config')
+async def _edit_config(ctx, selected_option:str='', new_value:str=''):
+    u = str(ctx.author.id)
+    
+    if (not selected_option) and (not new_value):
+        """
+        If the user invokes with empty arguments, we show them their own configuration.
+        """
+        logging.info('No args detected')
+
+        result = user_configuration.viewFullUserConfig(u)
+        if result['status'] == 'success':
+            await ctx.reply(f"{ctx.author}'s config: \n```{result['msg']}```!defaults to see options")
+        else:
+            await ctx.reply(f"`{result['status']}: {result['msg']}`") 
+
+    else:    
+        result = user_configuration.editUserConfig(u,selected_option,new_value)
+        await ctx.reply(f"`{result['status']}: {result['msg']}`")
+        
+
+
+@bot.command(name='restore')
+async def _restore_config(ctx):
+    u = str(ctx.author.id)
+    user_configuration.restoreUserConfig(u)
+    await ctx.reply(f"Restored {ctx.author.name}'s config to defaults.")
+    logging.info(f"Restored {ctx.author.name}'s config to defaults.")
 
 
 @bot.event
 async def on_ready():
-    print(f"ccE's Discord Bot")
-    print(f'Current Time: {current_time()}')
-    print('We have logged in as {0.user}'.format(bot))
+    logging.info(f"ccE's Discord Bot")
+    logging.info(f'Current Time: {current_time()}')
+    logging.info('We have logged in as {0.user}'.format(bot))
 
 
 @bot.event
@@ -383,6 +431,21 @@ async def on_command_error(ctx, error):
     
     await ctx.send(f'{z}')
 
+@bot.event
+async def on_command(ctx):
+    fulluser = f'{ctx.author} -> {ctx.author.id}'
+    
+    logging.info(f'{ctx.author} invoked "{ctx.command}" w/ args {ctx.args[1:]}.')
+    logging.debug(f'{fulluser}')
+
+
+@bot.event
+async def on_command_completion(ctx):
+    """
+    Increments the user's config.usage and config.last_used.
+    """
+    userid = ctx.author.id
+    user_configuration.incrementUserConfig(str(userid))
 
 # @bot.event
 # async def on_message(message):
@@ -396,8 +459,18 @@ async def on_command_error(ctx, error):
 
 
 # Run Bot
-handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
-bot.run(__DISCORD_API_KEY__,log_handler=handler)
+root = logging.getLogger()
+root.setLevel(logging.DEBUG)
+
+handler_stdout = logging.StreamHandler(sys.stdout)
+handler_stdout.setLevel(logging.DEBUG)
+handler_formatting = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler_stdout.setFormatter(handler_formatting)
+
+root.addHandler(handler_stdout)
+
+handler_filelog = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
+bot.run(__DISCORD_API_KEY__,log_handler=handler_filelog)
 
 
 # TODO: how to reply to the previous user
