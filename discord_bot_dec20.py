@@ -498,12 +498,12 @@ handler_filelog = logging.FileHandler(filename='discord.log', encoding='utf-8', 
 bot.run(__DISCORD_API_KEY__,log_handler=handler_filelog)
 
 
-# TODO: how to reply to the previous user
-# FEATURE: click for latex output.
-# REQUIRE: Detection of Edits, and Reactions
+# TODO: how to reply to the previous user DONE
+# FEATURE: click for latex output (REACTION)
+# REQUIRE: Detection of Edits, and Reactions (EDITS)
 
-# Matrix Converter. Accepts different notation (e,g MatLab Notation)
-# Table Maker in Latex
+# Matrix Converter. Accepts different notation (e,g MatLab Notation) (DONE)
+# Table Maker in Latex (DONE)
 # StringNumString
 
 # TODO Domain Restrictions. for plotFunction
