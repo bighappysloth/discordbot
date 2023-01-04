@@ -13,7 +13,7 @@ def channel_identifier(ctx):
             'name': f'dm_{ctx.channel.recipient.id}',
             'title': f'dm_{ctx.channel.recipient.name}',
             'id': str(ctx.channel.recipient.id),
-            
+            'channel_id': str(ctx.channel.id),
             'type': 'dm'
         }
     elif isinstance(ctx.channel, (discord.TextChannel,
@@ -33,7 +33,10 @@ def channel_identifier(ctx):
             'name': f'thread_{ctx.channel.id}',
             'title': f'channel_{ctx.channel.name}',
             
-            'id': ctx.channel.id,
+            'id': str(ctx.channel.id),
+            
+            'message_id': str(ctx.message.id),
+            'channel_id': str(ctx.channel.id),
             'guild_id': str(ctx.guild.id),
             'guild_title': str(ctx.guild.name),
 
@@ -48,6 +51,18 @@ def channel_identifier(ctx):
         'referenced_message': ctx.message.reference.cached_message,
         }
     return result
+
+def message_identifiers(ctx):
+    return {\
+        'message_id': str(ctx.message.id),
+        'channel_id': str(ctx.channel.id)
+    }
+
+async def fetch_message(bot, channel_id, message_id):
+    c = bot.get_channel(int(channel_id))
+    m = await c.fetch_message(int(message_id))
+    return m
+
 
 class Pin:
 
