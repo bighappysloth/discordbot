@@ -18,25 +18,18 @@ from functools import reduce
 
 
 # Bot Modules
-from user_configuration import Configuration, __DEFAULT_USER__
-from bot_helpers import *
-import latex_to_png
-from bot_flags import *
-from plotFunction import *
+from modules.user_configuration import Configuration, __DEFAULT_USER__
+from  modules.latex_sympy_matlab_conversions import *
+import  modules.latex_to_png
+from  modules.bot_flags import *
+from  modules.plotFunction import *
 from latex2sympy2 import latex2sympy as latex_to_sympy
-import PseudoPins
+from modules.PseudoPins import *
 
 
 
 __STAR_EMOJI__ = '\U00002B50'
 
-"""
-channel = client.get_channel(channel_id)
-message = await channel.fetch_message(message_id)
-Also, when editing a message you need to specify the content as follows:
-
-await message.edit(content=new_message)
-"""
 
 """
 List of Commands
