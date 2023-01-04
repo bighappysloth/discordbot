@@ -7,9 +7,11 @@ from sympy.abc import epsilon
 import numpy as np
 
 import datetime
-
+import logging
 
 from latex2sympy2 import latex2sympy
+logger = logging.getLogger(__name__)
+
 
 __ALLOWED_MATRIX_ENVIRONMENTS__ = {'mini': 'bsmallmatrix',
     'regular': 'bmatrix',
@@ -33,7 +35,7 @@ def epoch_delta_milliseconds():
     x = datetime.datetime.now()
     seconds = (x - datetime.datetime(1970, 1, 1)).total_seconds()*1000
     # seconds = seconds + x.microsecond
-    return int(seconds)
+    return str(int(seconds))
 
 class Helper_fStrings:
     """
@@ -71,27 +73,27 @@ class Helper_fStrings:
     async def encode(self, x, verbose = False):
         """Encodes any problematic expression by hiding the backslashes and curly braces."""
         temp = x
-        if verbose: print(f'fstring (encoder): {x}')
+        if verbose: logger.debug(f'fstring (encoder): {x}')
         for filter in self.encode_filters: 
             temp = re.sub(*filter, temp)
-            #if verbose: print(f'temp: {temp}')
+            #if verbose: logger.debug(f'temp: {temp}')
         return temp
 
 
     async def decode(self, x, verbose = False):
         """Decodes using decode_filters."""
         temp = x
-        if verbose: print(f'fstring (decoder): {x}')
+        if verbose: logger.debug(f'fstring (decoder): {x}')
         for filter in self.decode_filters: 
             temp = re.sub(*filter, temp)
-            #if verbose: print(f'temp: {temp}')
+            #if verbose: logger.debug(f'temp: {temp}')
         return temp
         
         
     async def print_filters(self):
         # Print Filters
-        for filter in self.encode_filters: print(*filter)
-        for filter in self.decode_filters: print(*filter)
+        for filter in self.encode_filters: logger.debug(*filter)
+        for filter in self.decode_filters: logger.debug(*filter)
 
     
     async def wrap(self, x, env):
@@ -120,7 +122,7 @@ async def matlab_to_sympy(x):
     } #each r'\\' is one backslash
     h = Helper_fStrings(settings = mapping)
     temp = latex2sympy(await h.wrapenv(await h.decode(x), 'bmatrix'))
-    print(f'matlab2sympy execution: {temp}')
+    logger.debug(f'matlab2sympy execution: {temp}')
     return temp
 
 
@@ -198,5 +200,5 @@ async def xprint(m, verb=True, env='regular',latex_mode = 'inline', title=None):
     elif latex_mode == 'display': z = tex_title + '\[' + z + '\]'
         
     elif latex_mode == 'title_display': z =  '\[' + f'{tex_title}{z}' + '\]'        
-    print(z+await h.newline(0,1))
+    logger.debug(z+await h.newline(0,1))
     return z

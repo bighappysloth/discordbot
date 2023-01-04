@@ -34,6 +34,8 @@ from bot_flags import *
 from latex2sympy2 import latex2sympy as latex_to_sympy
 import PseudoPins
 
+
+
 __STAR_EMOJI__ = '\U00002B50'
 
 """
@@ -244,6 +246,7 @@ intents.message_content = True
 intents.reactions = True
 intents.dm_reactions = True
 intents.dm_messages = True
+intents.members = True
 
 bot = commands.Bot(command_prefix='!', intents=intents)
 
@@ -256,8 +259,8 @@ async def time(ctx):
     print(f'reference? {ctx.message.reference}')
     await ctx.send(f'Time: {current_time()}')
     await ctx.send(f'{temp}')
-    emoji = '\U00002B50'
-    await ctx.message.add_reaction(emoji)
+    # emoji = '\U00002B50'
+    # await ctx.message.add_reaction(emoji)
 
     
     
@@ -283,8 +286,8 @@ async def plot(ctx, *, flags: plotFunctionFlags):
 
     await ctx.send(f'plot invoked w/ `{temp}`')
     
-    logging.debug(f'plot raw_args {temp}')
-    logging.debug(f'plot parsed_args: {parser.parse_args(temp)}')
+    logger.debug(f'plot raw_args {temp}')
+    logger.debug(f'plot parsed_args: {parser.parse_args(temp)}')
     result = await gen_plot(parser.parse_args(temp))
     
     print(f'Image Saved to {result["image_path"]}')
@@ -348,24 +351,6 @@ async def latex2sympy(ctx, *, flags: latex2sympyFlags):
     await ctx.send(f'`{z}`') #send result
 
 
-
-
-# @bot.command()
-# async def latex2png(ctx, *, flags: latex2pngFlags):
-#     await ctx.send(f'latex2png invoked w/ `{flags.xinput}`')
-#     result = await latex_to_png(
-#     flags.xinput,
-#     tex_mode=flags.latex_mode,
-#     alt_mode=flags.alternate,
-#     DENSITY=flags.dpi)
-#     if result['status'] == 'success':
-#         im_location = result['image_path']
-#         with open(im_location, 'rb') as fp:
-#             await ctx.send(file=discord.File(fp,f'{im_location}'))
-#     else:
-#         # Error Detected
-#         raise commands.CommandError(f'latex2png Error: {result["reason"]}')
-
 """
 latex2png default inline mode
 """
@@ -404,7 +389,7 @@ async def _view_defaults(ctx):
         await ctx.reply(f"Configuration Options (defaults):\n```{result['msg']}```")
     else:
         await ctx.reply(f"`{result['status']}: {result['msg']}`")
-        logging.warning(f"`{result['status']}: {result['msg']}`")   
+        logger.warning(f"`{result['status']}: {result['msg']}`")   
 
 
 @bot.command(name='config', rest_is_raw=True)
@@ -416,7 +401,7 @@ async def _edit_config(ctx, *, arg:str):
         """
         If the user invokes with empty arguments, we show them their own configuration.
         """
-        logging.info('No args detected')
+        logger.info('No args detected')
         uc = Configuration(u)
         print(f'UC: {uc}')
         await ctx.reply(f"{ctx.author.name}'s config:\n```{json.dumps(Configuration(u).settings,sort_keys=True,indent=4)}```")
@@ -440,14 +425,23 @@ async def _restore_config(ctx):
     u = str(ctx.author.id)
     Configuration.restoreUserConfig(u)
     await ctx.reply(f"Restored {ctx.author.name}'s config to defaults.")
-    logging.info(f"Restored {ctx.author.name}'s config to defaults.")
+    logger.info(f"Restored {ctx.author.name}'s config to defaults.")
 
+
+
+@bot.command(name='pins')
+async def _get_pins(ctx):
+    u = str(ctx.author.id)
+    temp = await PseudoPins.UserPins.get_pins(u, bot)
+    s = json.dumps(temp,indent=4,sort_keys=True)
+    await ctx.reply(s)
+    logger.debug(s)
 
 @bot.event
 async def on_ready():
-    logging.info(f"ccE's Discord Bot")
-    logging.info(f'Current Time: {current_time()}')
-    logging.info('We have logged in as {0.user}'.format(bot))
+    logger.info(f"ccE's Discord Bot")
+    logger.info(f'Current Time: {current_time()}')
+    logger.info('We have logged in as {0.user}'.format(bot))
 
 
 # @bot.event
@@ -455,15 +449,15 @@ async def on_ready():
 #     z = f'Command Error: `{error}`'
     
 #     await ctx.send(f'{z}')
-#     logging.warning(f'{z}, {error.args} {type(error)}')
+#     logger.warning(f'{z}, {error.args} {type(error)}')
 
 
 @bot.event
 async def on_command(ctx):
     fulluser = f'{ctx.author} -> {ctx.author.id}'
     
-    logging.info(f'{ctx.author} invoked "{ctx.command}" w/ args {ctx.args[1:]}.')
-    logging.debug(f'{fulluser}')
+    logger.info(f'{ctx.author} invoked "{ctx.command}" w/ args {ctx.args[1:]}.')
+    logger.debug(f'{fulluser}')
 
 
 @bot.event
@@ -478,60 +472,56 @@ async def on_command_completion(ctx):
 
 @bot.event
 async def on_message_edit(before, after):
-    logging.info(f'Edit Detected: {before} -> {after}')
+    logger.info(f'Edit Detected: {before} -> {after}')
 
 
 # @bot.event
 # async def on_reaction_add(reaction, user):
-#     logging.info(f'Reaction Detected: {reaction.Message}, by {user}')
+#     logger.info(f'Reaction Detected: {reaction.Message}, by {user}')
     
 
 @bot.event
 async def on_raw_reaction_add(payload):
-    logging.info(f'Raw Reaction Added: {payload}')
-    if payload.emoji == __STAR_EMOJI__:
-        # Record payload message id, channel ID for fetching later on.
-        
-        x = {\
-            'channel_id': str(payload.channel_id),
-            'user_id': str(payload.user_id), # the user_id of who added the reaction.
-            'message_id': str(payload.message_id),
-        }
-        cached = await PseudoPins.fetch_message(bot, **x)
-        
-        x['date'] = current_time()
-        x['unix_date'] = epoch_delta_milliseconds()
-        x['cached_messsage'] = cached.content
+    
+    if payload.emoji.name == __STAR_EMOJI__:
+        """
+        Record the channel, message ID. And the pinning user, and
+        passes to PseudoPins
+        """
+        logger.debug(f'Star Emoji Reaction detected wtih {x}')
 
-        logging.debug(f'Star Emoji Reaction detected wtih {x}')
+
+        add_pin_args = {\
+            'user': str(payload.user_id),
+            'payload': {
+                'channel_id': str(payload.channel_id),
+                'message_id':  str(payload.message_id),
+                'date': current_time(),
+                'unix_date': epoch_delta_milliseconds()
+            },
+            'bot': bot
+        }
+        #logger.debug(f'add_pin_args: {add_pin_args}')
+        logger.info(f'Pinning User: {add_pin_args["user"]}')
+        result = await PseudoPins.UserPins.add_pin(**add_pin_args)
+        #logger.debug(f'pinning_result: {json.dumps(result,sort_keys=True,indent=4)}')
         
-        # Write to JSON? Use another module to handle this.
 
 
 @bot.event
 async def on_raw_reaction_remove(payload):
-    logging.info(f'Raw Reaction Removed: {payload}')
+    logger.info(f'Raw Reaction Removed: {payload}')
 
 
 @bot.event
 async def on_raw_message_edit(payload):
-    logging.info(f'Raw Message Edit: {payload}')
+    logger.info(f'Raw Message Edit: {payload}')
     
-
-# @bot.event
-# async def on_message(message):
-#     if message.author == bot.user: # Prevent loops
-#         return
- 
-#     # if message.content.startswith(r'function_plot'):
-#     #     await message.channel.send('Hello!')
-#     #     await bot.process_commands(message)
-#     #     return
 
 
 # Run Bot
 root = logging.getLogger()
-root.setLevel(logging.INFO)
+root.setLevel(logging.DEBUG)
 
 handler_stdout = logging.StreamHandler(sys.stdout)
 handler_stdout.setLevel(logging.DEBUG)
@@ -554,8 +544,11 @@ bot.run(__DISCORD_API_KEY__,log_handler=handler_filelog)
 
 # TODO Domain Restrictions. for plotFunction
 # itemizeMe, enumerateMe
-# string num string
+# string num string (deferred)
 
-# TODO Pinbot, Pseudo Pins.
+# TODO Pinbot, Pseudo Pins. Done
+# TODO Add VIP List
+# TODO Add feature to remove pins
+# TODO Add workbook area
 
 # Simplify Function, collect polynomials

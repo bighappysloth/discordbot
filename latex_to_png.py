@@ -9,7 +9,8 @@ import os
 import asyncio
 
 import user_configuration
-
+import logging
+logger=logging.getLogger(__name__)
 __TEX_OUT_DIRECTORY__ = \
 'latex_out'
 
@@ -66,7 +67,7 @@ async def run_shell_command(shell_command):
 
     Caller should handle subprocess.TimeoutExpired and subprocess.CalledProcessError
     """
-    print(f'Running {shlex.split(shell_command)}...')
+    logger.debug(f'Running {shlex.split(shell_command)}...')
 
     POLLING_INTERVAL = 0.5
     SHELL_TIMEOUT = 10
@@ -101,7 +102,7 @@ async def converter( userInput,
                 save_pdf = False,
                 tex_mode = 'inline'):
 
-    print(f'Converter invoked with args: {DENSITY}, {tex_mode}, {framing}')    
+    logger.debug(f'Converter invoked with args: {DENSITY}, {tex_mode}, {framing}')    
     file_contents = TEX_FILE_HEADER[framing] if TEX_FILE_HEADER.get(framing) else TEX_FILE_HEADER['regular']
     
     if not userInput: userInput = r'\,'
@@ -111,7 +112,7 @@ async def converter( userInput,
 
     with open(p,'w') as texFile:    
         file_contents = file_contents + '\n' + TEX_DELIMITERS[tex_mode](userInput) + '\n' + r'\end{document}'
-        print(f'Writing contents to path: {p}')
+        logger.debug(f'Writing contents to path: {p}')
         texFile.write(file_contents)
         texFile.flush()
         texFile.close()

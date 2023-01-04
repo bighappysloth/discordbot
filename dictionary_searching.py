@@ -2,7 +2,8 @@ from pathlib import Path
 import argparse
 import json
 from functools import reduce
-
+import logging
+logger=logging.getLogger(__name__)
 
 
 # Now Check for Nones.
@@ -56,9 +57,9 @@ if __name__ == '__main__':
         with p.open() as fp:
             j = json.loads(fp.read())
     except FileNotFoundError:
-        print(f'File: {p} not found.')
+        logger.debug(f'File: {p} not found.')
 
-    print(f'Dictionary: {json.dumps(j,sort_keys=True,indent=4)}, type = {type(j)}')
+    logger.debug(f'Dictionary: {json.dumps(j,sort_keys=True,indent=4)}, type = {type(j)}')
     args=parser.parse_args()
-    print(f'args: {args}')
-    print(f'Finding "{args.input}" recursively: {getEntryRecursive_dictionary(args.input,j)}')
+    logger.debug(f'args: {args}')
+    logger.debug(f'Finding "{args.input}" recursively: {getEntryRecursive_dictionary(args.input,j)}')

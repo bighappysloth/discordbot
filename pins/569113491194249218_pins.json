@@ -1,0 +1,18 @@
+{
+    "display_name": "('ccE',)",
+    "pins": [
+        {
+            "cache": {
+                "msg": "\\providecommand{\\notimplies}{\\nRightarrow}\n\nIn general\n\n\\begin{enumerate}\n\\item If $a,b,c\\in\\cl{\\real}$, then \\[\nac=bc\\notimplies a=b\n\\]\n\n\\item If $a,b,c\\in\\cl{\\real}$, then \\[\na+c=b+c\\notimplies a=b\n\\]\nand\n\n\\[\na-c=b-c\\notimplies a=b\n\\]\n\\end{enumerate}",
+                "status": "success",
+                "updated": "2023-01-04 at 15.54.02",
+                "updated_unix": "1672847642578"
+            },
+            "channel_id": "912137100932026391",
+            "date": "2023-01-04 at 15.54.02",
+            "message_id": "1060292872945029251",
+            "unix_date": "1672847642075"
+        }
+    ],
+    "user": "569113491194249218"
+}

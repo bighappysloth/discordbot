@@ -6,7 +6,7 @@ from allowed_settings import ALLOWED_CONFIG
 from dictionary_searching import getEntryRecursive_dictionary # Recursive Methods for parsing hierarchical expressions.
 import bot_helpers
 import module_configs.matplotlib_args as matplotlib_args
-
+logger=logging.getLogger(__name__)
 __DEFAULT_USER__ = 'default' # name of the default user
 
 __CONFIG_FOLDER_NAME__ = r'user_settings'
@@ -176,8 +176,8 @@ class Configuration:
             new_usage = x.getEntry('usage')['msg'] + 1
             z1=x.editEntry('usage',new_usage,write=True)
             z2=x.editEntry('last_used',bot_helpers.current_time(),write = True)
-            logging.debug(f'First, Second: {z1}, {z2}')
-            logging.debug(f'new_usage: {new_usage}, type={type(new_usage)}')
+            logger.debug(f'First, Second: {z1}, {z2}')
+            logger.debug(f'new_usage: {new_usage}, type={type(new_usage)}')
             return
         raise ValueError('Default User cannot be incremented.')
 
@@ -258,7 +258,7 @@ def editUserConfig(user:str, user_option:str, new_value):
             with settings_path.open('w') as fw:
                 old_value = j.get(user_option)
                 j[user_option] = new_value # After checking for Valid Arguments (if there exists a check)
-                fw.write(json.dumps(j))
+                fw.write(json.dumps(j, sort_keys=True, indent=4))
                 fw.close()
 
                 return {
@@ -275,7 +275,7 @@ def editUserConfig(user:str, user_option:str, new_value):
                 }
             else:
                 with settings_path.open('w') as fp:
-                    z = json.dumps({user_option: new_value}) #Need to check for TypeError as well.
+                    z = json.dumps({user_option: new_value}, sort_keys=True, indent=4) #Need to check for TypeError as well.
                     fp.write(z)
                     fp.close()
         except KeyError:
