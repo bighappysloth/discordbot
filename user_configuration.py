@@ -60,7 +60,7 @@ try:
 except FileNotFoundError: pass
     
 """
-Generate Config
+Configuration Class
 """
 class Configuration:
 

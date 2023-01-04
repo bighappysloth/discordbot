@@ -1,6 +1,14 @@
 import discord
+from pathlib import Path
+import logging
+
+from module_configs.matplotlib_args import HelperString
+import bot_helpers
 
 # PseudoPins
+
+__PINS_FOLDER_PATH__ = Path('./pins')
+
 
 #Addressing:
 #Guild.Channel.Message
@@ -63,7 +71,98 @@ async def fetch_message(bot, channel_id, message_id):
     m = await c.fetch_message(int(message_id))
     return m
 
+class PseudoPin:
 
-class Pin:
+    async def __init__(self, 
+                        channel_id, 
+                        user_id, 
+                        message_id, 
+                        date, 
+                        unix_date, 
+                        bot):
+        self.channel_id = channel_id
+        self.user_id = user_id
+        self.message_id = message_id
+        self.date = date
+        self.unix_date = unix_date
+        x = self.refresh(bot)
+        if x['status']=='failure':
+            logging.debug(f'PinError: {x.msg}')
+            self.cache = x
+    
+    
+    async def refresh(self, bot):  
+        """
+        Attempts to fetch message on refresh. Updates self.cache if success, else returns a failure message.
+        """
+        try:
+            m = fetch_message(bot, self.channel_id, self.message_id)
+        except Exception as E:
+            return {\
+                'status': 'failure',
+                'msg': HelperString.list_printer([str(z) for z in E.args]),
+                'updated': bot_helpers.current_time(),
+                'updated_unix': bot_helpers.epoch_delta_milliseconds
+            }
+        else:
+            self.cache = result = {\
+                'status': 'success',
+                'msg' : m,
+                'updated': bot_helpers.current_time(),
+                'updated_unix': bot_helpers.epoch_delta_milliseconds
+            }
+            return result
 
-    pass
+    async def get_latest(self, bot):
+        """
+        Returns 'best known' message, use with get_latest(bot)['msg']
+        """
+        x = self.refresh(bot)
+        if x['status']=='failure':
+            return self.cache
+        else:
+            return x
+
+    
+    async def __iter__(self):
+        """
+        Produces Dictionary with dict(x)
+        """
+        attrs = ['channel_id', 'user_id', 'message_id', 'date', 'unix_date', 'cached_message']
+        
+        vals = [self.channel_id, self.user_id, self.message_id, self.date, self.unix_date, self.cache]
+        
+        for z in zip(attrs,vals): yield z
+
+        
+
+class UserPins:
+
+    class Pin:
+
+        def __init__(self, channel_id, user_id, message_id, date, cached_message, unix_date):
+            self.channel_id = channel_id
+            self.user_id = user_id
+            self.message_id = message_id
+            self.date = date
+            self.cached_message = cached_message
+            self.unix_date = unix_date
+
+        async def refresh(self, bot): # require passing an instance of the bot
+            m = await fetch_message(bot, self.channel_id, self.message_id)
+            if m != self.cached_message: cached_message = m
+            return m
+
+
+    def __init__(self, user):
+        self.user = user
+        # Load all pins into memory
+
+    
+    def add_pin(self, pinned_message):
+        pass
+    
+
+
+def user_pins_path(user):
+    return __PINS_FOLDER_PATH__/(user + r'_pins.json')

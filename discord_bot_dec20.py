@@ -494,14 +494,15 @@ async def on_raw_reaction_add(payload):
         
         x = {\
             'channel_id': str(payload.channel_id),
-            'user_id': str(payload.user_id),
+            'user_id': str(payload.user_id), # the user_id of who added the reaction.
             'message_id': str(payload.message_id),
         }
         cached = await PseudoPins.fetch_message(bot, **x)
         
         x['date'] = current_time()
-        x['cached_messsage'] = cached
-        
+        x['unix_date'] = epoch_delta_milliseconds()
+        x['cached_messsage'] = cached.content
+
         logging.debug(f'Star Emoji Reaction detected wtih {x}')
         
         # Write to JSON? Use another module to handle this.
