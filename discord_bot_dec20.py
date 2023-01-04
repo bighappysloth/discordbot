@@ -32,7 +32,17 @@ import latex_to_png
 from bot_flags import *
 
 from latex2sympy2 import latex2sympy as latex_to_sympy
+import PseudoPins
 
+__STAR_EMOJI__ = '\U00002B50'
+
+"""
+channel = client.get_channel(channel_id)
+message = await channel.fetch_message(message_id)
+Also, when editing a message you need to specify the content as follows:
+
+await message.edit(content=new_message)
+"""
 
 """
 List of Commands
@@ -231,20 +241,23 @@ async def gen_plot(args):
 # Bot Subscription to Particular Events
 intents = discord.Intents.default()
 intents.message_content = True
+intents.reactions = True
+intents.dm_reactions = True
+intents.dm_messages = True
 
 bot = commands.Bot(command_prefix='!', intents=intents)
 
 @bot.command()
 async def time(ctx):
     temp = f'{datetime.datetime.now().strftime("Date %Y-%m-%d at %H.%M.%S")}'
-
-
     
-    temp = json.dumps(result,sort_keys=True,indent=4)
-    print(f'{temp}')
+    # temp = json.dumps(result,sort_keys=True,indent=4)
+    # print(f'{temp}')
     print(f'reference? {ctx.message.reference}')
     await ctx.send(f'Time: {current_time()}')
     await ctx.send(f'{temp}')
+    emoji = '\U00002B50'
+    await ctx.message.add_reaction(emoji)
 
     
     
@@ -444,6 +457,7 @@ async def on_ready():
 #     await ctx.send(f'{z}')
 #     logging.warning(f'{z}, {error.args} {type(error)}')
 
+
 @bot.event
 async def on_command(ctx):
     fulluser = f'{ctx.author} -> {ctx.author.id}'
@@ -464,13 +478,44 @@ async def on_command_completion(ctx):
 
 @bot.event
 async def on_message_edit(before, after):
-    logging.info('Edit Detected: {before} -> {after}')
+    logging.info(f'Edit Detected: {before} -> {after}')
+
+
+# @bot.event
+# async def on_reaction_add(reaction, user):
+#     logging.info(f'Reaction Detected: {reaction.Message}, by {user}')
+    
+
+@bot.event
+async def on_raw_reaction_add(payload):
+    logging.info(f'Raw Reaction Added: {payload}')
+    if payload.emoji == __STAR_EMOJI__:
+        # Record payload message id, channel ID for fetching later on.
+        
+        x = {\
+            'channel_id': str(payload.channel_id),
+            'user_id': str(payload.user_id),
+            'message_id': str(payload.message_id),
+        }
+        cached = await PseudoPins.fetch_message(bot, **x)
+        
+        x['date'] = current_time()
+        x['cached_messsage'] = cached
+        
+        logging.debug(f'Star Emoji Reaction detected wtih {x}')
+        
+        # Write to JSON? Use another module to handle this.
 
 
 @bot.event
-async def on_reaction_add(reaction, user):
-    logging.info('Reaction Detected: {reaction.Message}, by {user}')
+async def on_raw_reaction_remove(payload):
+    logging.info(f'Raw Reaction Removed: {payload}')
 
+
+@bot.event
+async def on_raw_message_edit(payload):
+    logging.info(f'Raw Message Edit: {payload}')
+    
 
 # @bot.event
 # async def on_message(message):
@@ -485,7 +530,7 @@ async def on_reaction_add(reaction, user):
 
 # Run Bot
 root = logging.getLogger()
-root.setLevel(logging.DEBUG)
+root.setLevel(logging.INFO)
 
 handler_stdout = logging.StreamHandler(sys.stdout)
 handler_stdout.setLevel(logging.DEBUG)
