@@ -1,12 +1,12 @@
-from pathlib import Path
 import json
 import logging
 
-from discordbot_sloth.user.allowed_settings import ALLOWED_CONFIG
-
+from discordbot_sloth.config import __DATA_PATH__
+from discordbot_sloth.helpers.check_dir import *
 from discordbot_sloth.helpers.dictionary_searching import *
-from discordbot_sloth.module_args.matplotlib_args import *
 from discordbot_sloth.helpers.TimeFormat import *
+from discordbot_sloth.module_args.matplotlib_args import *
+from discordbot_sloth.user.allowed_settings import ALLOWED_CONFIG
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +14,7 @@ __DEFAULT_USER__ = "default"  # name of the default user
 
 __CONFIG_FOLDER_NAME__ = r"user_settings"
 
-__CONFIG_FOLDER_PATH__ = Path("./data/") / __CONFIG_FOLDER_NAME__
+__CONFIG_FOLDER_PATH__ = __DATA_PATH__ / __CONFIG_FOLDER_NAME__
 
 __DEFAULT_CONFIG_PATH__ = __CONFIG_FOLDER_PATH__ / r"default_settings.json"
 
@@ -45,6 +45,7 @@ DEFAULT_CONFIG = {
         "verb": True,
         "env": "regular",
         "latex_mode": "inline",
+        "use_title": False
     },
 }
 
@@ -59,6 +60,7 @@ try:
 except FileNotFoundError:
     pass
 
+check_dir(__DEFAULT_CONFIG_PATH__)
 
 """
 Configuration Class
@@ -101,7 +103,8 @@ class Configuration:
             if self.user != __DEFAULT_USER__:
                 # One last try: Searches in Default Config
                 temp = viewFullUserConfig(__DEFAULT_USER__)["payload"]
-                default_result = getEntryRecursive_dictionary(selected_option, temp)
+                default_result = getEntryRecursive_dictionary(
+                    selected_option, temp)
                 return default_result
         return z
 
@@ -146,12 +149,14 @@ class Configuration:
                     temp_query = temp_query[1:]
                 old_value = self.settings.get(selected_option)
 
-                temp_dictionary[temp_query[0]] = new_value  # updates self.settings
+                # updates self.settings
+                temp_dictionary[temp_query[0]] = new_value
                 path_to_settings = user_settings_path(self.user)
 
                 if write:  # Writes to disk if flag is enabled.
                     with path_to_settings.open("w") as fp:
-                        fp.write(json.dumps(self.settings, sort_keys=True, indent=4))
+                        fp.write(json.dumps(self.settings,
+                                 sort_keys=True, indent=4))
                         fp.flush()
                         fp.close()
                 return {

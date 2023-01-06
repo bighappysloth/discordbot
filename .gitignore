@@ -1,6 +1,6 @@
 
 # Bot Config
-config.py
+discordbot_sloth/config.py
 
 # bot state
 discordbot_sloth/data/latex_out/Snipp*

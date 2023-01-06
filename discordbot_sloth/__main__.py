@@ -1,26 +1,22 @@
-import discord
-from discord.ext import commands
-
-
-import datetime
-import logging
 import argparse
-import sys
+import datetime
 import json
+import logging
+import sys
 from functools import reduce
 
+import discord
+from discord.ext import commands
 from latex2sympy2 import latex2sympy as latex_to_sympy
 
 from discordbot_sloth.config import __DISCORD_API_KEY__
 from discordbot_sloth.discordpy.bot_flags import *
 from discordbot_sloth.helpers.TimeFormat import *
-from discordbot_sloth.modules.plotFunction import gen_plot
 from discordbot_sloth.modules.latex_sympy_matlab_conversions import *
 from discordbot_sloth.modules.latex_to_png import *
-from discordbot_sloth.user.user_configuration import *
+from discordbot_sloth.modules.plotFunction import gen_plot
 from discordbot_sloth.user.PseudoPins import *
-from discordbot_sloth.modules.latex_to_png import *
-
+from discordbot_sloth.user.user_configuration import *
 
 __STAR_EMOJI__ = "\U00002B50"
 
@@ -92,30 +88,9 @@ plotFunction_parser.add_argument(
     dest="grid",
 )
 
-matlab2sympy_parser = subparser.add_parser("matlab2sympy")
-
-matlab2latex_parser = subparser.add_parser("matlab2latex")
-
-latex2sympy_parser = subparser.add_parser("latex2sympy")
 
 stringnumstring_parser = subparser.add_parser("stringnumstring")
 
-mt_parser = subparser.add_parser("mt")
-mt_parser.add_argument("xinput")  # positional
-mt_parser.add_argument("-m", action="store_true")  # store true mode
-
-matlab2sympy_parser.add_argument(
-    "-input", "--i", type=str, required=True, help="MatLab Input", dest="input"
-)
-
-matlab2latex_parser.add_argument(
-    "-input", "--i", type=str, required=True, help="MatLab Input", dest="input"
-)
-
-
-latex2sympy_parser.add_argument(
-    "-input", "--i", type=str, required=True, help="Latex Input", dest="input"
-)
 
 
 # Bot Subscription to Particular Events
@@ -138,14 +113,17 @@ async def time(ctx):
     print(f"reference? {ctx.message.reference}")
     await ctx.send(f"Time: {current_time()}")
     await ctx.send(f"{temp}")
-    # emoji = '\U00002B50'
-    # await ctx.message.add_reaction(emoji)
+    
 
 
 @bot.command()
 async def plot(ctx, *, flags: plotFunctionFlags):
 
-    temp = [r"plotFunction", f"-function={flags.function}"]
+    """
+        Input to this is horrible and should be fixed.
+    """
+
+    temp = [r"plotFunction", flags.function]
 
     # The Correct Way to Handle Multiple Arguments
     if flags.xlim:
@@ -174,63 +152,66 @@ async def plot(ctx, *, flags: plotFunctionFlags):
         await ctx.send(file=discord.File(fp, f'{result["image_path"]}'))
 
 
-# For the following three functions, no parsing is done.
-# it is simple enough that we do not require any parsers.
+
+# simple enough that we do not require any parsers.
 @bot.command()
 async def matlab2sympy(ctx, *, x: str):
-    temp = [r"matlab2sympy"]
-    temp.append("-input")
-    temp.append(x)
-    await ctx.send(f"matlab2sympy invoked w/ `{temp}`")
-    print(f"matlab2sympy: {temp}")
-
     z = await matlab_to_sympy(x)
-    print(f"matlab2sympy: {x} --> {z}")
-    await ctx.send(f"`{z}`")  # send result
+    logger.debug(f"matlab2sympy: {x} --> {z}")
+    await ctx.reply(f"`{z}`")  # send result
+
+
+@bot.command(rest_is_raw=True)
+async def matlab2latex(ctx, *, arg: str):
+    u = str(ctx.author.id)
+    """
+    If empty argument, then swaps between title and non-title mode.
+    """
+    logger.debug(f"matlab2latex executed with {arg}")
+    
+    if not arg:
+        """
+        Toggle use_title
+        """
+        
+        temp = Configuration(u)
+
+        result = temp.editEntry('xprint_settings.use_title', 
+                    not temp.getEntry('xprint_settings.use_title'))
+        
+        await ctx.reply(f"{result['status']}: {result['msg']}")
+        logger.info(f"{result['status']}: {result['msg']}")
+    else:
+        temp = Configuration(u)
+        
+        # Now check if use_title is enabled.
+        # Split using shlex, because the title can contain spaces.
+
+        xprint_args = {\
+
+        'verb': temp.getEntry('xprint_settings.verb'),
+        'env': temp.getEntry('xprint_settings.env'),
+        'latex_mode': temp.getEntry('xprint_settings.latex_mode'),
+        }
+        matlab = arg
+        if temp.getEntry('xprint_settings.use_title'):
+
+            split = shlex.split(arg)
+            logger.debug(f'split? given \n{split}')
+            xprint_args['title'] = split[0]
+            matlab = split[1]
+
+        x = await xprint(await matlab_to_sympy(matlab), **xprint_args)
+
+        logger.debug(f"matlab2latex: {arg} --> {x}")  # result
+        await ctx.reply(f"`{x}`")  # send result
 
 
 @bot.command()
-async def matlab2latex(ctx, *, flags: matlab2latexFlags):
-    logger.debug(f"matlab2latex executed with {flags.xinput}")
-    xprint_args = {}
-
-    if flags.matrix_env != None:
-        xprint_args["env"] = flags.matrix_env
-    if flags.verbatim != None:
-        xprint_args["verb"] = flags.verbatim
-    if flags.title != None:
-        xprint_args["title"] = flags.title
-    if flags.latex_mode != None:
-        xprint_args["latex_mode"] = flags.latex_mode
-
-    z = await xprint(await matlab_to_sympy(flags.xinput), **xprint_args)
-
-    temp = [r"matlab2latex"]
-    temp.append("-input")
-    temp.append(flags.xinput)
-
-    for k in xprint_args:
-        temp.append(k)
-        temp.append(xprint_args[k])
-
-    await ctx.send(f"matlab2latex invoked w/ `{temp}`")  # debug
-    logger.debug(f"matlab2latex: {temp}")  # debug
-
-    logger.debug(f"matlab2latex: {flags.xinput} --> {z}")  # result
-    await ctx.send(f"`{z}`")  # send result
-
-
-@bot.command()
-async def latex2sympy(ctx, *, flags: latex2sympyFlags):
-    temp = [r"latex2sympy"]
-    temp.append("-input")
-    temp.append(flags.xinput)
-    await ctx.send(f"latex2sympy invoked w/ `{temp}`")
-    logger.debug(f"latex2sympy: {temp}")
-
-    z = latex_to_sympy(flags.xinput)
-    logger.debug(f"latex2sympy: {flags.xinput} --> {z}")
-    await ctx.send(f"`{z}`")  # send result
+async def latex2sympy(ctx, *, z):
+    x = latex_to_sympy(z)
+    logger.debug(f"latex2sympy: {z} -> {x}")
+    await ctx.send(f"`{x}`")  # send result
 
 
 """
@@ -292,7 +273,7 @@ async def _edit_config(ctx, *, arg: str):
 
     else:
         split = arg.split(" ")
-        print(f"Split: {split}")
+        #print(f"Split: {split}")
         split = split[1:]
         if len(split) == 1:
             raise commands.CommandError(
@@ -305,6 +286,7 @@ async def _edit_config(ctx, *, arg: str):
         result = temp.editEntry(selected_option, new_value)
 
         await ctx.reply(f"{result['status']}: {result['msg']}")
+        logger.info(f"{result['status']}: {result['msg']}")
 
 
 @bot.command(name="restore")

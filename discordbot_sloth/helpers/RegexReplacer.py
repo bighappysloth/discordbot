@@ -1,11 +1,8 @@
+import logging
 import re
 
 from sympy import *
 from sympy.abc import epsilon
-
-
-import logging
-
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +38,8 @@ class RegexReplacer:
             y = "(" + k + ")"
 
             self.decode_filters.append(
-                [re.compile(y), settings[k] if k != r"_BACK_SLASH" else settings[k]]
+                [re.compile(y), settings[k] if k !=
+                 r"_BACK_SLASH" else settings[k]]
             )
 
     async def encode(self, x, verbose=False):

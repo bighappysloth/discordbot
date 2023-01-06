@@ -14,7 +14,11 @@ matplotlib = "^3.6.2"
 numpy = "^1.24.1"
 sympy = "^1.11.1"
 latex2sympy2 = "^1.8.3"
+scikit-image = "^0.19.3"
 
+
+[tool.poetry.group.dev.dependencies]
+autopep8 = "^2.0.1"
 
 [build-system]
 requires = ["poetry-core"]

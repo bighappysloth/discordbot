@@ -1,6 +1,8 @@
 
-#Include tex_fname with .tex extension
-# 
+# Include tex_fname with .tex extension
+#
+from discordbot_sloth.config import __DATA_PATH__
+from discordbot_sloth.helpers.check_dir import *
 import datetime
 import shlex
 from pathlib import Path
@@ -10,46 +12,48 @@ import asyncio
 
 
 import logging
-logger=logging.getLogger(__name__)
-from discordbot_sloth.config import __DATA_PATH__
+
+
+logger = logging.getLogger(__name__)
+
 
 
 __TEX_OUT_DIRECTORY__ = \
-'latex_out'
+    'latex_out'
 
 COMMAND_PDF_COMPILE = \
-'latexmk -quiet -silent -cd -f -xelatex "{0}"'
+    'latexmk -quiet -silent -cd -f -xelatex "{0}"'
 
 COMMAND_CLEANUP1 = \
-'latexmk -quiet -silent-cd -c "{0}"'# does not remove pdf files
+    'latexmk -quiet -silent-cd -c "{0}"'  # does not remove pdf files
 
 COMMAND_CLEANUP2 = \
-'latexmk -quiet -silent -cd -C "{0}"'# removes pdf files as well
+    'latexmk -quiet -silent -cd -C "{0}"'  # removes pdf files as well
 
 COMMAND_PNG_CONVERT = \
-'convert -density {0}  -colorspace RGB -alpha opaque -background white  -quality {1} "{2}" "{3}"'
+    'convert -density {0}  -colorspace RGB -alpha opaque -background white  -quality {1} "{2}" "{3}"'
 
 COMMAND_CLEANUP3 = \
-'latexmk -c -cd -f {}/'
+    'latexmk -c -cd -f {}/'
 
 COMMAND_IMG_CONVERT_WITHTRIM = \
-'convert -trim -density {0} -quality {1} "{2}" "{3}"'
+    'convert -trim -density {0} -quality {1} "{2}" "{3}"'
 
 
-TEX_FILE_HEADER = {\
-'tight': r'''\documentclass[preview]{standalone}
+TEX_FILE_HEADER = {
+    'tight': r'''\documentclass[preview]{standalone}
 \usepackage{import}
 \import{./}{imports}
 \import{./}{engineering_imports} % uncomment if necessary
 \begin{document}''',
 
-'regular': r'''\documentclass[preview, border=10pt, 6pt]{standalone}
+    'regular': r'''\documentclass[preview, border=10pt, 6pt]{standalone}
 \usepackage{import}
 \import{./}{imports}
 \import{./}{engineering_imports} % uncomment if necessary
 \begin{document}''',
 
-'wide': r'''\documentclass[preview, border=20pt, 12pt]{standalone}
+    'wide': r'''\documentclass[preview, border=20pt, 12pt]{standalone}
 \usepackage{import}
 \import{./}{imports}
 \import{./}{engineering_imports} % uncomment if necessary
@@ -58,9 +62,15 @@ TEX_FILE_HEADER = {\
 }
 
 TEX_DELIMITERS = {
-'inline': lambda x: '$' + x + '$',
-'display': lambda x: r'\[' + x +r'\]'
+    'inline': lambda x: '$' + x + '$',
+    'display': lambda x: r'\[' + x + r'\]'
 }
+
+"""
+Check Directory Exists
+"""
+check_dir(__DATA_PATH__/__TEX_OUT_DIRECTORY__)
+
 
 async def run_shell_command(shell_command):
 
@@ -75,50 +85,49 @@ async def run_shell_command(shell_command):
     POLLING_INTERVAL = 0.5
     SHELL_TIMEOUT = 10
 
-    process = subprocess.Popen(shlex.split(shell_command)) 
+    process = subprocess.Popen(shlex.split(shell_command))
 
     for i in range(int(SHELL_TIMEOUT / POLLING_INTERVAL)):
 
-        await asyncio.sleep(POLLING_INTERVAL) # polls process every polling interval.
-        if process.poll() is not None: break # Finishes before timeout.
+        # polls process every polling interval.
+        await asyncio.sleep(POLLING_INTERVAL)
+        if process.poll() is not None:
+            break  # Finishes before timeout.
 
-
-    if process.poll() is None: # Does not finish before timeout.
+    if process.poll() is None:  # Does not finish before timeout.
         process.kill()
-        raise subprocess.TimeoutExpired(shell_command, SHELL_TIMEOUT, process.stdout, process.stderr)
+        raise subprocess.TimeoutExpired(
+            shell_command, SHELL_TIMEOUT, process.stdout, process.stderr)
 
-    if process.poll()==0: return str(process.stdout) #nothing is wrong
-        
-    raise subprocess.CalledProcessError(process.poll(), shell_command, process.stdout, process.stderr)
+    if process.poll() == 0:
+        return str(process.stdout)  # nothing is wrong
 
-
-def check_dir(dirname):
-    if not Path(dirname): Path.mkdir(dirname)
-
-"""
-TODO: remove option to change 'tex_dir'
-"""
+    raise subprocess.CalledProcessError(
+        process.poll(), shell_command, process.stdout, process.stderr)
 
 
-async def latex_to_png_converter( userInput, 
-                tex_fname=datetime.datetime.now().strftime("Snippet %Y-%m-%d at %H.%M.%S.tex"),
-                tex_dir = __TEX_OUT_DIRECTORY__, 
-                DENSITY = 1200, 
-                QUALITY = 100, 
-                framing = 'regular',
-                save_pdf = False,
-                tex_mode = 'inline'):
+async def latex_to_png_converter(userInput,
+                                 tex_fname=datetime.datetime.now().strftime("Snippet %Y-%m-%d at %H.%M.%S.tex"),
+                                 tex_dir=__TEX_OUT_DIRECTORY__,
+                                 DENSITY=1200,
+                                 QUALITY=100,
+                                 framing='regular',
+                                 save_pdf=False,
+                                 tex_mode='inline'):
 
-    logger.debug(f'Converter invoked with args: {DENSITY}, {tex_mode}, {framing}')    
-    file_contents = TEX_FILE_HEADER[framing] if TEX_FILE_HEADER.get(framing) else TEX_FILE_HEADER['regular']
-    
-    if not userInput: userInput = r'\,'
+    logger.debug(
+        f'Converter invoked with args: {DENSITY}, {tex_mode}, {framing}')
+    file_contents = TEX_FILE_HEADER[framing] if TEX_FILE_HEADER.get(
+        framing) else TEX_FILE_HEADER['regular']
 
-    
-    p = (__DATA_PATH__.resolve()) / tex_dir / tex_fname
+    if not userInput:
+        userInput = r'\,'
 
-    with open(p,'w') as texFile:    
-        file_contents = file_contents + '\n' + TEX_DELIMITERS[tex_mode](userInput) + '\n' + r'\end{document}'
+    p = __DATA_PATH__ / tex_dir / tex_fname
+
+    with open(p, 'w') as texFile:
+        file_contents = file_contents + '\n' + \
+            TEX_DELIMITERS[tex_mode](userInput) + '\n' + r'\end{document}'
         logger.debug(f'Writing contents to path: {p}')
         texFile.write(file_contents)
         texFile.flush()
@@ -129,7 +138,7 @@ async def latex_to_png_converter( userInput,
 
     image_path = p.parent / image_fname
     pdf_path = p.parent / pdf_fname
-    
+
     try:
         logger.debug(f'latex_to_png shell: {COMMAND_PDF_COMPILE.format(p)}')
         await run_shell_command(COMMAND_PDF_COMPILE.format(p))
@@ -142,11 +151,11 @@ async def latex_to_png_converter( userInput,
         return {
             'status': 'error',
             'reason': 'Failure to compile PDF with xelatex. See log with details.',
-            'log_path': p.parent/ str(tex_fname[:-4] + r'.log')
+            'log_path': p.parent / str(tex_fname[:-4] + r'.log')
         }
 
     try:
-        await run_shell_command(COMMAND_PNG_CONVERT.format(DENSITY,QUALITY,pdf_path,image_path))
+        await run_shell_command(COMMAND_PNG_CONVERT.format(DENSITY, QUALITY, pdf_path, image_path))
     except subprocess.TimeoutExpired:
         return {
             'status': 'error',
@@ -160,9 +169,10 @@ async def latex_to_png_converter( userInput,
 
     # latexmk Cleanup delete all aux files.
     try:
-        await run_shell_command(COMMAND_CLEANUP3.format(p.parent)) # cleans up the parent folder
+        # cleans up the parent folder
+        await run_shell_command(COMMAND_CLEANUP3.format(p.parent))
         # if save_pdf:
-        #     await run_shell_command(COMMAND_CLEANUP1.format(p)) # 
+        #     await run_shell_command(COMMAND_CLEANUP1.format(p)) #
         # else:
         #     await run_shell_command(COMMAND_CLEANUP2.format(p)) #
     except subprocess.TimeoutExpired:
@@ -172,10 +182,9 @@ async def latex_to_png_converter( userInput,
         }
     except subprocess.CalledProcessError:
         return {
-            'status' : 'error',
+            'status': 'error',
             'reason': 'latexmk cleanup failed.'
         }
-
 
     # Return paths, trust on the caller to keep track of whether they used the flag 'save_tex'
     return {
@@ -185,11 +194,10 @@ async def latex_to_png_converter( userInput,
         'tex_path': p
     }
 
-    
-
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
-    coroutine = latex_to_png_converter(r'\dfrac{\alpha}{2}',tex_mode='display')
-    
+    coroutine = latex_to_png_converter(
+        r'\dfrac{\alpha}{2}', tex_mode='display')
+
     loop.run_until_complete(coroutine)

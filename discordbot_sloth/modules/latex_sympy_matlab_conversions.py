@@ -1,14 +1,11 @@
-import sympy as sym
-from sympy import *
-
-
 import logging
 
+import sympy as sym
 from latex2sympy2 import latex2sympy
+from sympy import *
 
-from discordbot_sloth.module_args.latex_args import *
 from discordbot_sloth.helpers.RegexReplacer import *
-
+from discordbot_sloth.module_args.latex_args import *
 
 logger = logging.getLogger(__name__)
 

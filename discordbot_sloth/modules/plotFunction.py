@@ -5,12 +5,12 @@ import logging
 import matplotlib.pyplot as plt
 import numpy as np
 
-
 from sympy import *
 from sympy.core import sympify
 from sympy.abc import x
 
 from latex2sympy2 import latex2sympy as latex_to_sympy
+from discordbot_sloth.config import __DATA_PATH__
 
 # Logger
 logger = logging.getLogger(__name__)
@@ -112,8 +112,8 @@ async def gen_plot(args):
         f'{datetime.datetime.now().strftime("Plot %Y-%m-%d at %H.%M.%S.png")}'
     )
 
-    p = Path(".")
-    plot_image_path = p / plot_image_filename
+    
+    plot_image_path = __DATA_PATH__/ 'plots_out' / plot_image_filename
 
     logger.debug(f"Saving to {plot_image_path}...")
     try:

@@ -27,25 +27,8 @@ class plotFunctionFlags(commands.FlagConverter, delimiter=' ', prefix = '-'):
     description='Number of Samples (optional), default = 100')
 
 
-class matlab2latexFlags(commands.FlagConverter, delimiter=' ', prefix = '-'):
-    xinput: str = commands.flag(name = 'input',
-    description='matlab matrix (input)')
 
-    matrix_env: str = commands.flag(name = 'env',
-    description=f'output latex matrix environment {__ALLOWED_MATRIX_ENVIRONMENTS__}',
-    default = None) # we let xprint defaults handle this.
 
-    verbatim: bool = commands.flag(name = 'verb',
-    description='whether the title is printed in verbatim or not',
-    default = True)
-
-    title: str = commands.flag(name = 'title',
-    description='title (name) of the matrix',
-    default = None)
-
-    latex_mode: str = commands.flag(name = 'mode',
-    description=f'output latex mode: {__ALLOWED_LATEX_MODES__}',
-    default = None)
 
 
 class latex2sympyFlags(commands.FlagConverter, delimiter=' ', prefix = '-'):
