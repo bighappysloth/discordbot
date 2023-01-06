@@ -1,0 +1,30 @@
+{
+    "background": "white",
+    "framing": "tight",
+    "last_used": "2023-01-06 at 13.59.45",
+    "latex_mode": "display",
+    "latex_preamble": "",
+    "matplotlib_settings": {
+        "legend": {
+            "loc": "lower right"
+        },
+        "plot": {
+            "color": "tab:orange",
+            "linewidth": 2.5
+        }
+    },
+    "matplotlib_settings.legend.loc": "lower",
+    "plot_grid": true,
+    "plot_samples": 100,
+    "plot_xlimits": [
+        0,
+        10
+    ],
+    "png_dpi": 2400,
+    "usage": 62,
+    "xprint_settings": {
+        "env": "regular",
+        "latex_mode": "inline",
+        "verb": true
+    }
+}

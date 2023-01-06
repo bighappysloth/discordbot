@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "discordbot_sloth"
+version = "0.0.1"
+description = "discord bot with couple features for academia"
+authors = ["me <ting.h.li@mail.mcgill.ca>"]
+readme = "README.md"
+packages = [{include = "discordbot_sloth"}]
+repository = "https://github.com/bighappysloth/discordbot"
+
+[tool.poetry.dependencies]
+python = ">=3.8,<4.0"
+discord = "^2.1.0"
+matplotlib = "^3.6.2"
+numpy = "^1.24.1"
+sympy = "^1.11.1"
+latex2sympy2 = "^1.8.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

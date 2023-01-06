@@ -1,3 +1,16 @@
+
+# Bot Config
 config.py
-latex_out/Snippet*
-pins/*
+
+# bot state
+discordbot_sloth/data/latex_out/Snipp*
+discordbot_sloth/data/pins/*
+discordbot_sloth/data/user_settings/*
+!discordbot_sloth/data/user_settings/default_settings.json
+
+# logs
+discord-bot/discord.log
+
+# packaging and distribution
+build/
+dist/
