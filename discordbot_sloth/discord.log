@@ -1,24 +1,2 @@
-[2023-01-06 16:56:12] [INFO    ] discord.client: logging in using static token
-[2023-01-06 16:56:12] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: d74046c082abae4069b58543bfc38d7d).
-[2023-01-06 16:56:18] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command matlab2latex
-Traceback (most recent call last):
-  File "/Users/user/Library/Caches/pypoetry/virtualenvs/discordbot-sloth-GwwNnJk6-py3.11/lib/python3.11/site-packages/discord/ext/commands/core.py", line 229, in wrapped
-    ret = await coro(*args, **kwargs)
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/user/repos/discordbot/discordbot_sloth/__main__.py", line 213, in matlab2latex
-    x = await xprint(await matlab_to_sympy(matlab), **xprint_args)
-                                           ^^^^^^
-UnboundLocalError: cannot access local variable 'matlab' where it is not associated with a value
-
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "/Users/user/Library/Caches/pypoetry/virtualenvs/discordbot-sloth-GwwNnJk6-py3.11/lib/python3.11/site-packages/discord/ext/commands/bot.py", line 1349, in invoke
-    await ctx.command.invoke(ctx)
-  File "/Users/user/Library/Caches/pypoetry/virtualenvs/discordbot-sloth-GwwNnJk6-py3.11/lib/python3.11/site-packages/discord/ext/commands/core.py", line 1023, in invoke
-    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/user/Library/Caches/pypoetry/virtualenvs/discordbot-sloth-GwwNnJk6-py3.11/lib/python3.11/site-packages/discord/ext/commands/core.py", line 238, in wrapped
-    raise CommandInvokeError(exc) from exc
-discord.ext.commands.errors.CommandInvokeError: Command raised an exception: UnboundLocalError: cannot access local variable 'matlab' where it is not associated with a value
-[2023-01-06 17:02:04] [INFO    ] discord.gateway: Shard ID None has successfully RESUMED session d74046c082abae4069b58543bfc38d7d.
+[2023-01-06 21:57:30] [INFO    ] discord.client: logging in using static token
+[2023-01-06 21:57:30] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: ed8281d97b71b5331a866fede3def329).

@@ -5,7 +5,8 @@ discord bot created during winter break
 - finish toggle and domain restrictions for xprint_settings.use_title
 - allowed_settings should be upgraded, --> clean up allowed_settings.py with helper functions
 - remove reliance on bot_flags.py, and use !config over flags for each command.
-
+- fix user_configuration and its default assertions.
+- include __iter__ for Configuration class for Jsons, e.g json.dumps(Configuration(user), indent=4, sort_keys=True)
 
 ## Features
 - [x] latex to png

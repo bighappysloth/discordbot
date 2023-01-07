@@ -1,13 +1,13 @@
 from discordbot_sloth.module_args.matplotlib_args import HelperString
 
-__ALLOWED_MATRIX_ENVIRONMENTS__ = {
+matrix_environments = {
     "mini": "bsmallmatrix",
     "regular": "bmatrix",
     "rounded": "pmatrix",
     "mini_rounded": "psmallmatrix",
 }
 
-__ALLOWED_LATEX_MODES__ = {
+latex_modes = {
     "inline",
     "title_display",
     "display",
@@ -15,6 +15,6 @@ __ALLOWED_LATEX_MODES__ = {
     "equation*",
 }
 
-allowed_env_usage_string = HelperString.dict_printer(__ALLOWED_MATRIX_ENVIRONMENTS__)
+allowed_env_usage_string = HelperString.dict_printer(matrix_environments)
 
-allowed_latex_modes_usage_string = HelperString.list_printer(list(__ALLOWED_LATEX_MODES__))
+allowed_latex_modes_usage_string = HelperString.list_printer(list(latex_modes))

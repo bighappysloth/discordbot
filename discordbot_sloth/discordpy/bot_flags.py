@@ -3,7 +3,7 @@ File to Manage Bot Flags
 """
 
 from discord.ext import commands
-from discordbot_sloth.module_args.latex_args import __ALLOWED_LATEX_MODES__, __ALLOWED_MATRIX_ENVIRONMENTS__
+from discordbot_sloth.module_args.latex_args import latex_modes, matrix_environments
 
 
 class plotFunctionFlags(commands.FlagConverter, delimiter=' ', prefix = '-'):
@@ -25,15 +25,6 @@ class plotFunctionFlags(commands.FlagConverter, delimiter=' ', prefix = '-'):
     samples: int = commands.flag(name='samples',
     default = None,
     description='Number of Samples (optional), default = 100')
-
-
-
-
-
-
-class latex2sympyFlags(commands.FlagConverter, delimiter=' ', prefix = '-'):
-    xinput: str = commands.flag(name = 'input',
-    description='latex (input)')
 
 
 class latex2pngFlags(commands.FlagConverter, delimiter=' ', prefix = '-'):

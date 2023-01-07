@@ -1,6 +1,8 @@
 import json
 import logging
+import os
 
+from discordbot_sloth.user.default_settings import __DEFAULT_CONFIG_PATH__, __COMMAND_DEFAULT_SETTINGS__, __DEFAULT_USER__, __CONFIG_FOLDER_PATH__, DEFAULT_CONFIG
 from discordbot_sloth.config import __DATA_PATH__
 from discordbot_sloth.helpers.check_dir import *
 from discordbot_sloth.helpers.dictionary_searching import *
@@ -8,59 +10,8 @@ from discordbot_sloth.helpers.TimeFormat import *
 from discordbot_sloth.module_args.matplotlib_args import *
 from discordbot_sloth.user.allowed_settings import ALLOWED_CONFIG
 
+
 logger = logging.getLogger(__name__)
-
-__DEFAULT_USER__ = "default"  # name of the default user
-
-__CONFIG_FOLDER_NAME__ = r"user_settings"
-
-__CONFIG_FOLDER_PATH__ = __DATA_PATH__ / __CONFIG_FOLDER_NAME__
-
-__DEFAULT_CONFIG_PATH__ = __CONFIG_FOLDER_PATH__ / r"default_settings.json"
-
-__COMMAND_DEFAULT_SETTINGS__ = "!defaults"
-
-
-DEFAULT_CONFIG = {
-    "latex_mode": "inline",
-    "framing": "regular",
-    "latex_preamble": "",
-    "usage": 0,
-    "last_used": None,
-    "background": "white",
-    "png_dpi": 2400,
-    "plot_samples": 100,
-    "plot_grid": True,
-    "plot_xlimits": [0, 10],
-    "matplotlib_settings": {
-        "plot": {
-            "color": "tab:orange",
-            "linewidth": 2.5,
-        },
-        "legend": {
-            "loc": "upper right",
-        },
-    },
-    "xprint_settings": {
-        "verb": True,
-        "env": "regular",
-        "latex_mode": "inline",
-        "use_title": False
-    },
-}
-
-"""
-Initialize Default Config from __DEFAULT_CONFIG_PATH__
-"""
-
-
-try:
-    with __DEFAULT_CONFIG_PATH__.open("r") as fp:
-        __DEFAULT__CONFIG__ = json.loads(fp.read())
-except FileNotFoundError:
-    pass
-
-check_dir(__DEFAULT_CONFIG_PATH__)
 
 """
 Configuration Class
@@ -81,18 +32,20 @@ class Configuration:
         self.user = user
         temp = viewFullUserConfig(self.user)
         if temp["status"] != "success":
+            # logger.debug(f'Configuration __init__ error: {self.user}, reason: {temp}')
+            """
+            If there is an empty file or no file at all, then we load the default config, while keeping track of the user's ID.
 
+            This is to support future editing.
+            """
             temp = viewFullUserConfig(__DEFAULT_USER__)
 
             if temp["status"] != "success":
                 raise ValueError("Configuration loader has failed.")
 
-            self.user = __DEFAULT_USER__  # reset to default user
-
         self.settings = temp["payload"]
-        # print(f'see here{self.settings}')
-        z = json.dumps(self.settings, sort_keys=True, indent=4)
-        # print(f'Configuration Init: {user} --> {z}')
+        
+        # logger.debug(f'Configuration Init: {user} --> {z}')
 
     def getEntry(self, selected_option):
 
@@ -129,7 +82,7 @@ class Configuration:
                     entry_validation_test["msg"](new_value, selected_option)
 
             except (ValueError, TypeError) as E:
-                print(f"E: {E.args}, {type(E.args)}")
+                logger.warning(f"E: {E.args}, {type(E.args)}")
                 return {
                     "status": "failure",
                     "msg": "```"
@@ -153,6 +106,7 @@ class Configuration:
                 temp_dictionary[temp_query[0]] = new_value
                 path_to_settings = user_settings_path(self.user)
 
+                # logger.debug(f'path_to_settings: {path_to_settings}')
                 if write:  # Writes to disk if flag is enabled.
                     with path_to_settings.open("w") as fp:
                         fp.write(json.dumps(self.settings,
@@ -169,21 +123,42 @@ class Configuration:
 
     @staticmethod
     def restoreUserConfig(user):
-        Z = {"usage", "last_used"}  # do not wipe these entries.
-        for k in DEFAULT_CONFIG:
-            if not k in Z:
-                editUserConfig(user, k, DEFAULT_CONFIG[k])  # wipe all config.
-        # Call our incrementing function
+        
+        try:
+
+            temp = Configuration(user)
+            usage = int(temp.getEntry('usage'))
+            logger.debug(f'old usage: {usage}')
+            
+            settings_path = user_settings_path(user)
+            if settings_path:
+                os.remove(settings_path)
+            temp2 = Configuration(user)
+            temp2.editEntry('usage', usage)
+            temp2.editEntry('last_used', current_time())
+            return {\
+                'status': 'success',
+                'msg': 'Restore successful'
+            }
+        except Exception as E:
+            return {
+                "status": "failure",
+                "msg": "```"
+                + HelperString.list_printer(
+                    [str(z) for z in E.args]
+                )
+                + "```",
+            }
+        
+
 
     @staticmethod
     def incrementUserConfig(user):
         if user != __DEFAULT_USER__:
             x = Configuration(user)
             new_usage = x.getEntry("usage")["msg"] + 1
-            z1 = x.editEntry("usage", new_usage, write=True)
-            z2 = x.editEntry("last_used", current_time(), write=True)
-            logger.debug(f"First, Second: {z1}, {z2}")
-            logger.debug(f"new_usage: {new_usage}, type={type(new_usage)}")
+            x.editEntry("usage", new_usage, write=True)
+            x.editEntry("last_used", current_time(), write=True)
             return
         raise ValueError("Default User cannot be incremented.")
 
@@ -207,7 +182,6 @@ def getUserConfig(user, user_option="usage"):
             return j[user_option]
     except (FileNotFoundError, KeyError):
         try:
-
             # Try resorting to DEFAULT_CONFIG, if the user has not configured this option yet.
             return getUserConfig(__DEFAULT_USER__)[user_option]
         except KeyError:
@@ -217,6 +191,7 @@ def getUserConfig(user, user_option="usage"):
 def viewFullUserConfig(user):
     """
     TODO: implement this as a static method within Configurations
+    viewFullUserConfig(user) returns a dictionary with status: 'success' or 'failure'. Gives the dictionary in two formats, string (in 'msg') and 'payload' only on success.
     """
     settings_path = user_settings_path(user)
     try:
@@ -226,7 +201,11 @@ def viewFullUserConfig(user):
 
             # print(f'JSON DUMP View Full user Config:\n{j}')
 
-            return {"status": "success", "msg": j, "payload": json.loads(j)}
+            return {
+                "status": "success",
+                "msg": j,
+                "payload": json.loads(j)
+            }
     except FileNotFoundError:
         return {
             "status": "failure",
@@ -235,7 +214,10 @@ def viewFullUserConfig(user):
     except json.decoder.JSONDecodeError:
         j = viewFullUserConfig(__DEFAULT_USER__)["msg"]
 
-        return {"status": "failure", "msg": j, "payload": json.loads(j)}
+        return {"status": "success",
+                "msg": j,
+                "payload": json.loads(j)
+                }
 
 
 """
@@ -245,6 +227,7 @@ This function is outdated and should be removed as soon as possible.
 
 def editUserConfig(user: str, user_option: str, new_value):
     settings_path = user_settings_path(user)
+
     try:
         with settings_path.open("r") as fp:
             j = json.loads(fp.read())  # returns a dictionary
@@ -297,43 +280,3 @@ def editUserConfig(user: str, user_option: str, new_value):
             "status": "failure",
             "msg": E.args,
         }
-
-
-# with settings_path.open('w') as f:
-#     f.write(json.dumps(DEFAULT_CONFIG))
-#     print(f'Writing to {settings_path}...')
-
-# with settings_path.open('r') as f:
-#     j = json.loads(f.read())
-#     print(f'Printing JSON Settings: {j},\ntype: {type(j)}')
-
-
-# print(result)
-
-
-# print(getUserConfig('ccE', 'latex_mode'))
-# print(viewUserConfig(__DEFAULT_USER__, 'xprint_settings'))
-
-
-# print(viewFullUserConfig(__DEFAULT_USER__))
-
-# Additional Testing for Configuration
-
-# if __name__ == '__main__':
-#     args = parser.parse_args()
-#     current_user = __DEFAULT_USER__
-
-#     if args.command == 'view':
-#         print(f'Command Selected: {args.command}')
-#         print(viewFullUserConfig(user=current_user))
-
-#     elif args.command =='edit':
-#         print(f'Command Selected: {args.command} w/ {args}')
-#         print(editUserConfig(user=current_user, user_option = args.user_option, new_value = args.new_value))
-
-#     elif args.command == 'restore':
-#         print(f'Command Selected: {args.command}')
-#         print(restoreUserConfig(user=current_user))
-
-# TODO: Load all User Configurations at Startup, then
-# on editing any of the files, save it to disk. And reload.

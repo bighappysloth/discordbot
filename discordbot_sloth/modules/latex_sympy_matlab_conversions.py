@@ -57,9 +57,9 @@ async def xprint(m, verb=True, env="regular", latex_mode="inline", title=None):
     tex_print_kwargs = {
         "full_prec": False,
         "mat_delim": "",
-        "mat_str": __ALLOWED_MATRIX_ENVIRONMENTS__[env]
-        if env in __ALLOWED_MATRIX_ENVIRONMENTS__.keys()
-        else __ALLOWED_MATRIX_ENVIRONMENTS__["regular"],
+        "mat_str": matrix_environments[env]
+        if env in matrix_environments.keys()
+        else matrix_environments["regular"],
         "mode": "plain"
         if latex_mode in {"inline", "title_display", "display"}
         else latex_mode,
@@ -67,18 +67,18 @@ async def xprint(m, verb=True, env="regular", latex_mode="inline", title=None):
         "symbol_names": h.latex_symbol_list,
     }
 
-    if not latex_mode in __ALLOWED_LATEX_MODES__:
+    if not latex_mode in latex_modes:
         raise ValueError(
-            f"Invalid latex_mode {latex_mode}. Allowed: {__ALLOWED_LATEX_MODES__}"
+            f"Invalid latex_mode {latex_mode}. Allowed: {latex_modes}"
         )
 
     if isinstance(m, (sym.Matrix, sym.MatrixSymbol)):
 
         # Here the 'env' argument can be discarded, we only care about the mode inline or display. Equation mode also matters but w will not use it much.
 
-        if not env in __ALLOWED_MATRIX_ENVIRONMENTS__:
+        if not env in matrix_environments:
             raise ValueError(
-                f"Invalid env {env}. Allowed: {list(__ALLOWED_MATRIX_ENVIRONMENTS__.keys())}"
+                f"Invalid env {env}. Allowed: {list(matrix_environments.keys())}"
             )
 
         # print(h.wrap(f'\'env\'={env} valid: {env in __ALLOWED_MATRIX_ENVIRONMENTS__}','verb'), end=h.newline() + '\n')

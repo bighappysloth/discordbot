@@ -266,7 +266,7 @@ async def _edit_config(ctx, *, arg: str):
         """
         logger.info("No args detected")
         uc = Configuration(u)
-        print(f"UC: {uc}")
+        #print(f"user_configuration: {uc}")
         await ctx.reply(
             f"{ctx.author.name}'s config:\n```{json.dumps(Configuration(u).settings,sort_keys=True,indent=4)}```"
         )
@@ -276,7 +276,7 @@ async def _edit_config(ctx, *, arg: str):
         #print(f"Split: {split}")
         split = split[1:]
         if len(split) == 1:
-            raise commands.CommandError(
+            await ctx.reply(
                 f'!config [selected_option] [new_value], "new_value" is missing.'
             )
         selected_option = split[0]

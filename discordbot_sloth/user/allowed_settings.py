@@ -89,13 +89,13 @@ ALLOWED_CONFIG = {
     'xprint_settings':  {
         'verb': lambda x, y: helper_type_check(x, bool, y),
         'env': lambda x, y: helper_set_check(x,
-                                             latex_args.__ALLOWED_MATRIX_ENVIRONMENTS__,
+                                             latex_args.matrix_environments,
                                              y,
                                              latex_args.allowed_env_usage_string
                                              ),
         'latex_mode': lambda x, y: helper_set_check(
             x,
-            latex_args.__ALLOWED_LATEX_MODES__,
+            latex_args.latex_modes,
             y,
             latex_args.allowed_latex_modes_usage_string
         ),
