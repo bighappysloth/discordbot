@@ -4,12 +4,19 @@ discordbot_sloth/config.py
 
 # bot state
 discordbot_sloth/data/latex_out/Snipp*
+discordbot_sloth/data/latex_out/out/*
 discordbot_sloth/data/pins/*
 discordbot_sloth/data/user_settings/*
 !discordbot_sloth/data/user_settings/default_settings.json
 
+
 # logs
-discord-bot/discord.log
+discordbot_sloth/discord.log
+__pycache__/
+discordbot_sloth/__pycache__
+discordbot_sloth/helpers/__pycache__
+discordbot_sloth/module_args/__pycache__
+discordbot_sloth/discordpy/__pycache__
 
 # packaging and distribution
 build/
