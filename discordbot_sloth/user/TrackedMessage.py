@@ -21,6 +21,8 @@ TRACKED_TYPES = {\
 class TrackedMessage(discord.PartialMessage):
     
     def __init__ (self, channel, id, type, memory=None):
+        # Notice we have to pass in a non-null channel.
+        # This is prone to some NoneType errors. The client should check if the channel is valid or not.
         super(channel=channel, id = int(id))
         
         self.memory=memory
@@ -52,3 +54,10 @@ class TrackedMessage(discord.PartialMessage):
         return message_identifier(channel_id = self.channel_id,
                            message_id=self.message_id)
     
+class TrackedShowPinsMessage(TrackedMessage):
+    
+    def __init__(self, user):
+        pass
+    
+            
+        

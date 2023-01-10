@@ -343,7 +343,7 @@ async def _get_pins(ctx, *, args:str):
         
         logger.debug(s)
     else:
-        split = shlex.split(arg)
+        split = shlex.split(args)
         action = split[0] # The action to be performed
         action_list = {'here', 'clear'}
         if action not in action_list:

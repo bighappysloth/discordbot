@@ -2,6 +2,7 @@ from email import message
 import json
 import logging
 import os
+from stat import FILE_ATTRIBUTE_NOT_CONTENT_INDEXED
 
 import discord
 
@@ -157,11 +158,14 @@ class UserPins:
 
             if UserPins.user_pins_path(user):
                 os.remove(UserPins.user_pins_path(user))
-
+        except FileNotFoundError:
+            return {
+                "status": "success",
+                "msg": f"Restored {user}'s pins."
+            }
         except Exception as E:
-            return {"status": "failure", "msg": list_printer([z for z in E.args])}
+            return {"status": "failure", "msg": list_printer([str(z) for z in E.args])}
         else:
-            
             return {"status": "success", "msg": f"Restored {user}'s pins."}
 
     
