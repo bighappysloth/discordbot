@@ -12,8 +12,13 @@ def helper_range_check(x,
                        user_option):
 
     if not isinstance(x, required_type):
-        raise TypeError(
-            f'Value {user_option} must be of type {required_type}.')
+        try:
+            z=int(x)
+        except ValueError:
+            raise TypeError(
+                f'Value {user_option} must be of type {required_type}.')
+        else:
+            return z
 
     if not (min <= x and x <= max):
         raise ValueError(
@@ -34,7 +39,7 @@ def helper_set_check(x,
             raise ValueError(f'Value {user_option} must be in {required_set}.')
         else:
             raise ValueError(
-                f'Value {user_option} must satisfy: \n{usage_help}')
+                f'Value {user_option} must satisfy: '+ '\n' +f'{usage_help}')
 
 
 def helper_type_check(x, required_type, user_option):
@@ -47,7 +52,7 @@ def helper_type_check(x, required_type, user_option):
 Maps a field to a lambda expression that raises exceptions. Use with ALLOWED_CONFIG[field](new_value, field) perhaps after checking with ALLOWED_CONFIG.get(field)
 """
 ALLOWED_CONFIG = {
-    'latex_mode': lambda x, y: helper_set_check(x, {'inline', 'display'}, y),
+    'latex_mode': lambda x, y: helper_set_check(x, {'inline', 'display','raw'}, y),
 
     'framing': lambda x, y: helper_set_check(x, {'regular', 'tight', 'wide'}, y),
 

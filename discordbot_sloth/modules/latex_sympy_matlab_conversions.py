@@ -2,7 +2,7 @@ import logging
 
 import sympy as sym
 from latex2sympy2 import latex2sympy
-from sympy import *
+
 
 from discordbot_sloth.helpers.RegexReplacer import *
 from discordbot_sloth.module_args.latex_args import *
@@ -68,9 +68,7 @@ async def xprint(m, verb=True, env="regular", latex_mode="inline", title=None):
     }
 
     if not latex_mode in latex_modes:
-        raise ValueError(
-            f"Invalid latex_mode {latex_mode}. Allowed: {latex_modes}"
-        )
+        raise ValueError(f"Invalid latex_mode {latex_mode}. Allowed: {latex_modes}")
 
     if isinstance(m, (sym.Matrix, sym.MatrixSymbol)):
 
@@ -81,13 +79,11 @@ async def xprint(m, verb=True, env="regular", latex_mode="inline", title=None):
                 f"Invalid env {env}. Allowed: {list(matrix_environments.keys())}"
             )
 
-        # print(h.wrap(f'\'env\'={env} valid: {env in __ALLOWED_MATRIX_ENVIRONMENTS__}','verb'), end=h.newline() + '\n')
-
-        z = sym.printing.latex(m, **tex_print_kwargs)
+        z = latex(m, **tex_print_kwargs)
 
     else:
 
-        z = sym.printing.latex(m, **tex_print_kwargs)
+        z = latex(m, **tex_print_kwargs)
 
     # Now we (almost) always put the text within the Math Environment, which reads
     # tex_title = \begin{bmatrix} ... \end{bmatrix}
@@ -118,9 +114,9 @@ async def xprint(m, verb=True, env="regular", latex_mode="inline", title=None):
         z = f"${tex_title}{z}$"
 
     elif latex_mode == "display":
-        z = tex_title + "\[" + z + "\]"
+        z = tex_title + r"\[" + z + r"\]"
 
     elif latex_mode == "title_display":
-        z = "\[" + f"{tex_title}{z}" + "\]"
+        z = r"\[" + f"{tex_title}{z}" + r"\]"
     logger.debug(z + await h.newline(0, 1))
     return z

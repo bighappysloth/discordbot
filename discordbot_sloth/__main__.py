@@ -2,6 +2,7 @@ import argparse
 import datetime
 import json
 import logging
+from os import remove
 import sys
 from functools import reduce
 
@@ -17,9 +18,9 @@ from discordbot_sloth.modules.latex_to_png import *
 from discordbot_sloth.modules.plotFunction import gen_plot
 from discordbot_sloth.user.PseudoPins import *
 from discordbot_sloth.user.user_configuration import *
-
-__STAR_EMOJI__ = "\U00002B50"
-
+from discordbot_sloth.helpers.RegexReplacer import *
+from discordbot_sloth.helpers.EmojiReactor import react_to_message
+from discordbot_sloth.helpers.emoji_defaults import *
 
 """
 List of Commands
@@ -92,7 +93,6 @@ plotFunction_parser.add_argument(
 stringnumstring_parser = subparser.add_parser("stringnumstring")
 
 
-
 # Bot Subscription to Particular Events
 intents = discord.Intents.default()
 intents.message_content = True
@@ -100,6 +100,7 @@ intents.reactions = True
 intents.dm_reactions = True
 intents.dm_messages = True
 intents.members = True
+intents.guilds = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
@@ -113,14 +114,13 @@ async def time(ctx):
     print(f"reference? {ctx.message.reference}")
     await ctx.send(f"Time: {current_time()}")
     await ctx.send(f"{temp}")
-    
 
 
 @bot.command()
 async def plot(ctx, *, flags: plotFunctionFlags):
 
     """
-        Input to this is horrible and should be fixed.
+    Input to this is horrible and should be fixed.
     """
 
     temp = [r"plotFunction", flags.function]
@@ -137,7 +137,7 @@ async def plot(ctx, *, flags: plotFunctionFlags):
 
     if flags.samples:
         temp.append(f"-samples={flags.samples}")
-    if flags.grid != None:
+    if flags.grid is not None:
         temp.append(f"-grid={str(flags.grid)}")
 
     await ctx.send(f"plot invoked w/ `{temp}`")
@@ -150,7 +150,6 @@ async def plot(ctx, *, flags: plotFunctionFlags):
 
     with open(result["image_path"], "rb") as fp:
         await ctx.send(file=discord.File(fp, f'{result["image_path"]}'))
-
 
 
 # simple enough that we do not require any parsers.
@@ -168,37 +167,37 @@ async def matlab2latex(ctx, *, arg: str):
     If empty argument, then swaps between title and non-title mode.
     """
     logger.debug(f"matlab2latex executed with {arg}")
-    
+
     if not arg:
         """
         Toggle use_title
         """
-        
+
         temp = Configuration(u)
 
-        result = temp.editEntry('xprint_settings.use_title', 
-                    not temp.getEntry('xprint_settings.use_title'))
-        
+        result = temp.editEntry(
+            "xprint_settings.use_title", not temp.getEntry("xprint_settings.use_title")
+        )
+
         await ctx.reply(f"{result['status']}: {result['msg']}")
         logger.info(f"{result['status']}: {result['msg']}")
     else:
         temp = Configuration(u)
-        
+
         # Now check if use_title is enabled.
         # Split using shlex, because the title can contain spaces.
 
-        xprint_args = {\
-
-        'verb': temp.getEntry('xprint_settings.verb'),
-        'env': temp.getEntry('xprint_settings.env'),
-        'latex_mode': temp.getEntry('xprint_settings.latex_mode'),
+        xprint_args = {
+            "verb": temp.getEntry("xprint_settings.verb"),
+            "env": temp.getEntry("xprint_settings.env"),
+            "latex_mode": temp.getEntry("xprint_settings.latex_mode"),
         }
         matlab = arg
-        if temp.getEntry('xprint_settings.use_title'):
+        if temp.getEntry("xprint_settings.use_title"):
 
             split = shlex.split(arg)
-            logger.debug(f'split? given \n{split}')
-            xprint_args['title'] = split[0]
+            logger.debug(f"split? given \n{split}")
+            xprint_args["title"] = split[0]
             matlab = split[1]
 
         x = await xprint(await matlab_to_sympy(matlab), **xprint_args)
@@ -221,13 +220,13 @@ latex2png default inline mode
 
 @bot.command(name="t")
 async def _make_latex_to_png(ctx, *, z):
-    await ctx.reply(f"Generating Image from `{z}`")
+    previous = await ctx.reply(f"Making Latex...")
 
     Config = Configuration(str(ctx.author.id))
 
     result = await latex_to_png_converter(
         z,
-        DENSITY=Config.getEntry("png_dpi")["msg"],
+        DENSITY=int(Config.getEntry("png_dpi")["msg"]),
         tex_mode=Config.getEntry("latex_mode")["msg"],
         framing=Config.getEntry("framing")["msg"],
     )
@@ -235,10 +234,18 @@ async def _make_latex_to_png(ctx, *, z):
     if result["status"] == "success":
         im_location = result["image_path"]
         with open(im_location, "rb") as fp:
-            await ctx.reply(file=discord.File(fp, f"{im_location}"))
+            await previous.add_files(discord.File(fp, f"{im_location}"))
     else:
-        # Error Detected
-        raise commands.CommandError(result["msg"])
+        if result["log"]:
+            now = await previous.edit(content=result["log"])
+            if result.get("image_path"):
+                with Path(str(result.get("image_path"))).open("rb") as fp:
+                    await now.add_files(discord.File(fp, result.get("image_path")))
+        else:
+            # Error Detected
+            logger.warning(f"PNG fail: {result['msg']}")
+            await previous.edit(content=(result["msg"]))
+            raise commands.CommandError(result["msg"])
 
 
 @bot.command(name="defaults")
@@ -249,7 +256,7 @@ async def _view_defaults(ctx):
     result = viewFullUserConfig(__DEFAULT_USER__)
 
     if result["status"] == "success":
-        await ctx.reply(f"Configuration Options (defaults):\n```{result['msg']}```")
+        await ctx.reply(f"Configuration Options (defaults):\n```\n{result['msg']}\n```")
     else:
         await ctx.reply(f"`{result['status']}: {result['msg']}`")
         logger.warning(f"`{result['status']}: {result['msg']}`")
@@ -266,15 +273,15 @@ async def _edit_config(ctx, *, arg: str):
         """
         logger.info("No args detected")
         uc = Configuration(u)
-        #print(f"user_configuration: {uc}")
+        # print(f"user_configuration: {uc}")
         await ctx.reply(
             f"{ctx.author.name}'s config:\n```{json.dumps(Configuration(u).settings,sort_keys=True,indent=4)}```"
         )
 
     else:
-        split = arg.split(" ")
-        #print(f"Split: {split}")
-        split = split[1:]
+        split = shlex.split(arg)
+        # print(f"Split: {split}")
+        
         if len(split) == 1:
             await ctx.reply(
                 f'!config [selected_option] [new_value], "new_value" is missing.'
@@ -297,13 +304,59 @@ async def _restore_config(ctx):
     logger.info(f"Restored {ctx.author.name}'s config to defaults.")
 
 
-@bot.command(name="pins")
-async def _get_pins(ctx):
+
+# TODO: pins clear, pins all, pins here, pins ?
+@bot.command(name="pins", rest_is_raw=True)
+async def _get_pins(ctx, *, args:str):
+    
+    
     u = str(ctx.author.id)
-    temp = await UserPins.get_pins(u, bot)
-    s = json.dumps(temp, indent=4, sort_keys=True)
-    await ctx.reply(s)
-    logger.debug(s)
+    if not args:
+        # Show user's list of pins if given empty arguments.
+        temp = await UserPins.get_pins(u, bot)
+    
+        z = temp["msg"]
+        z.sort(
+            key=lambda a: int(dict(a)['created_unix_date'])
+        )  # sorts by retriving the unix_date of each dicitionarized Pin. see UserPins.get_pins
+        
+        if z: # if there exists pins.
+            A = [f'{i+1}) {z[i]}' for i in range(0,len(z))]
+            s = list_printer(A)
+            
+            delimiters_code = {
+                'start': "```\n",
+                'end': r"\n```"
+            }
+            
+            delimiters_none = {
+                'start': f'{STAR_EMOJI} List of Pins for {ctx.author.name}\n',
+                'end': '\n',
+            }
+
+            reply_factory = lambda x: delimiters_none['start'] + x + delimiters_none['end']
+            await ctx.reply(reply_factory(s))
+            
+        else:
+            s = f'You have 0 pins. React with {STAR_EMOJI} to pin a message.'
+            await ctx.reply(s)
+        
+        logger.debug(s)
+    else:
+        split = shlex.split(arg)
+        action = split[0] # The action to be performed
+        action_list = {'here', 'clear'}
+        if action not in action_list:
+            await ctx.reply(f'Unknown action: {action}. Allowed actions: {(lambda a: reduce((lambda b,c: b + c), a))(action_list)}')
+        elif action=='here':
+            
+            pass
+        elif action=='clear':
+            result = await UserPins.restore_pins(u)
+            await ctx.reply(f"{result['status']}: {result['msg']}")
+        
+        
+
 
 
 @bot.event
@@ -339,44 +392,75 @@ async def on_command_completion(ctx):
 
 
 @bot.event
-async def on_message_edit(before, after):
-    logger.info(f"Edit Detected: {before} -> {after}")
-
-
-# @bot.event
-# async def on_reaction_add(reaction, user):
-#     logger.info(f'Reaction Detected: {reaction.Message}, by {user}')
-
-
-@bot.event
 async def on_raw_reaction_add(payload):
 
-    if payload.emoji.name == __STAR_EMOJI__:
-        """
-        Record the channel, message ID. And the pinning user, and
-        passes to PseudoPins
-        """
-        logger.debug(f"Star Emoji Reaction detected wtih {payload}")
+    channel_id = payload.channel_id
+    message_id = payload.message_id
+    user = str(payload.user_id)
+    if user != str(bot.user.id):
+        if payload.emoji.name == STAR_EMOJI:
+            """
+            Record the channel, message ID. And the pinning user, and
+            passes to PseudoPins
+            """
+            logger.info(f"Star Emoji Reaction detected wtih {payload}")
 
-        add_pin_args = {
-            "user": str(payload.user_id),
-            "payload": {
-                "channel_id": str(payload.channel_id),
-                "message_id": str(payload.message_id),
-                "date": current_time(),
-                "unix_date": epoch_delta_milliseconds(),
-            },
-            "bot": bot,
-        }
-        # logger.debug(f'add_pin_args: {add_pin_args}')
-        logger.info(f'Pinning User: {add_pin_args["user"]}')
-        result = await UserPins.add_pin(**add_pin_args)
-        # logger.debug(f'pinning_result: {json.dumps(result,sort_keys=True,indent=4)}')
+            add_pin_args = {
+                "user": user,
+                "payload": {"channel_id": channel_id, "message_id": message_id},
+                "bot": bot,
+            }
+
+            result = await UserPins.add_pin(**add_pin_args)
+
+
+            # Attempts to fetch the channel.
+            channel = bot.get_channel(channel_id)
+            if not channel:
+                channel = await bot.fetch_channel(channel_id)
+            if result['status']=='success':
+                
+                #await channel.send(f"Pin {result['status']}. Payload: {result['pin']}")
+                logger.debug(f"Pin {result['status']}. Payload: {result['pin']}")
+                react_to_message(bot=bot,
+                                channel_id = channel_id,
+                                message_id=message_id,
+                                emoji=STAR_EMOJI,
+                                action='add')
+                
+            else:
+                #await channel.send(f"Pin {result['status']}. Payload: {result['msg']}.")
+                logger.debug(f"Pin {result['status']}. Payload: {result['msg']}")
 
 
 @bot.event
 async def on_raw_reaction_remove(payload):
-    logger.info(f"Raw Reaction Removed: {payload}")
+
+    channel_id = payload.channel_id
+    message_id = payload.message_id
+    user = str(payload.user_id)
+    if user != str(bot.user.id):
+        if payload.emoji.name == STAR_EMOJI:
+            """
+            Removes the pin if the pin exists.
+            """
+            logger.debug(f"Star Emoji Removal detectected with {payload}")
+
+            remove_pin_args = {
+                "user": user,
+                "payload": {"channel_id": channel_id, 
+                            "message_id": message_id}
+            }
+            result = await UserPins.remove_pin(**remove_pin_args)
+            logger.debug(f"Removing Pin: {result}")
+            
+            # Now find the message and unreact.
+            react_to_message(bot=bot,
+                                channel_id = channel_id,
+                                message_id=message_id,
+                                emoji=STAR_EMOJI,
+                                action='remove')
+        
 
 
 @bot.event

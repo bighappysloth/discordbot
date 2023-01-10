@@ -2,7 +2,13 @@ import json
 import logging
 import os
 
-from discordbot_sloth.user.default_settings import __DEFAULT_CONFIG_PATH__, __COMMAND_DEFAULT_SETTINGS__, __DEFAULT_USER__, __CONFIG_FOLDER_PATH__, DEFAULT_CONFIG
+from discordbot_sloth.user.default_settings import (
+    __DEFAULT_CONFIG_PATH__,
+    __COMMAND_DEFAULT_SETTINGS__,
+    __DEFAULT_USER__,
+    __CONFIG_FOLDER_PATH__,
+    DEFAULT_CONFIG,
+)
 from discordbot_sloth.config import __DATA_PATH__
 from discordbot_sloth.helpers.check_dir import *
 from discordbot_sloth.helpers.dictionary_searching import *
@@ -44,10 +50,18 @@ class Configuration:
                 raise ValueError("Configuration loader has failed.")
 
         self.settings = temp["payload"]
-        
+
         # logger.debug(f'Configuration Init: {user} --> {z}')
 
     def getEntry(self, selected_option):
+        """Gets an config entry
+
+        Args:
+            selected_option (str): dotted hierarchical notation
+
+        Returns:
+            Any: the value field, if some type of error occurs, attempts ot fetch default settings.
+        """
 
         z = getEntryRecursive_dictionary(selected_option, self.settings)
 
@@ -55,9 +69,9 @@ class Configuration:
 
             if self.user != __DEFAULT_USER__:
                 # One last try: Searches in Default Config
+                
                 temp = viewFullUserConfig(__DEFAULT_USER__)["payload"]
-                default_result = getEntryRecursive_dictionary(
-                    selected_option, temp)
+                default_result = getEntryRecursive_dictionary(selected_option, temp)
                 return default_result
         return z
 
@@ -85,11 +99,7 @@ class Configuration:
                 logger.warning(f"E: {E.args}, {type(E.args)}")
                 return {
                     "status": "failure",
-                    "msg": "```"
-                    + HelperString.list_printer(
-                        [str(z) for z in E.args]
-                    )
-                    + "```",
+                    "msg": "```" + list_printer([str(z) for z in E.args]) + "```",
                 }
             else:
                 """
@@ -109,8 +119,7 @@ class Configuration:
                 # logger.debug(f'path_to_settings: {path_to_settings}')
                 if write:  # Writes to disk if flag is enabled.
                     with path_to_settings.open("w") as fp:
-                        fp.write(json.dumps(self.settings,
-                                 sort_keys=True, indent=4))
+                        fp.write(json.dumps(self.settings, sort_keys=True, indent=4))
                         fp.flush()
                         fp.close()
                 return {
@@ -123,34 +132,25 @@ class Configuration:
 
     @staticmethod
     def restoreUserConfig(user):
-        
+
         try:
 
             temp = Configuration(user)
-            usage = int(temp.getEntry('usage'))
-            logger.debug(f'old usage: {usage}')
-            
+            usage = int(temp.getEntry("usage"))
+            logger.debug(f"old usage: {usage}")
+
             settings_path = user_settings_path(user)
             if settings_path:
                 os.remove(settings_path)
             temp2 = Configuration(user)
-            temp2.editEntry('usage', usage)
-            temp2.editEntry('last_used', current_time())
-            return {\
-                'status': 'success',
-                'msg': 'Restore successful'
-            }
+            temp2.editEntry("usage", usage)
+            temp2.editEntry("last_used", current_time())
+            return {"status": "success", "msg": "Restore successful"}
         except Exception as E:
             return {
                 "status": "failure",
-                "msg": "```"
-                + HelperString.list_printer(
-                    [str(z) for z in E.args]
-                )
-                + "```",
+                "msg": "```\n" + list_printer([str(z) for z in E.args]) + "\n```",
             }
-        
-
 
     @staticmethod
     def incrementUserConfig(user):
@@ -201,11 +201,7 @@ def viewFullUserConfig(user):
 
             # print(f'JSON DUMP View Full user Config:\n{j}')
 
-            return {
-                "status": "success",
-                "msg": j,
-                "payload": json.loads(j)
-            }
+            return {"status": "success", "msg": j, "payload": json.loads(j)}
     except FileNotFoundError:
         return {
             "status": "failure",
@@ -214,10 +210,7 @@ def viewFullUserConfig(user):
     except json.decoder.JSONDecodeError:
         j = viewFullUserConfig(__DEFAULT_USER__)["msg"]
 
-        return {"status": "success",
-                "msg": j,
-                "payload": json.loads(j)
-                }
+        return {"status": "success", "msg": j, "payload": json.loads(j)}
 
 
 """

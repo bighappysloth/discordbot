@@ -3,6 +3,7 @@ import re
 
 from sympy import *
 from sympy.abc import epsilon
+from functools import reduce
 
 logger = logging.getLogger(__name__)
 
@@ -82,3 +83,57 @@ class RegexReplacer:
 
     async def wrapenv(self, x, env):
         return "\\" + "begin{" + env + "}" + x + "\\" + "end{" + env + "}"
+
+
+list_printer = lambda x: reduce(lambda a, b: a + '\n' + b,x) if x else ''
+dict_printer = lambda x: list_printer([f'{z}: {x[z]}' for z in x]) if x else ''
+
+def merge_columns(*args, spacing=4, align='left'):
+    """
+    Given a list of lists of strings. Print them in columns
+    Calculates the maximum width of each column.
+    Provides options ot adjust spacing and alignment: 'left' or 'right'.
+    """
+
+    M = [L.copy() for L in args]  # copy all columns
+    for L in M:
+        L.reverse()  # reverse all columns
+
+    M = [
+        [L.copy(),
+        max([len(x) for x in L])]
+        for L in args
+    ]
+
+    fmt = {
+        'left': lambda r, cell, numspaces: r + cell + ' '*numspaces,
+        'right': lambda r, cell, numspaces: r + ' '*numspaces + cell,
+    }
+
+    for [a, b] in M:
+        a.reverse()
+
+    row_array = []
+    while True:
+        # While there are still elements to be printed.
+        emptyRow = True
+        # Print row
+
+        row = ''
+        for [a, b] in M:
+
+            # pop if list A is non-empty, else put a blank there.
+
+            if a:
+                temp = a.pop()
+                emptyRow = False
+            else:
+                temp = ''
+
+            # calc and add spaces according to how big temp is
+            row = fmt[align](row, temp, spacing+b-len(temp))
+
+        row_array.append(row)
+        if emptyRow:
+            break
+    return list_printer(row_array)

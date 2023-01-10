@@ -1,3 +1,10 @@
 {
-    "python.formatting.provider": "autopep8"
+    "python.linting.pylintEnabled": false,
+    "python.linting.flake8Enabled": false,
+    "python.linting.enabled": false,
+    "python.analysis.typeCheckingMode": "off",
+    "python.linting.lintOnSave": false,
+    "python.analysis.autoImportUserSymbols": true,
+    "python.analysis.autoImportCompletions": true,
+    "python.analysis.logLevel": "Error"
 }

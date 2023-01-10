@@ -1,4 +1,5 @@
-from discordbot_sloth.module_args.matplotlib_args import HelperString
+from discordbot_sloth.helpers.RegexReplacer import *
+
 
 matrix_environments = {
     "mini": "bsmallmatrix",
@@ -15,6 +16,6 @@ latex_modes = {
     "equation*",
 }
 
-allowed_env_usage_string = HelperString.dict_printer(matrix_environments)
+allowed_env_usage_string = dict_printer(matrix_environments)
 
-allowed_latex_modes_usage_string = HelperString.list_printer(list(latex_modes))
+allowed_latex_modes_usage_string = list_printer(list(latex_modes))

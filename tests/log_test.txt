@@ -1,0 +1,21 @@
+abcd
+
+
+==== LOG FILE START ====
+
+abcdabcdabcdabcd
+
+
+abcd
+
+abcd
+abcd
+abcdabcdabcd
+abcd
+
+
+
+
+abcd
+
+==== LOG FILE END ====

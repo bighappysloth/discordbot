@@ -34,7 +34,7 @@ plt.rcParams.update(
 )
 
 
-# Custom Method for inline Latex Printing. 
+# Custom Method for inline Latex Printing.
 async def inline_print(m, use_ln_over_log=True):
 
     temp = latex(m, mode="inline", ln_notation=use_ln_over_log)
@@ -112,8 +112,7 @@ async def gen_plot(args):
         f'{datetime.datetime.now().strftime("Plot %Y-%m-%d at %H.%M.%S.png")}'
     )
 
-    
-    plot_image_path = __DATA_PATH__/ 'plots_out' / plot_image_filename
+    plot_image_path = __DATA_PATH__ / "plots_out" / plot_image_filename
 
     logger.debug(f"Saving to {plot_image_path}...")
     try:
