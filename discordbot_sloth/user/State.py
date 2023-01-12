@@ -6,8 +6,7 @@ from discordbot_sloth.helpers.emoji_defaults import *
 from discordbot_sloth.helpers.RegexReplacer import *
 from discordbot_sloth.helpers.TimeFormat import *
 from discordbot_sloth.user.TrackedPanels import LatexImage, ParrotMessage, ShowPinsPanel
-from discordbot_sloth.user.PseudoPins import message_identifier
-from discordbot_sloth.user.newPin import StarredMessage
+from discordbot_sloth.user.StarredMessage import StarredMessage
 
 __STATE_FOLDER_NAME__ = "pins"
 
@@ -26,7 +25,7 @@ class State:
             x["state"] = dict()
             x["pins"] = dict()
             fw.write(json.dumps(x, sort_keys=True, indent=4))
-            fw.close
+            fw.close()
 
     # Reads from the json file.
     def __setup__(self):
@@ -35,13 +34,10 @@ class State:
 
                 try:
                     temp = json.loads(fp.read())
-                except json.JSONDecodeError:  # empty file
-                    self.__init_empty_config__()
-                    self.__setup__()  # reload
-                else:
-
+                    
+                    # Loading State
                     try:
-                        A = temp["state"]
+                        A = dict(temp["state"])
                         # Create State Objects Here
                         self.state = dict()
                         for k, v in A.items():
@@ -54,23 +50,39 @@ class State:
                                     self.state[k] = ShowPinsPanel(**v["memory"])
 
                     except KeyError:  # No 'state' field.
-                        self.state = {}
+                        self.state = dict()
 
+                    # Loading Pins
                     try:
-                        self.pins = temp["pins"]
-                        A = temp["pins"]
+                        self.pins = dict(temp["pins"])
+                        A = dict(temp["pins"])  
 
                         # Create Pin Objects Here
                         self.pins = {(k, StarredMessage(**v)) for k, v in A.items()}
+                        self.pins = dict()
+                        for k, v in A.items():
+                            self.pins[k] = StarredMessage(**v)
+                        
+                        # logger.debug(f'{self.user} pins: {len(self.pins)}')
+                        
                     except KeyError:  # No 'pins' field
-                        self.pins = {}
+                        self.pins = dict()
 
+                        
+                except json.JSONDecodeError:  # empty file
+                    self.__init_empty_config__()
+                    self.__setup__()  # reload
+                    
                 finally:
                     fp.close()
 
         except FileNotFoundError:  # no file
             self.__init_empty_config__()
             self.__setup__()  # reload
+            
+        if isinstance(self.state, set): self.state = dict()
+        if isinstance(self.pins, set): self.pins = dict()
+        
 
     def __init__(self, user, bot):
         logger.debug(f"Init user: {user}")
@@ -80,50 +92,83 @@ class State:
         self.__setup__()
 
     # Belongs in state class
-    async def get(self, identifier="", type=""):
+    async def fetch_tracker(self, identifier="", type=""):
+        """Using a message identifier we get a TrackedMessage
 
-        x = self.state.get(identifier)  # should be a dictionary
-        # can replace this by another class but we will skip this for now.
-        # a class that allows us to use x = AbstractLink(**self.state.get(identifier))
+        Args:
+            identifier (str, optional): Message Identifier. If left blank then we assume the client wants to retrieve all TrackedMessages with a certain type. Defaults to "".
+            type (str, optional): type of tracked message. Both fields cannot be blank. Defaults to "".
+
+        Returns:
+            AbstractPanel: a subclass of AbstractPanel.
+            
+        """
+        
 
         # TODO: implement sorting by type.
         # i.e get all by type
 
-        if x is None:
+        if identifier:
+            x = self.state.get(identifier)  
+            if x is None:
+                return x
 
-            return x
+            if x["type"] == "parrot_message":
+                return ParrotMessage(**x["memory"])
+            elif x["type"] == "latex_image":
+                return LatexImage(**x["memory"])
+            elif x["type"] == "pins_panel":
+                return ShowPinsPanel(**x["memory"])
+        else:
+            # User does not provide an identifier
+            if type:
+                if type == 'parrot_message':
+                    y = lambda a: isinstance(a, ParrotMessage)
+                elif type == 'latex_image':
+                    y = lambda a: isinstance(a, LatexImage)
+                elif type == 'pins_panel':
+                    y = lambda a: isinstance(a, ShowPinsPanel)
+                
+                z = list(self.state.values())
+                z = list(filter(y, z))
+                return z
+                
 
-        if x["type"] == "parrot_message":
-            return ParrotMessage(**x["memory"])
-        elif x["type"] == "latex_image":
-            return LatexImage(**x["memory"])
-        elif x["type"] == "pins_panel":
-            return ShowPinsPanel(**x["memory"])
-
+    def __iter__(self):
+        out = {
+            'display_name': self.display_name,
+            'state': dict((x, dict(y)) for x, y in self.state.items() ),
+            'pins': dict((x, dict(y)) for x, y in self.pins.items() )
+        }
+        for k, v in out.items():
+            yield (k, v)
     # No need a separate edit method
 
     def save(self):
 
         # Clean up Dead Panels
-        temp = self.state.copy()
-        z = lambda a: bool(a.get("type")) and a.get("type") != "dead"
-
-        temp = {k: v for k, v in temp.items() if z(v)}
-        self.state = temp
+        
+        
 
         try:
 
-            A = {
-                "display_name": self.display_name,
-                "state": {(k, dict(v)) for k, v in self.state.items()},
-                "pins": {(k, dict(v)) for k, v in self.pins.items()},
-            }
+            # A = {
+            #     "display_name": self.display_name,
+            #     "state": {(k, dict(v)) for k, v in self.state.items()},
+            #     "pins": {(k, dict(v)) for k, v in self.pins.items()},
+            # }
 
-            with State.state_path(self.user).open("w") as fw:
+            A = dict(self)
+            print(f'Dict for user {self.user}: {A}')
+            p = Path(State.state_path(self.user))
+            logger.debug(f'Saving to {str(p)}')
+            with p.open("w") as fw:
                 fw.write(json.dumps(A, sort_keys=True, indent=4))
                 fw.flush()
                 fw.close()
+            logger.debug(f'Finished Saving to {p}')
         except Exception as E:
+            logger.warning(f'Something went wrong... {E.args}')
             return {"status": "failure", "msg": list_printer([str(z) for z in E.args])}
         finally:
             return {
@@ -132,7 +177,10 @@ class State:
             }
 
     def __str__(self):
-        return str(self.state)
+        z = self.state
+        s = self.pins
+        x = f'States: {z}\nPins: {s}'
+        return x
 
     def add_pin(self, identifier, bot):
         pass

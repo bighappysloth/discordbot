@@ -1,6 +1,6 @@
 import datetime
-import discord
-__TIME_FORMAT__ = r'"%Y-%m-%d at %H.%M.%S'
+
+__TIME_FORMAT__ = r'%Y-%m-%d at %H.%M.%S'
 
 
 def current_time() -> str:
@@ -12,7 +12,9 @@ def fmt_date(x:datetime.datetime) -> str:
 def convert_time(z) -> datetime.datetime:
     return datetime.datetime.strptime(current_time(), __TIME_FORMAT__)
 
-def epoch_delta_milliseconds(x=datetime.datetime.now()) -> str: 
+def epoch(x=None) -> str: 
+    if x is None:
+        x = datetime.datetime.now()
     seconds = (x - datetime.datetime(1970, 1, 1)).total_seconds() * 1000
     # seconds = seconds + x.microsecond
     return str(int(seconds))

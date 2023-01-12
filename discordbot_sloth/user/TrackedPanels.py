@@ -5,18 +5,90 @@ from discordbot_sloth.helpers.check_dir import *
 from discordbot_sloth.helpers.emoji_defaults import *
 from discordbot_sloth.helpers.EmojiReactor import react_to_message
 from discordbot_sloth.helpers.RegexReplacer import *
+from discordbot_sloth.helpers.TimeFormat import *
 from discordbot_sloth.modules.latex_to_png import latex_to_png_converter
 from discordbot_sloth.user.AbstractPanel import AbstractPanel
 from discordbot_sloth.user.user_configuration import Configuration
 
 
-class ParrotMessage(AbstractPanel):
-    def __init__(self, channel_id, message_id, word=None):
-        # describes the channel_id, and the message_id of the parrot (the bot's reply)
+class PinPanel(AbstractPanel):
+    """Class that monitors the removal of reactions for a Pin
+    
+        # The date when the user created this pin
+        # When we init a new pin, leave the two fields blank in the constructor.
+        
 
+        # The Pin that is the AbstractPanel should be different than the 'pins' saved within user_state.json.
+        
+        # One handles the interactions, the other is the cache.
+    Args:
+        AbstractPanel (_type_): _description_
+    """
+    
+    
+    def __init__(
+        self,
+        channel_id,
+        message_id,
+        user,
+        created_date=None,
+        created_unix_date=None,
+    ):
+
+        
+
+        # These two fields define the partial that we can refresh()
+        self.channel_id = channel_id
+        self.message_id = message_id
+
+        self.created_date = created_date
+        self.created_unix_date = created_unix_date
+        self.user = user
+        self.dead = False
+
+
+    async def on_reaction_add(self, emoji, bot):
+        pass
+    
+    
+
+    async def on_reaction_remove(self, emoji, bot):
+        # The removal should be handled by the main event loop.
+        pass
+
+
+    async def on_edit(self, after, bot):
+        pass
+
+    def __iter__(self):
+        out = {
+            "type": "pinned_message" if not self.dead else "dead",
+            "memory": {"user": self.user},
+        }
+
+        temp = super().timestamp()
+
+        for (k, v) in temp.items():
+            out['memory'][k] = v
+
+        for (k, v) in out.items():
+            yield (k, v)
+
+
+
+class ParrotMessage(AbstractPanel):
+    def __init__(self, channel_id, message_id, word=None, 
+                 created_date = None, created_unix_date = None):
+        
+        # describes the channel_id, and the message_id of the parrot (the bot's reply)
+        
+        super().__init__(created_date, created_unix_date)
+        
         self.channel_id = channel_id
         self.message_id = message_id
         self.word = word
+        
+        self.dead = False
 
     async def on_edit(self, after, bot):
 
@@ -67,15 +139,21 @@ class ParrotMessage(AbstractPanel):
                 "word": self.word,
             },
         }
-        for k, v in out.items():
+        temp = super().timestamp()
+        for (k, v) in temp.items():
+            out['memory'][k] = v
+        for (k, v) in out.items():
             yield (k, v)
 
 
 class LatexImage(AbstractPanel):
-    def __init__(self, channel_id, message_id, user):
+    def __init__(self, channel_id, message_id, user, created_date = None, created_unix_date = None):
+        super().__init__(created_date, created_unix_date)
         self.channel_id = channel_id
         self.message_id = message_id
         self.user = user
+        
+        self.dead = False
 
     async def on_reaction_add(self, emoji, bot):
         pass
@@ -138,32 +216,38 @@ class LatexImage(AbstractPanel):
                     "user": self.user,
                 },
             }
+            temp = super().timestamp()
+            for (k, v) in temp.items():
+                out['memory'][k] = v
+            for (k, v) in out.items():
+                yield (k, v)
+                
             for k, v in out.items():
                 yield (k, v)
 
 
 class ShowPinsPanel(AbstractPanel):
-    
-    
     @staticmethod
-    def build_pages(
-        list_of_pins,
-        author_name,
-        condition=lambda a: True,
-        sort=lambda a: int(dict(a)["created_unix_date"]),
-    ):
-        z = list_of_pins.copy()
-        list_of_messages = list(filter(condition, z))
+    def build_pages(pins, author_name, condition=lambda a: True,oldest_first=False):
 
-        list_of_messages.sort(key=sort)
+        z = [v for k, v in pins.items()]
+        list_of_StarredMessages = list(filter(condition, z))
+
+        # Sorting by descending StarredMessage (created_unix_date).
+        # if oldest_first, then use ascending order
+        list_of_StarredMessages.sort(reverse=not oldest_first)  
         pages = []
+
+        A = [f"{i+1}) {list_of_StarredMessages[i]}" for i in range(0, len(list_of_StarredMessages)) ]
+                
+        print("A: \n")
+        for z in A: print(z, end="======")
+
         
-        A = [f"{i+1}) {list_of_messages[i]}" for i in range(0, len(list_of_messages))]
-        print('A: \n')
-        for z in A:
-            print(z,end='======')
-        if list_of_messages:
+        if list_of_StarredMessages:
+            
             numpages = int(len(A) / 3) + 1
+            
             delimiters = {
                 "start_firstpage": "{0} List of Pins for {1}\n",
                 "start": "{0} List of Pins for {1}\n",
@@ -171,12 +255,14 @@ class ShowPinsPanel(AbstractPanel):
             }
 
             for i in range(1, numpages + 1):
-                end = min(3*i, len(A))
-                s = list_printer(A[3 * (i - 1): end])
-                
-                x = delimiters["start"].format(STAR_EMOJI, author_name) + \
-                    s + \
-                    delimiters["end"].format(str(i), str(numpages))
+                end = min(3 * i, len(A))
+                s = list_printer(A[3 * (i - 1) : end])
+
+                x = (
+                    delimiters["start"].format(STAR_EMOJI, author_name)
+                    + s
+                    + delimiters["end"].format(str(i), str(numpages))
+                )
                 pages.append(x)
                 print(x)
         else:
@@ -186,7 +272,7 @@ class ShowPinsPanel(AbstractPanel):
 
         return pages
 
-    def __init__(self, channel_id, message_id, pages, current_page):
+    def __init__(self, channel_id, message_id, pages, current_page, created_date = None, created_unix_date = None):
 
         """Builds the required pages and saves to memory
 
@@ -225,6 +311,8 @@ class ShowPinsPanel(AbstractPanel):
         s.save()
 
         """
+        super().__init__(created_date, created_unix_date)
+        
         # Build the pages first
 
         self.channel_id = channel_id
@@ -236,11 +324,8 @@ class ShowPinsPanel(AbstractPanel):
 
         numpages = len(self.pages)
         emojis = [PAGE_EMOJIS["prev_page"], PAGE_EMOJIS["next_page"]]
-        
-        
-        # 1) Edit Message
 
-        
+        # 1) Edit Message
 
         if emoji == PAGE_EMOJIS["next_page"]:
             if self.current_page + 1 in range(1, numpages + 1):
@@ -254,7 +339,7 @@ class ShowPinsPanel(AbstractPanel):
             channel = await bot.fetch_channel(self.channel_id)
         try:
             partial = discord.PartialMessage(channel=channel, id=int(self.message_id))
-            await partial.edit(content=self.pages[self.current_page-1])
+            await partial.edit(content=self.pages[self.current_page - 1])
         except Exception as E:
             logger.warning("Exception : " + list_printer([str(z) for z in E.args]))
 
@@ -284,5 +369,8 @@ class ShowPinsPanel(AbstractPanel):
                 "current_page": self.current_page,
             },
         }
+        temp = super().timestamp()
+        for (k, v) in temp.items():
+            out['memory'][k] = v
         for (k, v) in out.items():
             yield (k, v)

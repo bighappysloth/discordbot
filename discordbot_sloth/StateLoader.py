@@ -15,7 +15,7 @@ def load_states(bot):
 
     x = [Path(z) for z in STATE_FOLDER_PATH.glob('*.json')]
     y = [str(z.stem)[:-5] for z in x]
-    A = dict((user, State(user, bot )) for user in y )
+    A = dict((user, State(user, bot)) for user in y )
     return A
         
         

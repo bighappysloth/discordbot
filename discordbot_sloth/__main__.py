@@ -1,9 +1,8 @@
 import argparse
 import datetime
-
+from email import message
 import json
 import logging
-
 import signal
 import sys
 from functools import reduce
@@ -14,29 +13,33 @@ from latex2sympy2 import latex2sympy as latex_to_sympy
 
 from discordbot_sloth.config import __DISCORD_API_KEY__
 from discordbot_sloth.discordpy.bot_flags import *
+from discordbot_sloth.helpers.emoji_defaults import *
+from discordbot_sloth.helpers.EmojiReactor import react_to_message
+from discordbot_sloth.helpers.RegexReplacer import *
 from discordbot_sloth.helpers.TimeFormat import *
 from discordbot_sloth.modules.latex_sympy_matlab_conversions import *
 from discordbot_sloth.modules.latex_to_png import *
 from discordbot_sloth.modules.plotFunction import gen_plot
+from discordbot_sloth.StateLoader import load_states
 from discordbot_sloth.user.PseudoPins import *
-from discordbot_sloth.user.user_configuration import *
-from discordbot_sloth.helpers.RegexReplacer import *
-from discordbot_sloth.helpers.EmojiReactor import react_to_message
-from discordbot_sloth.helpers.emoji_defaults import *
+from discordbot_sloth.user.StarredMessage import StarredMessage
 from discordbot_sloth.user.State import State
-from discordbot_sloth.user.TrackedPanels import ParrotMessage, LatexImage, ShowPinsPanel
-from discordbot_sloth.StateLoader import load_states, save_states
-from discordbot_sloth.user.newPin import StarredMessage
+from discordbot_sloth.user.TrackedPanels import LatexImage, ParrotMessage, ShowPinsPanel, PinPanel
+from discordbot_sloth.user.user_configuration import *
 
-"""
-List of Commands
-plotFunction
-matlab2sympy
-matlab2latex
-latex2sympy
-stringnumstring
-sandwich
-"""
+
+# Bot Subscription to Particular Events
+intents = discord.Intents.default()
+intents.message_content = True
+intents.reactions = True
+intents.dm_reactions = True
+intents.dm_messages = True
+intents.members = True
+intents.guilds = True
+
+bot = commands.Bot(command_prefix="!", intents=intents)
+
+
 
 
 # Command Line Arguments for Function_Plotter
@@ -96,20 +99,29 @@ plotFunction_parser.add_argument(
 )
 
 
-stringnumstring_parser = subparser.add_parser("stringnumstring")
 
+@bot.event
+async def on_ready():
+    logger.info(f"ccE's Discord Bot")
+    logger.info(f"Current Time: {current_time()}")
 
-# Bot Subscription to Particular Events
-intents = discord.Intents.default()
-intents.message_content = True
-intents.reactions = True
-intents.dm_reactions = True
-intents.dm_messages = True
-intents.members = True
-intents.guilds = True
+    bot.states = load_states(bot)
 
-bot = commands.Bot(command_prefix="!", intents=intents)
+    logger.info("We have logged in as {0.user}".format(bot))
 
+    bot.users
+    # TODO: on load;
+    #
+    # 1) Add timestamp to each trackedpanel
+    # 2) Load all users, into for users in userbank bot.states['user'] = State(user, bot) = x
+    # 3) Load recent TrackedPanels, with bot.states['user']['states'] = filter_dict(within past 24 hours created, x['states'])
+
+    # 4) Scenarios we need to fetch user state:
+    # 4+) on_edit, on_reaction_add, on_reaction_remove
+
+    # 5) Fetching a user state is easy as:
+    # 5+) x = bot.states.get(user)
+    # 5+) if x is None: x = bot.states[user] = State(user, bot)
 
 @bot.command()
 async def time(ctx):
@@ -235,12 +247,11 @@ async def _make_latex_to_png(ctx, *, z):
 
     # Get User State with init_new for regsitration.
     s = bot.states.get(u)
-    if s is None: 
+    if s is None:
         bot.states[u] = State(u, bot)
         s = bot.states[u]
-        logger.debug(f'Registering {u}')
-    
-    
+        logger.debug(f"Registering {u}")
+
     x = LatexImage(channel_id=previous.channel.id, message_id=previous.id, user=u)
     identifier = message_identifier(
         channel_id=ctx.channel.id, message_id=ctx.message.id
@@ -276,7 +287,7 @@ async def _edit_config(ctx, *, arg: str):
         logger.info("No args detected")
         uc = Configuration(u)
         # print(f"user_configuration: {uc}")
-        
+
         await ctx.reply(
             f"{ctx.author.name}'s config:\n```{json.dumps(Configuration(u).settings,sort_keys=True,indent=4)}```"
         )
@@ -307,22 +318,36 @@ async def _restore_config(ctx):
     logger.info(f"Restored {ctx.author.name}'s config to defaults.")
 
 
+
+
+
+
+
+
+
+
+# New Functionality Below
+
+
+
+
+
+
 @bot.command(name="parrot")
 async def _parrot(ctx):
-    
+
     # Send Intiial Reply
     m = await ctx.reply(PARROT_EMOJI)
-    
+
     # Get Username
     u = str(ctx.author.id)
-    
+
     # Get User State with init_new for regsitration.
     s = bot.states.get(u)
-    if s is None: 
+    if s is None:
         bot.states[u] = State(u, bot)
         s = bot.states[u]
-        logger.debug(f'Registering {u}')
-    
+        logger.debug(f"Registering {u}")
 
     # Create New Object, then Link to The tracked message.
     new_parrot = ParrotMessage(
@@ -336,26 +361,23 @@ async def _parrot(ctx):
     logger.debug(
         "New Parrot: \n" + json.dumps(dict(new_parrot), sort_keys=True, indent=4)
     )
-    
-    s.state[identifier] = dict(new_parrot)
-    
+
+    s.state[identifier] = new_parrot
 
 
 @bot.command(name="state", rest_is_raw=True)
 async def _state(ctx, *, args: str):
-    
-    
+
     # Get Username
     u = str(ctx.author.id)
-    
+
     # Get User State with init_new for regsitration.
     s = bot.states.get(u)
-    if s is None: 
+    if s is None:
         bot.states[u] = State(u, bot)
         s = bot.states[u]
-        logger.debug(f'Registering {u}')
-    
-        
+        logger.debug(f"Registering {u}")
+
     if not args:
         # Empty args we show user state.
 
@@ -363,83 +385,91 @@ async def _state(ctx, *, args: str):
             "start": f"**State for {ctx.author.name}**\n" + r"```",
             "end": r"```",
         }
-        
+
         delimiters_pins = {
             "start": f"**Pins for {ctx.author.name}**\n" + r"```",
             "end": r"```",
         }
 
-        await ctx.reply(
-            delimiters_state["start"]
-            + json.dumps(s.state, sort_keys=True, indent=4)
-            + delimiters_state["end"]
-        )
+        # await ctx.reply(
+        #     delimiters_state["start"]
+        #     + json.dumps(s.state, sort_keys=True, indent=4)
+        #     + delimiters_state["end"]
+        # )
+
+        # await ctx.reply(
+        #     delimiters_pins["start"]
+        #     + json.dumps(s.pins, sort_keys=True, indent=4)
+        #     + delimiters_pins["end"]
+        # )
+        print(str(s))
         
-        await ctx.reply(
-            delimiters_pins["start"]
-            + json.dumps(s.state, sort_keys=True, indent=4)
-            + delimiters_pins["end"]
-        )
 
     else:
 
         split = shlex.split(args)
         if split[0] == "clear":
-            s.state = {}
+            s.state = dict()
             await ctx.message.add_reaction(CHECKMARK_EMOJI)
-        elif split[0] == "parrot_message":
-            pass
+        else:
+            
+            # Return the length of instances.
+            
+            x = await s.fetch_tracker(type = split[0])
+            ctx.reply(f'User {u} has {len(x)} {split[0]} instances.')
+            logger.debug(f'User {u} has {len(x)} {split[0]} instances: {x}.')
         pass
+
+
 
 
 @bot.command(name="pinz", rest_is_raw=True)
 async def _get_pins_v2(ctx, *, args: str):
     u = str(ctx.author.id)
-    if not args:
 
-        # Client should reply to command with a message like
+    # Get State
+    s = bot.states.get(u)
+    if s is None:
+        bot.states[u] = State(u, bot)
+        s = bot.states[u]
+    
+    
+    if not args or (len(shlex.split(args)) == 1 and shlex.split(args)[0] == 'reverse'):
 
+
+        # Use context to reply to user. Then fetch partial identifier.
+        # This will be used to construct ShowPinsPanel.
+        # Build pages first, then construct ShowPinsPanel
+        # Append ShowPinsPanel to user state to be aware of interactions.
+        
         m = await ctx.reply("Fetching Pins...")
 
-        # Then we can get message and channel id of the reply. Of which we will also track under the name of the user.
-
-        
         message_id = m.id
         channel_id = m.channel.id
-        u = str(ctx.author.id)
-        
-        # Get State
-        s = bot.states.get(u)
-        if s is None:
-            bot.states[u] = State(u, bot)
-            s = bot.states[u]
         
         identifier = message_identifier(channel_id=channel_id, message_id=message_id)
 
-
+        logger.debug(f"List of Pins: {s.pins}")
+        
         # Build pages from List of Pins.
-        pages = ShowPinsPanel.build_pages(
-            list_of_pins=s.pins,
-            author_name=ctx.author.name,
-        )
+        pages = ShowPinsPanel.build_pages(pins=s.pins, author_name=ctx.author.name, reverse = bool(args))
 
         # Construct the Panel Reply
         x = ShowPinsPanel(
             channel_id=channel_id, message_id=message_id, pages=pages, current_page=0
         )
-        
-        #print('Before Init: \n' + json.dumps(dict(x), sort_keys=True,indent=4))
 
         await x.on_reaction_add(emoji=PAGE_EMOJIS["next_page"], bot=bot)
-
-        # To get the first page. Now to save it to the TrackedPanels
-        # The identifier is the same as the TrackedPanel
-
-        #print('After Init: \n' + json.dumps(dict(x), sort_keys=True,indent=4))
-        
-        
-        s.state[identifier] = dict(x)
-        
+        s.state[identifier] = x
+    
+    else:
+        split = shlex.split(args)
+        action = split[0]
+        if action == 'clear':
+            s.pins = dict()
+            await ctx.message.add_reaction(CHECKMARK_EMOJI)
+        elif action == 'reverse':
+            
 
 
 # TODO: pins clear, pins all, pins here, pins ?
@@ -477,9 +507,9 @@ async def _get_pins(ctx, *, args: str):
             await ctx.reply(s)
 
         logger.debug(s)
-    
+
     else:
-        
+
         split = shlex.split(args)
         action = split[0]  # The action to be performed
         action_list = {"here", "clear"}
@@ -495,33 +525,7 @@ async def _get_pins(ctx, *, args: str):
             await ctx.reply(f"{result['status']}: {result['msg']}")
 
 
-@bot.event
-async def on_ready():
-    logger.info(f"ccE's Discord Bot")
-    logger.info(f"Current Time: {current_time()}")
-    
-    bot.states = load_states(bot)
-    
-    logger.info("We have logged in as {0.user}".format(bot))
 
-
-    bot.users
-    # TODO: on load;
-    # 
-    # 1) Add timestamp to each trackedpanel
-    # 2) Load all users, into for users in userbank bot.states['user'] = State(user, bot) = x
-    # 3) Load recent TrackedPanels, with bot.states['user']['states'] = filter_dict(within past 24 hours created, x['states'])
-    
-    
-    # 4) Scenarios we need to fetch user state:
-    # 4+) on_edit, on_reaction_add, on_reaction_remove
-    
-    
-    
-    # 5) Fetching a user state is easy as:
-    # 5+) x = bot.states.get(user)
-    # 5+) if x is None: x = bot.states[user] = State(user, bot)
-    
 
 
 # @bot.event
@@ -532,21 +536,7 @@ async def on_ready():
 #     logger.warning(f'{z}, {error.args} {type(error)}')
 
 
-@bot.event
-async def on_command(ctx):
-    fulluser = f"{ctx.author} -> {ctx.author.id}"
 
-    logger.info(f'{ctx.author} invoked "{ctx.command}" w/ args {ctx.args[1:]}.')
-    logger.debug(f"{fulluser}")
-
-
-@bot.event
-async def on_command_completion(ctx):
-    """
-    Increments the user's config.usage and config.last_used.
-    """
-    userid = str(ctx.author.id)
-    Configuration.incrementUserConfig(str(userid))
 
 
 @bot.event
@@ -557,15 +547,18 @@ async def on_raw_reaction_add(payload):
     user = str(payload.user_id)
     emoji = payload.emoji.name
     display_name = bot.get_user(int(user)).name
+
     
-    s = bot.states.get(user)
-    if s is None:
-        bot.states[user] = State(user, bot)
-        s = bot.states[user]
-        
-    
+
     if user != str(bot.user.id):
         
+        s = bot.states.get(user)
+        if s is None:
+            bot.states[user] = State(user, bot)
+            s = bot.states[user]
+        identifier = message_identifier(channel_id = channel_id,
+                                                message_id = message_id)
+
         if emoji == STAR_EMOJI:
             """
             Record the channel, message ID. And the pinning user, and
@@ -573,13 +566,12 @@ async def on_raw_reaction_add(payload):
             """
             logger.debug(f"{STAR_EMOJI} add from {display_name}")
 
-            z = StarredMessage(channel_id = channel_id,
-                       message_id = message_id,
-                       )
-            
-            z.refresh(bot)
+            z = StarredMessage(
+                channel_id=channel_id,
+                message_id=message_id,
+            )
 
-            logger.debug(f"Pin {result['status']}. Payload: {result['pin']}")
+            await z.refresh(bot)
             await react_to_message(
                 bot=bot,
                 channel_id=channel_id,
@@ -587,34 +579,28 @@ async def on_raw_reaction_add(payload):
                 emoji=STAR_EMOJI,
                 action="add",
             )
-            
+
             # Attach to user's State
-            s.pins[identifier] = z
-            
             # Now add a Pinsv3 to track the emoji removal.
-            
-            
-        else:
-            
-            
-    
-            # Get User State
-            s = bot.states.get(user)
-            if s is None:
-                bot.states[user] = State(user, bot)
-                s = bot.states[user]
-                logger.debug(f'Regsitering {user}')
 
-            identifier = message_identifier(
-                channel_id=channel_id, 
-                message_id=message_id
+            w = PinPanel(
+                channel_id=channel_id,
+                message_id=message_id,
+                user=user,
             )
+            
+            
+            s.pins[identifier] = z
+            s.state[identifier] = w
+            
+            logger.debug(f's.pins: {s.pins}')
+            logger.debug(f's.state: {s.state}')
 
-            z = await s.get(identifier)
+        else:
 
-            if z is not None: result = await z.on_reaction_add(emoji, bot)
-
-                
+            # Now handle the interaction for any generic tracked object
+            z = await s.fetch_tracker(identifier)
+            if z is not None: await z.on_reaction_add(emoji, bot)
 
 
 @bot.event
@@ -628,6 +614,15 @@ async def on_raw_reaction_remove(payload):
 
     if user != str(bot.user.id):
 
+        s = bot.states.get(user)
+        if s is None:
+            bot.states[user] = State(user, bot)
+            s = bot.states[user]
+
+        identifier = message_identifier(
+            channel_id=channel_id, message_id=message_id
+        )
+
         if emoji == STAR_EMOJI:
 
             """
@@ -635,13 +630,17 @@ async def on_raw_reaction_remove(payload):
             """
             logger.debug(f"{STAR_EMOJI} removal from {display_name}")
 
-            remove_pin_args = {
-                "user": user,
-                "payload": {"channel_id": channel_id, "message_id": message_id},
-            }
+            try:
+                z = s.state.pop(identifier)
+            except KeyError:
+                pass
 
-            result = await UserPins.remove_pin(**remove_pin_args)
-            logger.debug(f"Removing Pin: {result}")
+            try:
+                z = s.pins.pop(identifier)
+            except KeyError:
+                pass
+
+
 
             # Now find the message and unreact.
             await react_to_message(
@@ -653,13 +652,7 @@ async def on_raw_reaction_remove(payload):
             )
         else:
 
-            x = State(user, bot)
-
-            identifier = message_identifier(
-                channel_id=channel_id, message_id=message_id
-            )
-
-            z = await x.get(identifier)
+            z = s.state.get(identifier)
 
             if z is not None:
 
@@ -668,7 +661,7 @@ async def on_raw_reaction_remove(payload):
 
 @bot.event
 async def on_raw_message_edit(payload):
-    
+
     channel_id = payload.channel_id
     message_id = payload.message_id
 
@@ -682,42 +675,54 @@ async def on_raw_message_edit(payload):
 
     full = await partial.fetch()
     u = str(full.author.id)
-    
+
     if u != bot.user.id:
-        
+
         s = bot.states.get(u)
-        if s is None: 
+        if s is None:
             bot.states[u] = State(u, bot)
             s = bot.states[u]
-            logger.debug(f'Registering {u}')
+            logger.debug(f"Registering {u}")
 
         identifier = message_identifier(channel_id=channel_id, message_id=message_id)
-    
-        z = await s.get(identifier)  # some kind of TrackedMessage class
+
+        z = s.state.get(identifier)
 
         if z is not None:
 
-            result = await z.on_edit(after=full.content, bot=bot)  # this might be empty.
-
-            if result["memory"]:
-                print(f"dict(z): {dict(z)}")
-                s.state[identifier] = dict(z)
-                
+            await z.on_edit(after=full.content, bot=bot)  # this might be empty.
 
 
+@bot.event
+async def on_command(ctx):
+    fulluser = f"{ctx.author} -> {ctx.author.id}"
+
+    logger.info(f'{ctx.author} invoked "{ctx.command}" w/ args {ctx.args[1:]}.')
+    #logger.debug(f"{fulluser}")
+
+
+@bot.event
+async def on_command_completion(ctx):
+    """
+    Increments the user's config.usage and config.last_used.
+    """
+    userid = str(ctx.author.id)
+    Configuration.incrementUserConfig(str(userid))
 
 def _terminate_bot(signal, frame):
-    logger.debug(f'Terminating bot: {str(bot.user.id)}')
+    logger.debug(f"Terminating bot: {str(bot.user.id)}")
     print(bot.states)
-    result = save_states(bot)
-    logger.debug('Saving...')
     
+    for (u, s) in bot.states.items():
+        print(s.state)
+        s.save()
     
+    logger.debug("Saving...")
+
     sys.exit(0)
 
+
 signal.signal(signal.SIGINT, _terminate_bot)
-
-
 
 
 logger = logging.getLogger()

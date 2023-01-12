@@ -7,14 +7,21 @@ import discord
 class StarredMessage:
     
     
-        def __init__(self, channel_id, message_id, cache=None):
+        def __init__(self, channel_id, 
+                     message_id, 
+                     created_date = current_time(),
+                     created_unix_date = epoch(),
+                     cache=None):
+            
             
             self.channel_id = channel_id
             self.message_id = message_id 
             self.cache = cache
             
-            self.created_date = current_time()
-            self.created_unix_date = epoch_delta_milliseconds()
+            self.created_date = created_date
+            self.created_unix_date = created_unix_date
+            
+            logger.debug(f'Calling StarredMessage Constructor with {channel_id},{message_id}')
 
         async def refresh(self, bot):
 
@@ -48,7 +55,7 @@ class StarredMessage:
                             "status": "failure",
                             "msg": list_printer([str(z) for z in E.args]),
                             "updated": current_time(),
-                            "updated_unix": epoch_delta_milliseconds(),
+                            "updated_unix": epoch(),
                         }
                         
                 logger.warning(f"Problem occured with refreshing pin: {self.cache['msg']}")
@@ -57,7 +64,7 @@ class StarredMessage:
                 # Successful
                 identifier = message_identifier(self.channel_id, self.message_id)
 
-                logger.debug(f"Fetching message: {identifier}")
+                logger.debug(f"Success in Refreshing Pin: {identifier}")
 
                 self.cache = {
                     "status": "success",
@@ -67,7 +74,7 @@ class StarredMessage:
                     "date_sent": fmt_date(full_message.created_at),
                     "date_sent_unix": "",
                     "updated": current_time(),
-                    "updated_unix": epoch_delta_milliseconds(),
+                    "updated_unix": epoch(),
                 }
 
         def __iter__(self):
