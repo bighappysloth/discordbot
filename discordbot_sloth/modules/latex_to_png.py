@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 __TEX_OUT_DIRECTORY__ = "latex_out"
 
 COMMAND_PDF_COMPILE = (
-    'latexmk -quiet -silent -cd -f -interaction=nonstopmode -xelatex "{0}"'
+    'latexmk -quiet -silent -cd -f -interaction=nonstopmode -xelatex -file-line-error "{0}"'
 )
 
 COMMAND_CLEANUP1 = 'latexmk -quiet -silent-cd -c "{0}"'  # does not remove pdf files
@@ -25,18 +25,20 @@ COMMAND_CLEANUP2 = 'latexmk -quiet -silent -cd -C "{0}"'  # removes pdf files as
 
 COMMAND_PNG_CONVERT = 'convert -density {0}  -colorspace RGB -alpha opaque -background white  -quality {1} "{2}" "{3}"'
 
-COMMAND_CLEANUP3 = "latexmk -c -cd -f {}/"
+COMMAND_CLEANUP3 = 'latexmk -C -cd -f "{0}"'
 
 COMMAND_IMG_CONVERT_WITHTRIM = 'convert -trim -density {0} -quality {1} "{2}" "{3}"'
 
 __TEX_LOG__ = {
     "start": {
-        "in_file": r"\typeout{==== LOG FILE START ====}",
+        "in_file": "\n" + r"\typeout{==== LOG FILE START ====}",
         "in_log": r"==== LOG FILE START ====",
+        "in_log_2": r"\typeout{==== LOG FILE START ====}",
     },
     "end": {
-        "in_file": r"\typeout{==== LOG FILE END ====}",
+        "in_file": "\n" + r"\typeout{==== LOG FILE END ====}",
         "in_log": r"==== LOG FILE END ====",
+        "in_log_2": r"\typeout{==== LOG FILE END ====}",
     },
 }
 
@@ -83,10 +85,17 @@ def return_latex_log(log_location: Path):
     with log_location.open("r") as log_file:
         temp = log_file.readlines()
 
-        x = [a.strip() for a in temp]  # remove whitespace \n and \t
-        start = x.index(__TEX_LOG__["start"]["in_log"])
-        end = x.index(__TEX_LOG__["end"]["in_log"])
-        return list_printer(temp[start + 1 : end])
+        z = [a.strip() for a in temp]  # remove whitespace \n and \t
+
+        
+        
+        i = 0
+        while not z[i].startswith(r"./Snipp"):
+            i = i + 1
+        num_lines_to_dump = 3
+        end = min(i + num_lines_to_dump, len(z))
+        z = z[i:end]
+        return list_printer(z)
 
 
 async def run_shell_command(shell_command):
@@ -151,7 +160,7 @@ async def latex_to_png_converter(
     with open(p, "w") as texFile:
         file_contents = (
             file_contents
-            + "\n"
+            + "\n\n"
             + __TEX_LOG__["start"]["in_file"]
             + TEX_DELIMITERS[tex_mode](userInput)
             + "\n"
@@ -169,72 +178,81 @@ async def latex_to_png_converter(
     image_path = p.parent / image_fname
     pdf_path = p.parent / pdf_fname
 
+    tex_log = {}
+
     try:
         logger.debug(f"latex_to_png shell: {COMMAND_PDF_COMPILE.format(p)}")
         await run_shell_command(COMMAND_PDF_COMPILE.format(p))
     except subprocess.TimeoutExpired:
-        return {\
-            "status": "error", 
-            "reason": "Timeout Exceeded when compiling PDF."
-        }
+        return {"status": "error", "reason": "Timeout Exceeded when compiling PDF."}
     except subprocess.CalledProcessError:  # try to force it
-        
-        log_location = Path(str(tex_fname[:-4]) + r".log")
+        print('Return code 1')
+        log_location = __DATA_PATH__ / tex_dir / Path(str(tex_fname[:-4]) + r".log")
         z = return_latex_log(log_location)
 
         # Now attempt to fetch image.
-        return {
-            "status": "failure",
-            "reason": "Failure to compile PDF with xelatex. See log with details.",
-            "log_path": p.parent / str(tex_fname[:-4] + r".log"),
-            "log": z,
-            "image_path": image_path if Path(image_path).exists() else None,
-        }
+        
+        tex_log["log"] = z
+        tex_log["log_path"] = log_location
 
-    try:
-        await run_shell_command(
-            COMMAND_PNG_CONVERT.format(DENSITY, QUALITY, pdf_path, image_path)
-        )
-    except subprocess.TimeoutExpired:
-        return {
-            "status": "error",
-            "reason": "Timeout Exceeded when converting PDF to PNG",
-            "image_path": image_path if Path(image_path).exists() else None,
-        }
-    except subprocess.CalledProcessError:
-        return {
-            "status": "error",
-            "reason": "Failure to convert PDF to PNG",
-            "image_path": image_path if Path(image_path).exists() else None,
-        }
+    finally:
 
-    # latexmk Cleanup delete all aux files.
-    try:
-        # cleans up the parent folder
-        await run_shell_command(COMMAND_CLEANUP3.format(p.parent))
+        try:
+            await run_shell_command(
+                COMMAND_PNG_CONVERT.format(DENSITY, QUALITY, pdf_path, image_path)
+            )
+        except subprocess.TimeoutExpired:
+            return {
+                "status": "error",
+                "reason": "Timeout Exceeded when converting PDF to PNG",
+                "image_path": image_path if Path(image_path).exists() else None,
+            }
+        except subprocess.CalledProcessError:
+            return {
+                "status": "error",
+                "reason": "Failure to convert PDF to PNG",
+                "image_path": image_path if Path(image_path).exists() else None,
+            }
 
-    except subprocess.TimeoutExpired:
-        return {
-            "status": "error",
-            "msg": "Timeout exceeded when performing latexmk cleanup.",
-        }
-    except subprocess.CalledProcessError:
-        return {
-            "status": "failure",
-            "msg": "latexmk cleanup failed.",
-            "image_path": image_path if Path(image_path).exists() else None,
-        }
+        # latexmk Cleanup delete all aux files.
+        try:
+            # cleans up the parent folder
+            
+            clean_location = str(pdf_path.resolve())
+            await run_shell_command(COMMAND_CLEANUP3.format(clean_location))
 
-    # Return paths, trust on the caller to keep track of whether they used the flag 'save_tex'
-    return {
-        "status": "success",
-        "image_path": image_path,
-        "pdf_path": pdf_path,
-        "tex_path": p,
-    }
+        except subprocess.TimeoutExpired:
+            return {
+                "status": "error",
+                "msg": "Timeout exceeded when performing latexmk cleanup.",
+            }
+        except subprocess.CalledProcessError:
+            return {
+                "status": "failure",
+                "msg": "latexmk cleanup failed.",
+                "image_path": image_path if Path(image_path).exists() else None,
+            }
+
+        # Return paths, trust on the caller to keep track of whether they used the flag 'save_tex'
+        if not tex_log.get("log"):
+            return {
+                "status": "success",
+                "image_path": image_path,
+                "pdf_path": pdf_path,
+                "tex_path": p,
+            }
+        else:
+            return {
+                "status": "failure",
+                "reason": "Failure to compile PDF with xelatex. See log with details.",
+                "image_path": image_path,
+                "log": tex_log["log"],
+                "log_path": tex_log["log_path"],
+            }
 
 
 if __name__ == "__main__":
+    
     loop = asyncio.get_event_loop()
     coroutine = latex_to_png_converter(r"\dfrac{\alpha}{2}", tex_mode="display")
 
