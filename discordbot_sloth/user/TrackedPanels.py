@@ -13,19 +13,18 @@ from discordbot_sloth.user.user_configuration import Configuration
 
 class PinPanel(AbstractPanel):
     """Class that monitors the removal of reactions for a Pin
-    
+
         # The date when the user created this pin
         # When we init a new pin, leave the two fields blank in the constructor.
-        
+
 
         # The Pin that is the AbstractPanel should be different than the 'pins' saved within user_state.json.
-        
+
         # One handles the interactions, the other is the cache.
     Args:
         AbstractPanel (_type_): _description_
     """
-    
-    
+
     def __init__(
         self,
         channel_id,
@@ -34,8 +33,6 @@ class PinPanel(AbstractPanel):
         created_date=None,
         created_unix_date=None,
     ):
-
-        
 
         # These two fields define the partial that we can refresh()
         self.channel_id = channel_id
@@ -46,16 +43,12 @@ class PinPanel(AbstractPanel):
         self.user = user
         self.dead = False
 
-
     async def on_reaction_add(self, emoji, bot):
         pass
-    
-    
 
     async def on_reaction_remove(self, emoji, bot):
         # The removal should be handled by the main event loop.
         pass
-
 
     async def on_edit(self, after, bot):
         pass
@@ -69,26 +62,30 @@ class PinPanel(AbstractPanel):
         temp = super().timestamp()
 
         for (k, v) in temp.items():
-            out['memory'][k] = v
+            out["memory"][k] = v
 
         for (k, v) in out.items():
             yield (k, v)
 
 
-
 class ParrotMessage(AbstractPanel):
-    def __init__(self, channel_id, message_id, word=None, 
-                 created_date = None, created_unix_date = None):
-        
+    def __init__(
+        self,
+        channel_id,
+        message_id,
+        word=None,
+        created_date=None,
+        created_unix_date=None,
+    ):
+
         # describes the channel_id, and the message_id of the parrot (the bot's reply)
-        
+
         super().__init__(created_date, created_unix_date)
-        
+
         self.channel_id = channel_id
         self.message_id = message_id
         self.word = word
-        
-        self.dead = False
+        self.dead = False # deprecated
 
     async def on_edit(self, after, bot):
 
@@ -141,18 +138,20 @@ class ParrotMessage(AbstractPanel):
         }
         temp = super().timestamp()
         for (k, v) in temp.items():
-            out['memory'][k] = v
+            out["memory"][k] = v
         for (k, v) in out.items():
             yield (k, v)
 
 
 class LatexImage(AbstractPanel):
-    def __init__(self, channel_id, message_id, user, created_date = None, created_unix_date = None):
+    def __init__(
+        self, channel_id, message_id, user, created_date=None, created_unix_date=None
+    ):
         super().__init__(created_date, created_unix_date)
         self.channel_id = channel_id
         self.message_id = message_id
         self.user = user
-        
+
         self.dead = False
 
     async def on_reaction_add(self, emoji, bot):
@@ -162,7 +161,8 @@ class LatexImage(AbstractPanel):
         pass
 
     async def on_edit(self, after, bot):
-
+        # remember to strip the !t
+        after = after[2:] if after.startswith(r'!t') else after
         Config = Configuration(self.user)
         result = await latex_to_png_converter(
             after,
@@ -186,10 +186,11 @@ class LatexImage(AbstractPanel):
         }
 
         if result["status"] == "success":
+
             im_location = result["image_path"]
             with Path(im_location).open("rb") as fp:
                 await full.edit(content=formatting["success"])
-                await full.add_files(discord.FIle(fp, im_location))
+                await full.add_files(discord.File(fp, str(im_location)))
 
         else:  # Either compilation or PNG error.
 
@@ -202,52 +203,56 @@ class LatexImage(AbstractPanel):
                 im_location = result["image_path"]
                 if Path(im_location):
                     with Path(im_location).open("rb") as fp:
-                        await full.add_files(discord.File(fp, im_location))
+                        await full.add_files(discord.File(fp, str(im_location)))
+            
             else:  # png error
                 logger.warning('PNG Failure: {result["msg"]}')
                 await full.edit(content=formatting["png_fail"].format(result["msg"]))
 
-        def __iter__(self):
-            out = {
-                "type": "latex_image",
-                "memory": {
-                    "channel_id": self.channel_id,
-                    "message_id": self.message_id,
-                    "user": self.user,
-                },
-            }
-            temp = super().timestamp()
-            for (k, v) in temp.items():
-                out['memory'][k] = v
-            for (k, v) in out.items():
-                yield (k, v)
-                
-            for k, v in out.items():
-                yield (k, v)
+
+    def __iter__(self):
+        out = {
+            "type": "latex_image",
+            "memory": {
+                "channel_id": self.channel_id,
+                "message_id": self.message_id,
+                "user": self.user,
+            },
+        }
+        temp = super().timestamp()
+        for (k, v) in temp.items():
+            out["memory"][k] = v
+        for (k, v) in out.items():
+            yield (k, v)
+
+        for k, v in out.items():
+            yield (k, v)
 
 
 class ShowPinsPanel(AbstractPanel):
     @staticmethod
-    def build_pages(pins, author_name, condition=lambda a: True,oldest_first=False):
-
-        z = [v for k, v in pins.items()]
-        list_of_StarredMessages = list(filter(condition, z))
+    def build_pages(pins, author_name, condition=lambda a: True, oldest_first=False):
+        print(pins)
+        list_of_StarredMessages = list(filter(condition, pins))
 
         # Sorting by descending StarredMessage (created_unix_date).
         # if oldest_first, then use ascending order
-        list_of_StarredMessages.sort(reverse=not oldest_first)  
+        list_of_StarredMessages.sort(reverse=not oldest_first)
         pages = []
 
-        A = [f"{i+1}) {list_of_StarredMessages[i]}" for i in range(0, len(list_of_StarredMessages)) ]
-                
-        print("A: \n")
-        for z in A: print(z, end="======")
+        A = [
+            f"{i+1}) {list_of_StarredMessages[i]}\n"
+            for i in range(0, len(list_of_StarredMessages))
+        ]
 
-        
+        print("A: \n")
+        for z in A:
+            print(z, end="======")
+
         if list_of_StarredMessages:
-            
+
             numpages = int(len(A) / 3) + 1
-            
+
             delimiters = {
                 "start_firstpage": "{0} List of Pins for {1}\n",
                 "start": "{0} List of Pins for {1}\n",
@@ -272,7 +277,15 @@ class ShowPinsPanel(AbstractPanel):
 
         return pages
 
-    def __init__(self, channel_id, message_id, pages, current_page, created_date = None, created_unix_date = None):
+    def __init__(
+        self,
+        channel_id,
+        message_id,
+        pages,
+        current_page,
+        created_date=None,
+        created_unix_date=None,
+    ):
 
         """Builds the required pages and saves to memory
 
@@ -312,7 +325,7 @@ class ShowPinsPanel(AbstractPanel):
 
         """
         super().__init__(created_date, created_unix_date)
-        
+
         # Build the pages first
 
         self.channel_id = channel_id
@@ -371,6 +384,6 @@ class ShowPinsPanel(AbstractPanel):
         }
         temp = super().timestamp()
         for (k, v) in temp.items():
-            out['memory'][k] = v
+            out["memory"][k] = v
         for (k, v) in out.items():
             yield (k, v)

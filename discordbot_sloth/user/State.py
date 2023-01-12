@@ -5,8 +5,9 @@ from discordbot_sloth.helpers.check_dir import *
 from discordbot_sloth.helpers.emoji_defaults import *
 from discordbot_sloth.helpers.RegexReplacer import *
 from discordbot_sloth.helpers.TimeFormat import *
-from discordbot_sloth.user.TrackedPanels import LatexImage, ParrotMessage, ShowPinsPanel
 from discordbot_sloth.user.StarredMessage import StarredMessage
+from discordbot_sloth.user.TrackedPanels import (LatexImage, ParrotMessage,
+                                                 ShowPinsPanel)
 
 __STATE_FOLDER_NAME__ = "pins"
 
@@ -34,7 +35,7 @@ class State:
 
                 try:
                     temp = json.loads(fp.read())
-                    
+
                     # Loading State
                     try:
                         A = dict(temp["state"])
@@ -55,34 +56,34 @@ class State:
                     # Loading Pins
                     try:
                         self.pins = dict(temp["pins"])
-                        A = dict(temp["pins"])  
+                        A = dict(temp["pins"])
 
                         # Create Pin Objects Here
                         self.pins = {(k, StarredMessage(**v)) for k, v in A.items()}
                         self.pins = dict()
                         for k, v in A.items():
                             self.pins[k] = StarredMessage(**v)
-                        
+
                         # logger.debug(f'{self.user} pins: {len(self.pins)}')
-                        
+
                     except KeyError:  # No 'pins' field
                         self.pins = dict()
 
-                        
                 except json.JSONDecodeError:  # empty file
                     self.__init_empty_config__()
                     self.__setup__()  # reload
-                    
+
                 finally:
                     fp.close()
 
         except FileNotFoundError:  # no file
             self.__init_empty_config__()
             self.__setup__()  # reload
-            
-        if isinstance(self.state, set): self.state = dict()
-        if isinstance(self.pins, set): self.pins = dict()
-        
+
+        if isinstance(self.state, set):
+            self.state = dict()
+        if isinstance(self.pins, set):
+            self.pins = dict()
 
     def __init__(self, user, bot):
         logger.debug(f"Init user: {user}")
@@ -101,15 +102,14 @@ class State:
 
         Returns:
             AbstractPanel: a subclass of AbstractPanel.
-            
+
         """
-        
 
         # TODO: implement sorting by type.
         # i.e get all by type
 
         if identifier:
-            x = self.state.get(identifier)  
+            x = self.state.get(identifier)
             if x is None:
                 return x
 
@@ -122,33 +122,31 @@ class State:
         else:
             # User does not provide an identifier
             if type:
-                if type == 'parrot_message':
+                if type == "parrot_message":
                     y = lambda a: isinstance(a, ParrotMessage)
-                elif type == 'latex_image':
+                elif type == "latex_image":
                     y = lambda a: isinstance(a, LatexImage)
-                elif type == 'pins_panel':
+                elif type == "pins_panel":
                     y = lambda a: isinstance(a, ShowPinsPanel)
-                
+
                 z = list(self.state.values())
                 z = list(filter(y, z))
                 return z
-                
 
     def __iter__(self):
         out = {
-            'display_name': self.display_name,
-            'state': dict((x, dict(y)) for x, y in self.state.items() ),
-            'pins': dict((x, dict(y)) for x, y in self.pins.items() )
+            "display_name": self.display_name,
+            "state": dict((x, dict(y)) for x, y in self.state.items()),
+            "pins": dict((x, dict(y)) for x, y in self.pins.items()),
         }
         for k, v in out.items():
             yield (k, v)
+
     # No need a separate edit method
 
     def save(self):
 
         # Clean up Dead Panels
-        
-        
 
         try:
 
@@ -159,16 +157,16 @@ class State:
             # }
 
             A = dict(self)
-            print(f'Dict for user {self.user}: {A}')
+            print(f"Dict for user {self.user}: {A}")
             p = Path(State.state_path(self.user))
-            logger.debug(f'Saving to {str(p)}')
+            logger.debug(f"Saving to {str(p)}")
             with p.open("w") as fw:
                 fw.write(json.dumps(A, sort_keys=True, indent=4))
                 fw.flush()
                 fw.close()
-            logger.debug(f'Finished Saving to {p}')
+            logger.debug(f"Finished Saving to {p}")
         except Exception as E:
-            logger.warning(f'Something went wrong... {E.args}')
+            logger.warning(f"Something went wrong... {E.args}")
             return {"status": "failure", "msg": list_printer([str(z) for z in E.args])}
         finally:
             return {
@@ -179,7 +177,7 @@ class State:
     def __str__(self):
         z = self.state
         s = self.pins
-        x = f'States: {z}\nPins: {s}'
+        x = f"States: {z}\nPins: {s}"
         return x
 
     def add_pin(self, identifier, bot):

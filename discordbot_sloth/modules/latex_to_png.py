@@ -205,13 +205,13 @@ async def latex_to_png_converter(
             return {
                 "status": "error",
                 "reason": "Timeout Exceeded when converting PDF to PNG",
-                "image_path": image_path if Path(image_path).exists() else None,
+                "image_path": str(image_path) if Path(image_path).exists() else None,
             }
         except subprocess.CalledProcessError:
             return {
                 "status": "error",
                 "reason": "Failure to convert PDF to PNG",
-                "image_path": image_path if Path(image_path).exists() else None,
+                "image_path": str(image_path) if Path(image_path).exists() else None,
             }
 
         # latexmk Cleanup delete all aux files.
@@ -230,14 +230,14 @@ async def latex_to_png_converter(
             return {
                 "status": "failure",
                 "msg": "latexmk cleanup failed.",
-                "image_path": image_path if Path(image_path).exists() else None,
+                "image_path": str(image_path) if Path(image_path).exists() else None,
             }
 
         # Return paths, trust on the caller to keep track of whether they used the flag 'save_tex'
         if not tex_log.get("log"):
             return {
                 "status": "success",
-                "image_path": image_path,
+                "image_path": str(image_path),
                 "pdf_path": pdf_path,
                 "tex_path": p,
             }
@@ -245,7 +245,7 @@ async def latex_to_png_converter(
             return {
                 "status": "failure",
                 "reason": "Failure to compile PDF with xelatex. See log with details.",
-                "image_path": image_path,
+                "image_path": str(image_path),
                 "log": tex_log["log"],
                 "log_path": tex_log["log_path"],
             }

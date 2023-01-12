@@ -70,4 +70,11 @@ class ConcreteClass(AbstractClass):
             yield (k, v)
 
 if __name__ == '__main__':
-    pass
+    x = ConcreteClass(1)
+    y = ConcreteClass(2)
+    A = [x, y]
+    B = list(filter(lambda z: z.val == 1, A))
+    
+    print(B)
+    for z in B:
+        print(z.val)
