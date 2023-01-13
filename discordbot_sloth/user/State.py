@@ -128,7 +128,9 @@ class State:
                     y = lambda a: isinstance(a, LatexImage)
                 elif type == "pins_panel":
                     y = lambda a: isinstance(a, ShowPinsPanel)
-
+                else:
+                    # None others are filtered through.
+                    return []
                 z = list(self.state.values())
                 z = list(filter(y, z))
                 return z

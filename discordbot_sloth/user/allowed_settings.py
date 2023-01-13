@@ -18,11 +18,14 @@ def helper_range_check(x,
             raise TypeError(
                 f'Value {user_option} must be of type {required_type}.')
         else:
-            return z
+            if not (min <= z and z <= max):
+                raise ValueError(
+                f'Value {user_option} must lie between {min} and {max}.')
+            else:
+                return z
+            
 
-    if not (min <= x and x <= max):
-        raise ValueError(
-            f'Value {user_option} must lie between {min} and {max}.')
+    
 
 
 def helper_set_check(x,
