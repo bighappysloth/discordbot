@@ -668,14 +668,16 @@ async def on_command_completion(ctx):
 def _terminate_bot(signal, frame):
     logger.debug(f"Terminating bot: {str(bot.user.id)}")
     
+    try:
+        for (u, s) in bot.states.items():
+            logger.debug(f'Saving user {u}')
+            s.save()
 
-    for (u, s) in bot.states.items():
-        logger.debug(f'Saving user {u}')
-        s.save()
-
-    logger.debug("Saving...")
-
-    sys.exit(0)
+        logger.debug("Saving...")
+    except Exception as E:
+        logger.debug(f'Error when quitting bot: {str(E)}')
+    finally:
+        sys.exit(0)
 
 
 signal.signal(signal.SIGINT, _terminate_bot)
