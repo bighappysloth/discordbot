@@ -8,6 +8,9 @@
     \renewcommand{\Im}{\operatorname{Im}} % Imaginary Part
     \newcommand{\defined}{\coloneqq} % := sign
     
+    \providecommand{\induces}{{\:\looparrowright\:}}
+    \providecommand{\inducedby}{{\:\looparrowleft\:}}
+
     % Fonts
     \newcommand{\bb}[1]{\mathbb{#1}} %shortcut for mathbb
     \renewcommand{\cal}[1]{\mathcal{#1}} %shortcut for mathcal
@@ -23,6 +26,8 @@
     \newcommand{\natplus}{\mathbb{N}}
     \newcommand{\integer}{\mathbb{Z}}
     \newcommand{\rat}{\mathbb{Q}}
+    \providecommand{\borel}{{\mathbb{B}}}
+    
     
     % Operators
     \newcommand{\range}{\operatorname{range}} %Range of a function
@@ -35,7 +40,7 @@
     \newcommand{\image}{\operatorname{im}} %Image of a linear map or any map in general
     
     \newcommand{\least}{\operatorname{least}} %Well Ordering Property
-    %\providecommand{\diam}{\operatorname{diam}} %diameter of a set
+    \providecommand{\diam}{\operatorname{diam}} %diameter of a set
     
     % Norms
     \newcommand{\norm}[1]{\lVert {#1} \rVert} % || . ||
@@ -49,7 +54,7 @@
     \newcommand{\cl}[1]{\overline{#1}} % Closure of a set
     \newcommand{\clc}[1]{(\overline{#1})^c} %  Complement of the Closure
     \newcommand{\Epsilon}{\mathcal{E}} % Base, generating set for Topology and Sigma algebras
-    \newcommand{\cpt}{\quaver} %Compact set
+    \newcommand{\cpt}{\musEighth} % Compact set, see old command \quaver does not scale properly in Math Mode.
     
     % Fourier Analysis
     \newcommand{\szz}{\mathcal{S}} % Schwartz Space
@@ -82,6 +87,11 @@
     \providecommand{\row}{\operatorname{row}}
     \providecommand{\lin}{\operatorname{lin}}
     \providecommand{\span}{\operatorname{span}}
+
+    % Condensation Points and Cardinality
+    \providecommand{\cond}{{\operatorname{cond}}}
+    \providecommand{\card}{\operatorname{card}}
+
 
 % Settings
 \setlength{\parindent}{0pt} %default no indent

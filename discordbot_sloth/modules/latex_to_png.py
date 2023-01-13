@@ -184,7 +184,7 @@ async def latex_to_png_converter(
         logger.debug(f"latex_to_png shell: {COMMAND_PDF_COMPILE.format(p)}")
         await run_shell_command(COMMAND_PDF_COMPILE.format(p))
     except subprocess.TimeoutExpired:
-        return {"status": "error", "reason": "Timeout Exceeded when compiling PDF."}
+        return {"status": "error", "msg": "Timeout Exceeded when compiling PDF."}
     except subprocess.CalledProcessError:  # try to force it
         print('Return code 1')
         log_location = __DATA_PATH__ / tex_dir / Path(str(tex_fname[:-4]) + r".log")
@@ -204,13 +204,13 @@ async def latex_to_png_converter(
         except subprocess.TimeoutExpired:
             return {
                 "status": "error",
-                "reason": "Timeout Exceeded when converting PDF to PNG",
+                "msg": "Timeout Exceeded when converting PDF to PNG",
                 "image_path": str(image_path) if Path(image_path).exists() else None,
             }
         except subprocess.CalledProcessError:
             return {
                 "status": "error",
-                "reason": "Failure to convert PDF to PNG",
+                "msg": "Failure to convert PDF to PNG",
                 "image_path": str(image_path) if Path(image_path).exists() else None,
             }
 
@@ -244,7 +244,7 @@ async def latex_to_png_converter(
         else:
             return {
                 "status": "failure",
-                "reason": "Failure to compile PDF with xelatex. See log with details.",
+                "msg": "Failure to compile PDF with xelatex. See log with details.",
                 "image_path": str(image_path),
                 "log": tex_log["log"],
                 "log_path": tex_log["log_path"],

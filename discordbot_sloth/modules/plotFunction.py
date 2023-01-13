@@ -118,7 +118,7 @@ async def gen_plot(args):
     try:
         fig.savefig(f"{plot_image_path}", transparent=false, backend="pgf", dpi=300)
     except Exception as E:
-        return {"status": "failure", "reason": E.args}
+        return {"status": "failure", "msg": E.args}
     return {
         "status": "success",
         "image_path": plot_image_path,

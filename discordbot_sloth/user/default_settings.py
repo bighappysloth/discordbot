@@ -49,7 +49,7 @@ DEFAULT_CONFIG = {
     },
 }
 
-with __DEFAULT_CONFIG_PATH__.open("w") as f:
+with __DEFAULT_CONFIG_PATH__.open("w+") as f:
     f.write(json.dumps(DEFAULT_CONFIG))
     logger.debug(f"Writing to {__DEFAULT_CONFIG_PATH__}...")
     f.close()
