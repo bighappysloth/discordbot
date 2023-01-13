@@ -7,11 +7,12 @@ discordbot_sloth/data/latex_out/Snipp*
 discordbot_sloth/data/latex_out/out/*
 discordbot_sloth/data/pins/*
 discordbot_sloth/data/user_settings/*
-!discordbot_sloth/data/user_settings/default_settings.json
+
+
 
 
 # logs
-discordbot_sloth/discord.log
+
 __pycache__/
 discordbot_sloth/__pycache__
 discordbot_sloth/helpers/__pycache__
@@ -26,3 +27,7 @@ dist/
 #
 ./.vscode
 __pycache__
+!discordbot_sloth/data/user_settings/default_settings.json
+discordbot_sloth/discord.log
+.vscode/settings.json
+discordbot_sloth/discord.log

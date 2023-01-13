@@ -654,7 +654,7 @@ handler_stdout.setFormatter(handler_formatting)
 
 logger.addHandler(handler_stdout)
 handler_filelog = logging.FileHandler(
-    filename="discord.log", encoding="utf-8", mode="w"
+    filename='discord.log', encoding="utf-8", mode="w"
 )
 
 bot.run(__DISCORD_API_KEY__, log_handler=handler_filelog)
