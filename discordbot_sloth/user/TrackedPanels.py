@@ -249,9 +249,9 @@ class ShowPinsPanel(AbstractPanel):
         for z in A:
             print(z, end="======")
 
-        if list_of_StarredMessages:
+        if A: # if len(A) != 0
 
-            numpages = int(len(A) / 3) + 1
+            numpages = int((len(A)-1) / 3) + 1
 
             delimiters = {
                 "start_firstpage": "{0} List of Pins for {1}\n",
