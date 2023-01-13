@@ -31,6 +31,38 @@ from discordbot_sloth.user.TrackedPanels import (
 )
 from discordbot_sloth.user.user_configuration import *
 
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+
+handler_stdout = logging.StreamHandler(sys.stdout)
+handler_stdout.setLevel(logging.DEBUG)
+handler_formatting = logging.Formatter(
+    "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+
+
+handler_stdout.setFormatter(handler_formatting)
+
+logger.addHandler(handler_stdout)
+handler_filelog = logging.FileHandler(
+    filename='discord.log', encoding="utf-8", mode="w"
+)
+
+def _terminate_bot(signal, frame):
+    logger.debug(f"Terminating bot: {str(bot.user.id)}")
+    print(bot.states)
+
+    for (u, s) in bot.states.items():
+        logger.debug(f'Saving user {u}')
+        s.save()
+
+    logger.debug("Saving...")
+
+    sys.exit(0)
+
+
+signal.signal(signal.SIGINT, _terminate_bot)
+
 # Bot Subscription to Particular Events
 intents = discord.Intents.default()
 intents.message_content = True
@@ -41,6 +73,7 @@ intents.members = True
 intents.guilds = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
+bot.run(__DISCORD_API_KEY__, log_handler=handler_filelog)
 
 
 # Command Line Arguments for Function_Plotter
@@ -623,41 +656,8 @@ async def on_command_completion(ctx):
     Configuration.incrementUserConfig(str(userid))
 
 
-def _terminate_bot(signal, frame):
-    logger.debug(f"Terminating bot: {str(bot.user.id)}")
-    print(bot.states)
-
-    for (u, s) in bot.states.items():
-        print(s.state)
-        s.save()
-
-    logger.debug("Saving...")
-
-    sys.exit(0)
 
 
-signal.signal(signal.SIGINT, _terminate_bot)
-
-
-logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
-
-
-handler_stdout = logging.StreamHandler(sys.stdout)
-handler_stdout.setLevel(logging.DEBUG)
-handler_formatting = logging.Formatter(
-    "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
-
-
-handler_stdout.setFormatter(handler_formatting)
-
-logger.addHandler(handler_stdout)
-handler_filelog = logging.FileHandler(
-    filename='discord.log', encoding="utf-8", mode="w"
-)
-
-bot.run(__DISCORD_API_KEY__, log_handler=handler_filelog)
 
 
 # TODO: how to reply to the previous user DONE
