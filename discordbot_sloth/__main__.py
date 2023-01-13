@@ -48,21 +48,6 @@ handler_filelog = logging.FileHandler(
     filename='discord.log', encoding="utf-8", mode="w"
 )
 
-def _terminate_bot(signal, frame):
-    logger.debug(f"Terminating bot: {str(bot.user.id)}")
-    
-
-    for (u, s) in bot.states.items():
-        logger.debug(f'Saving user {u}')
-        s.save()
-
-    logger.debug("Saving...")
-
-    sys.exit(0)
-
-
-signal.signal(signal.SIGINT, _terminate_bot)
-
 # Bot Subscription to Particular Events
 intents = discord.Intents.default()
 intents.message_content = True
@@ -678,3 +663,19 @@ async def on_command_completion(ctx):
 # TODO Add workbook area
 
 # Simplify Function, collect polynomials
+
+
+def _terminate_bot(signal, frame):
+    logger.debug(f"Terminating bot: {str(bot.user.id)}")
+    
+
+    for (u, s) in bot.states.items():
+        logger.debug(f'Saving user {u}')
+        s.save()
+
+    logger.debug("Saving...")
+
+    sys.exit(0)
+
+
+signal.signal(signal.SIGINT, _terminate_bot)
