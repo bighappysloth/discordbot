@@ -50,7 +50,7 @@ handler_filelog = logging.FileHandler(
 
 def _terminate_bot(signal, frame):
     logger.debug(f"Terminating bot: {str(bot.user.id)}")
-    print(bot.states)
+    
 
     for (u, s) in bot.states.items():
         logger.debug(f'Saving user {u}')
