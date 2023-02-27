@@ -22,7 +22,7 @@ discord bot created during winter break
 - [] table writer
 - [] matrix parser
 
-- [] pseudo pins
+- [x] pseudo pins
 - [] more string utilities
     - [] [str] [num] [str]
     - [] pdf parser
@@ -45,6 +45,17 @@ discord bot created during winter break
     !plot -f [function] -xlimits [a,b] -grid [True/False] | plots function in latex notation. Default -xlimits = [-10,10].
     !t [latex_input] | creates png from latex_input. Can be configured with 'png_dpi', 'latex_mode', 'latex_preamble' within !config. 
     !time | gets current time (mostly for debugging purposes)
+    
+    
+ ## Basic Setup
+    Clone direcotry, requires python, imagemagick (for convert), and texlive. Uses xelatex.
+    The font used is Computer Modern, see
+        \usepackage{mlmodern}
+        \usepackage[T1]{fontenc}
+    There are non-standard latex packages that are used. Namely: lilyglyphs and musicography.
+    See https://ctan.math.ca/tex-archive/macros/unicodetex/latex/lilyglyphs/INSTALL for how to install them.
+    As of today (27 feb 2023) works fine on ubuntu.
+    
 
 ## Utilities
     - argparse_helpers.py creates subparsers and their commands by feeding it a json file.
