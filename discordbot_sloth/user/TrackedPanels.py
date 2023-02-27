@@ -213,7 +213,7 @@ class LatexImage(AbstractPanel):
                         await full.add_files(discord.File(fp, str(im_location)))
             
             else:  # png error
-                logger.warning('PNG Failure: {result["msg"]}')
+                logger.warning(f'PNG Failure: {result["msg"]}')
                 await full.edit(content=formatting["png_fail"].format(result["msg"]))
 
 

@@ -19,7 +19,7 @@ class State:
 
     def __init_empty_config__(self):
         with State.state_path(self.user).open("w") as fw:
-            print(f"Empty: {self.user}")
+            # print(f"Empty: {self.user}")
             x = dict()
             x["user"] = str(self.user)
             x["display_name"] = str(self.display_name)
@@ -65,7 +65,7 @@ class State:
                         for (k, v) in A.items():
                             self.pins[k] = StarredMessage(**v)
 
-                        logger.debug(f'{self.user} pins: {len(self.pins)}')
+                        # logger.debug(f'{self.user} pins: {len(self.pins)}')
 
                     except KeyError:  # No 'pins' field
                         self.pins = dict()
@@ -169,7 +169,7 @@ class State:
                 fw.write(json.dumps(A, sort_keys=True, indent=4))
                 fw.flush()
                 fw.close()
-            logger.debug(f"Finished Saving to {p}")
+            # logger.debug(f"Finished Saving to {p}")
         except Exception as E:
             logger.warning(f"Something went wrong... {E.args}")
             return {"status": "failure", "msg": list_printer([str(z) for z in E.args])}
