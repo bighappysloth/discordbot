@@ -2,15 +2,15 @@
 discord bot created during winter break
 
 ## Todo
--invoking !t with no args should cycle between latex_mode 
--allowed_setitngs.pys hould be responsible for type conversions as well.
+- invoking !t with no args should cycle between latex_mode (done)
+- allowed_setitngs.pys hould be responsible for type conversions as well.
 - custom preamble for tex
-- save the last 5 tex'd message IDs
+- save the last 5 tex'd message IDs (it currently saves all of them). 
 - finish toggle and domain restrictions for xprint_settings.use_title
 - allowed_settings should be upgraded, --> clean up allowed_settings.py with helper functions
 - remove reliance on bot_flags.py, and use !config over flags for each command.
 - fix user_configuration and its default assertions.
-- include __iter__ for Configuration class for Jsons, e.g json.dumps(Configuration(user), indent=4, sort_keys=True)
+- furnish dialog boxes, and panel templates for additional features
 
 ## Features
 - [x] latex to png
