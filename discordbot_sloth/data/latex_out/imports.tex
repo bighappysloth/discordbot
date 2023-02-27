@@ -1,6 +1,7 @@
 \usepackage{import}
 \import{./}{packages.tex}
 \import{./}{headers.tex}
+\import{./}{docinfo.tex}
 % Commands
 
     % Essentials
@@ -54,8 +55,7 @@
     \newcommand{\cl}[1]{\overline{#1}} % Closure of a set
     \newcommand{\clc}[1]{(\overline{#1})^c} %  Complement of the Closure
     \newcommand{\Epsilon}{\mathcal{E}} % Base, generating set for Topology and Sigma algebras
-    % \newcommand{\cpt}{\musEighth} % Compact set, see old command \quaver does not scale properly in Math Mode.
-    \newcommand{\cpt}{\copyright} %Compact set
+    \newcommand{\cpt}{\musEighth} % Compact set, see old command \quaver does not scale properly in Math Mode.
     
     % Fourier Analysis
     \newcommand{\szz}{\mathcal{S}} % Schwartz Space
@@ -90,7 +90,7 @@
     \providecommand{\span}{\operatorname{span}}
 
     % Condensation Points and Cardinality
-    \providecommand{\cond}{\operatorname{cond}}
+    \providecommand{\cond}{{\operatorname{cond}}}
     \providecommand{\card}{\operatorname{card}}
 
 

@@ -32,10 +32,13 @@
     \usepackage{datetime}
     \usepackage{datetime2}
     
-    % Music symbols
-    % \usepackage{fontspec} % Is necessary to access OpenType fonts 
-    % \usepackage{lilyglyphs} 
-    % \usepackage{musicography} % compact set \cpt
+    %Music symbols
+    \usepackage{fontspec} % Is necessary to access OpenType fonts 
+    \usepackage{lilyglyphs} 
+    \usepackage{musicography} % compact set \cpt
+    
+    \usepackage{caption}
+    \usepackage{subcaption}
     
     
     %Hyperlinks in PDFs and Table of Contents, eqref and ref URLs
@@ -53,3 +56,6 @@
         pdfpagemode=UseOutlines,    % this is the option you were lookin for
         pdfpagelayout=TwoPageRight
     }
+    \usepackage[noabbrev]{cleveref}
+
+
