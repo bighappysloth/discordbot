@@ -144,6 +144,8 @@ class ParrotMessage(AbstractPanel):
 
 
 class LatexImage(AbstractPanel):
+    # This is tracking the user's latex input in the form of !t
+    
     def __init__(
         self, channel_id, message_id, user, created_date=None, created_unix_date=None
     ):
@@ -161,21 +163,18 @@ class LatexImage(AbstractPanel):
         pass
 
     async def on_edit(self, after, bot):
-        # remember to strip the !t
-        after = after[2:] if after.startswith(r'!t') else after
-        Config = Configuration(self.user)
-        result = await latex_to_png_converter(
-            after,
-            DENSITY=int(Config.getEntry("png_dpi")["msg"]),
-            tex_mode=Config.getEntry("latex_mode")["msg"],
-            framing=Config.getEntry("framing")["msg"],
-        )
+        
+        
+        after = after[2:] if after.startswith(r'!t') else after         # remember to strip the !t
+        Config = Configuration(self.user)                               # Load Config
+        
 
         channel = bot.get_channel(self.channel_id)
         if not channel:
             channel = await bot.fetch_channel(self.channel_id)
 
-        partial = discord.PartialMessage(channel=channel, id=int(self.message_id))
+        partial = discord.PartialMessage(channel=channel, 
+                                         id=int(self.message_id))
 
         full = await partial.fetch()
 
@@ -185,11 +184,19 @@ class LatexImage(AbstractPanel):
             "png_fail": r"**PNG Error. Unrecoverable: ```{0}```**",
         }
 
+        result = await latex_to_png_converter(
+                    after,
+                    DENSITY=int(Config.getEntry("png_dpi")["msg"]),
+                    tex_mode=Config.getEntry("latex_mode")["msg"],
+                    framing=Config.getEntry("framing")["msg"],
+                )
         if result["status"] == "success":
 
             im_location = result["image_path"]
             with Path(im_location).open("rb") as fp:
                 await full.edit(content=formatting["success"])
+                
+                full = await full.remove_attachments(*full.attachments)
                 await full.add_files(discord.File(fp, str(im_location)))
 
         else:  # Either compilation or PNG error.
@@ -237,7 +244,8 @@ class ShowPinsPanel(AbstractPanel):
 
         # Sorting by descending StarredMessage (created_unix_date).
         # if oldest_first, then use ascending order
-        list_of_StarredMessages.sort(reverse=not oldest_first)
+        
+        list_of_StarredMessages.sort(reverse = not oldest_first)
         pages = []
 
         A = [

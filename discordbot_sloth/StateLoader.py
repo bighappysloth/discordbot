@@ -15,8 +15,13 @@ def load_states(bot):
 
     x = [Path(z) for z in STATE_FOLDER_PATH.glob('*.json')]
     y = [str(z.stem)[:-5] for z in x]
-    A = dict((user, State(user, bot)) for user in y )
-    return A
+    bot.states = dict()
+    for user in y:
+        try:
+            temp = State(user, bot)
+            bot.states[user] = temp
+        except Exception as E:
+            logger.warning(f'Failure to load user {user}, {str(E.args)}')
         
         
 def save_states(bot):

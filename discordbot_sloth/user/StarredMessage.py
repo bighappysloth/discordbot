@@ -2,6 +2,7 @@ import discord
 
 from discordbot_sloth.helpers.RegexReplacer import *
 from discordbot_sloth.helpers.TimeFormat import *
+from discordbot_sloth.helpers.TimeFormat import __TIME_FORMAT__
 from discordbot_sloth.user.PseudoPins import message_identifier
 
 
@@ -10,8 +11,8 @@ class StarredMessage:
         self,
         channel_id,
         message_id,
-        created_date=current_time(),
-        created_unix_date=epoch(),
+        created_date=None,
+        created_unix_date=None,
         cache=None,
     ):
 
@@ -19,12 +20,10 @@ class StarredMessage:
         self.message_id = message_id
         self.cache = cache
 
-        self.created_date = created_date
-        self.created_unix_date = created_unix_date
-
-        logger.debug(
-            f"Calling StarredMessage Constructor with {channel_id},{message_id}"
-        )
+        self.created_date = created_date if created_date is not None else current_time()
+        self.created_unix_date = created_unix_date if created_unix_date is not None else epoch()
+        #print(f'Pin: {self.created_date}')
+        print(f'Pin: {self.created_unix_date}')
 
     async def refresh(self, bot):
 
@@ -102,9 +101,10 @@ class StarredMessage:
             message_attachments_url = self.cache["attachments_url"]
             message_author = self.cache["author"]  # author name and not id
             message_date = self.cache["date_sent"]  # not the pin date
-
-            x = "Sent at {0} by {1}".format(
-                convert_time(message_date).strftime("%b %d %H:%M"), message_author
+            
+            x = "Sent {0} by {1}".format(
+                fmt_date(datetime.strptime(message_date, __TIME_FORMAT__)), 
+                message_author
             )
             x = (
                 x + "\n" + "> Pinned Message: " + message_content

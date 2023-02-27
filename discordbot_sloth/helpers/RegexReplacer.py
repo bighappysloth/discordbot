@@ -1,9 +1,13 @@
 import logging
-import re
+
+import asyncio
+from pathlib import Path
 
 from sympy import *
 from sympy.abc import epsilon
 from functools import reduce
+
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +47,7 @@ class RegexReplacer:
                  r"_BACK_SLASH" else settings[k]]
             )
 
-    async def encode(self, x, verbose=False):
+    def encode(self, x, verbose=True):
         """Encodes any problematic expression by hiding the backslashes and curly braces."""
         temp = x
         if verbose:
@@ -53,7 +57,7 @@ class RegexReplacer:
             # if verbose: logger.debug(f'temp: {temp}')
         return temp
 
-    async def decode(self, x, verbose=False):
+    def decode(self, x, verbose=True):
         """Decodes using decode_filters."""
         temp = x
         if verbose:
@@ -63,25 +67,25 @@ class RegexReplacer:
             # if verbose: logger.debug(f'temp: {temp}')
         return temp
 
-    async def print_filters(self):
+    def print_filters(self):
         # Print Filters
         for filter in self.encode_filters:
             logger.debug(*filter)
         for filter in self.decode_filters:
             logger.debug(*filter)
 
-    async def wrap(self, x, env):
+    def wrap(self, x, env):
         if env == "verb":
             return "\\" + "verb|" + x + "|"
         return "\\" + env + "{" + x + "}"
 
-    async def newline(self, x: int = 1, y: int = 0):
+    def newline(self, x: int = 1, y: int = 0):
         """
         Returns a newline format suitable for Latex.
         """
         return "\\\\" * x + "\n" * y
 
-    async def wrapenv(self, x, env):
+    def wrapenv(self, x, env):
         return "\\" + "begin{" + env + "}" + x + "\\" + "end{" + env + "}"
 
 
@@ -137,3 +141,4 @@ def merge_columns(*args, spacing=4, align='left'):
         if emptyRow:
             break
     return list_printer(row_array)
+

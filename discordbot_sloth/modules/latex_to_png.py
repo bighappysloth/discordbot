@@ -19,7 +19,7 @@ COMMAND_PDF_COMPILE = (
     'latexmk -quiet -silent -cd -f -interaction=nonstopmode -xelatex -file-line-error "{0}"'
 )
 
-COMMAND_CLEANUP1 = 'latexmk -quiet -silent-cd -c "{0}"'  # does not remove pdf files
+COMMAND_CLEANUP1 = 'latexmk -quiet -silent -cd -c "{0}"'  # does not remove pdf files
 
 COMMAND_CLEANUP2 = 'latexmk -quiet -silent -cd -C "{0}"'  # removes pdf files as well
 

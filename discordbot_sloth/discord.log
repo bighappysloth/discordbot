@@ -1,13 +1,2 @@
-[2023-01-12 20:31:17] [INFO    ] discord.client: logging in using static token
-[2023-01-12 20:31:17] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 751c740fd9ea200943ea3c9a0e67ffc5).
-[2023-01-12 20:36:49] [INFO    ] discord.gateway: Shard ID None has successfully RESUMED session 751c740fd9ea200943ea3c9a0e67ffc5.
-[2023-01-12 23:02:08] [ERROR   ] discord.client: Attempting a reconnect in 0.06s
-Traceback (most recent call last):
-  File "/Users/user/Library/Caches/pypoetry/virtualenvs/discordbot-sloth-GwwNnJk6-py3.11/lib/python3.11/site-packages/discord/client.py", line 627, in connect
-    await self.ws.poll_event()
-  File "/Users/user/Library/Caches/pypoetry/virtualenvs/discordbot-sloth-GwwNnJk6-py3.11/lib/python3.11/site-packages/discord/gateway.py", line 646, in poll_event
-    raise ConnectionClosed(self.socket, shard_id=self.shard_id, code=code) from None
-discord.errors.ConnectionClosed: Shard ID None WebSocket closed with 1000
-[2023-01-12 23:02:08] [INFO    ] discord.gateway: Shard ID None has successfully RESUdMED session 751c740fd9ea200943ea3c9a0e67ffc5.
-[2023-01-12 23:17:50] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
-[2023-01-12 23:17:55] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 00c85785ee573436ab02768ae1969c8d).
+[2023-02-27 16:29:50] [INFO    ] discord.client: logging in using static token
+[2023-02-27 16:29:51] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 8726c99f4bf8724ca71f557c57e5e0d9).

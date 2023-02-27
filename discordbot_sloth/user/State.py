@@ -10,7 +10,7 @@ from discordbot_sloth.user.TrackedPanels import (LatexImage, ParrotMessage,
                                                  ShowPinsPanel)
 
 __STATE_FOLDER_NAME__ = "pins"
-
+__STATE_FOLDER_PATH__ = __DATA_PATH__ / __STATE_FOLDER_NAME__
 
 class State:
     @staticmethod
@@ -57,14 +57,15 @@ class State:
                     try:
                         self.pins = dict(temp["pins"])
                         A = dict(temp["pins"])
+                        # logger.debug(f'Loading State for user {self.display_name}: {dict_printer(A)}')
 
                         # Create Pin Objects Here
-                        self.pins = {(k, StarredMessage(**v)) for k, v in A.items()}
+                        
                         self.pins = dict()
-                        for k, v in A.items():
+                        for (k, v) in A.items():
                             self.pins[k] = StarredMessage(**v)
 
-                        # logger.debug(f'{self.user} pins: {len(self.pins)}')
+                        logger.debug(f'{self.user} pins: {len(self.pins)}')
 
                     except KeyError:  # No 'pins' field
                         self.pins = dict()
@@ -77,6 +78,7 @@ class State:
                     fp.close()
 
         except FileNotFoundError:  # no file
+            logger.warning(f'No File Found for user: {self.user}')
             self.__init_empty_config__()
             self.__setup__()  # reload
 
@@ -86,10 +88,10 @@ class State:
             self.pins = dict()
 
     def __init__(self, user, bot):
-        logger.debug(f"Init user: {user}")
+        
         self.user = user
         self.display_name = bot.get_user(int(user)).name
-
+        logger.debug(f"Init user: {user}/{self.display_name}")
         self.__setup__()
 
     # Belongs in state class
@@ -163,6 +165,7 @@ class State:
             p = Path(State.state_path(self.user))
             logger.debug(f"Saving to {str(p)}")
             with p.open("w") as fw:
+                fw.seek(0)
                 fw.write(json.dumps(A, sort_keys=True, indent=4))
                 fw.flush()
                 fw.close()
@@ -185,3 +188,25 @@ class State:
     def add_pin(self, identifier, bot):
         pass
         logger.debug(f"Adding Pin: {identifier}")
+        
+    async def write_to_txt(self):
+        txt_dir = Path(__STATE_FOLDER_PATH__ / 'txt_out')
+        txt_path = txt_dir / (f'{self.user}.txt')
+        check_dir(txt_dir) # Checks if the directory exists.
+        
+        contents = json.dumps(dict(self), indent = 4, sort_keys = True)
+        
+        
+        try:
+            with txt_path.open('w') as f:
+                f.seek(0)
+                f.write(contents)
+                f.close()
+            logger.debug(f'Writing to {str(txt_path)}')
+            return {'status': 'success', 'msg': '', 'Path': txt_path}
+        
+        except Exception as e:
+        
+            return {'status': 'failure', 'msg': str(e), 'Path': ''}
+
+        

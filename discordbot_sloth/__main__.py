@@ -122,7 +122,7 @@ plotFunction_parser.add_argument(
 async def on_ready():
     logger.info(f"ccE's Discord Bot")
     logger.info(f"Current Time: {current_time()}")
-    bot.states = load_states(bot)
+    load_states(bot)
     logger.info("We have logged in as {0.user}".format(bot))
 
 
@@ -219,7 +219,7 @@ async def matlab2latex(ctx, *, arg: str):
             split = shlex.split(arg)
             logger.debug(f"split? given \n{split}")
             xprint_args["title"] = split[0]
-            matlab = split[1]
+            matlab = split[1:]
 
         x = await xprint(await matlab_to_sympy(matlab), **xprint_args)
 
@@ -384,19 +384,30 @@ async def _state(ctx, *, args: str):
             "start": f"**Pins for {ctx.author.name}**\n" + r"```",
             "end": r"```",
         }
-
+        # temp = dict(s)
         # await ctx.reply(
         #     delimiters_state["start"]
-        #     + json.dumps(s.state, sort_keys=True, indent=4)
+        #     + json.dumps(temp['state'], sort_keys=True, indent=4)
         #     + delimiters_state["end"]
         # )
 
         # await ctx.reply(
         #     delimiters_pins["start"]
-        #     + json.dumps(s.pins, sort_keys=True, indent=4)
+        #     + json.dumps(temp['pins'], sort_keys=True, indent=4)
         #     + delimiters_pins["end"]
         # )
-        print(str(s))
+        # print(str(s))
+        m = await ctx.reply('Fetching State')
+        result = await s.write_to_txt()
+        logger.debug('Test')
+        if result['status'] == 'success':
+            with result['Path'].open('rb') as fp:
+                await m.add_files(discord.File(fp, 
+                                     str(result['Path'])))
+        else:
+            await m.edit(content = f'{result["status"]}: {result["msg"]}')
+            
+                
 
     else:
 
@@ -431,10 +442,10 @@ async def _get_pins_v2(ctx, *, args: str):
             reverse = False
             condition = lambda a: True
         elif action == "reverse":
-            reverse = True
+            reverse = False
             condition = lambda a: True
         elif action == "here":
-            reverse = False
+            reverse = True
             condition = lambda a: str(a.channel_id) == str(ctx.channel.id)
 
         # Use context to reply to user. Then fetch partial identifier.
@@ -506,7 +517,7 @@ async def on_raw_reaction_add(payload):
             z = StarredMessage(
                 channel_id=channel_id,
                 message_id=message_id,
-            )
+            )                               # Creates a new instance of Starred Message
 
             await z.refresh(bot)
             await react_to_message(
@@ -538,6 +549,8 @@ async def on_raw_reaction_add(payload):
             z = s.state.get(identifier)
             if z is not None:
                 await z.on_reaction_add(emoji, bot)
+                
+        s.save()
 
 
 @bot.event
@@ -588,6 +601,8 @@ async def on_raw_reaction_remove(payload):
             z = s.state.get(identifier)
             if z is not None:
                 await z.on_reaction_remove(emoji, bot)
+        
+        s.save()
 
 
 @bot.event
@@ -622,6 +637,8 @@ async def on_raw_message_edit(payload):
         if z is not None:
 
             await z.on_edit(after=full.content, bot=bot)  # this might be empty.
+            
+        s.save()
 
 
 @bot.event
