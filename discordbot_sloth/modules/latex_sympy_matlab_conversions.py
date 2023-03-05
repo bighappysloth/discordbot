@@ -16,7 +16,7 @@ async def matlab_to_sympy(x):
         r"\[": "",
         r"\]": "",
         r"\,": "&",
-        r";": r"\\" + r"\\",
+        r";": r"\\" + r"\\" + r" ",
     }  # each r'\\' is one backslash
     h = RegexReplacer(settings=mapping)
     temp = latex2sympy(h.wrapenv(h.decode(x), "bmatrix"))

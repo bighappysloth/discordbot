@@ -290,7 +290,7 @@ class ShowPinsPanel(AbstractPanel):
                 pages.append(x)
                 overflow_pages.append({
                     'reply_msg': y,
-                    'txt_contents', x
+                    'txt_contents': x
                 })
                 # print(x)
         else:
