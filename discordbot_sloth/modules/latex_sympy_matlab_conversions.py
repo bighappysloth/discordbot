@@ -63,7 +63,7 @@ async def xprint(m, verb=True, env="regular", latex_mode="inline", title=None):
         if env in matrix_environments.keys()
         else matrix_environments["regular"],
         "mode": "plain"
-        if latex_mode in {"inline", "title_display", "display"}
+        if latex_mode in {"inline", "title_display", "display", "nothing"}
         else latex_mode,
         "min": 2,
         "symbol_names": h.latex_symbol_list,
@@ -116,9 +116,9 @@ async def xprint(m, verb=True, env="regular", latex_mode="inline", title=None):
         z = f"${tex_title}{z}$"
 
     elif latex_mode == "display":
-        z = tex_title + r"\[" + z + r"\]"
+        z = tex_title + r"\[" + '\n\t' + z + '\n' + r"\]"
 
     elif latex_mode == "title_display":
-        z = r"\[" + f"{tex_title}{z}" + r"\]"
+        z = r"\[" + '\n\t' +f"{tex_title}{z}" + '\n' +r"\]"
     logger.debug(z + h.newline(0, 1))
     return z
