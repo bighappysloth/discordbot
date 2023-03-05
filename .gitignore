@@ -6,7 +6,9 @@ discordbot_sloth/data/latex_out/Snipp*
 discordbot_sloth/data/latex_out/out/*
 discordbot_sloth/data/pins/*
 discordbot_sloth/data/user_settings/*
+
 !discordbot_sloth/data/user_settings/default_settings.json
+
 
 
 # packaging and distribution
@@ -19,6 +21,9 @@ dist/
 **/.vscode
 
 discordbot_sloth/discord.log
+
+**/*.pyc
+
 **/__pycache__/
 .vscode/settings.json
 
