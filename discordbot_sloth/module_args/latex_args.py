@@ -14,6 +14,7 @@ latex_modes = {
     "display",
     "equation",
     "equation*",
+    "nothing",
 }
 
 allowed_env_usage_string = dict_printer(matrix_environments)

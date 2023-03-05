@@ -123,6 +123,32 @@ class StarredMessage:
             s = "Error: " + list_printer([z for z in E.args])
             logger.warning(s)
             return s
+        
+    async def write_to_txt(self):
+        
+        txt_dir = Path(__STATE_FOLDER_PATH__ / 'txt_out')
+        
+        txt_path = txt_dir / (f'{self.user}.txt')
+        
+        check_dir(txt_dir) # Checks if the directory exists.
+
+        contents = json.dumps(dict(self), indent = 4, sort_keys = True)
+
+        try:
+            
+            with txt_path.open('w') as f:
+                f.seek(0)
+                f.write(contents)
+                f.close()
+            
+            logger.debug(f'Writing to {str(txt_path)}')
+            
+            return {'status': 'success', 'msg': '', 'Path': txt_path}
+
+        except Exception as e:
+
+            return {'status': 'failure', 'msg': str(e), 'Path': ''}
+        
 
     def __le__(self, other):
         return int(self.created_unix_date) <= int(other.created_unix_date)

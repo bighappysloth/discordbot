@@ -45,6 +45,7 @@ async def xprint(m, verb=True, env="regular", latex_mode="inline", title=None):
         'title_display'     adds \[ [TITLE= ]   \] within the display   block.
         'equation'          adds \begin{equation} \end{equation},
         'equation*'         adds \begin{equation*} \end{equation*},
+        'nothing'           adds nothing.
     newline (bool):         whether to add '\n\n' or not at the end.
     verb    (bool):         whether to surround the title in \verb| |
     eval: flag?

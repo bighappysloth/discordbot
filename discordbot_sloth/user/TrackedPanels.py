@@ -44,6 +44,7 @@ class PinPanel(AbstractPanel):
         self.dead = False
 
     async def on_reaction_add(self, emoji, bot):
+        # TODO: adding a trash can emoji should delete the message, if the message is created by the bot. And if the message is reactable. This would require us to add another tracker to the LatexImage class.
         pass
 
     async def on_reaction_remove(self, emoji, bot):
@@ -142,9 +143,9 @@ class ParrotMessage(AbstractPanel):
         for (k, v) in out.items():
             yield (k, v)
 
-
+# Tracks User Latex Input, NOT THE IMAGE itself
 class LatexImage(AbstractPanel):
-    # This is tracking the user's latex input in the form of !t
+    
     
     def __init__(
         self, channel_id, message_id, user, created_date=None, created_unix_date=None
@@ -237,6 +238,7 @@ class LatexImage(AbstractPanel):
 
 
 class ShowPinsPanel(AbstractPanel):
+    
     @staticmethod
     def build_pages(pins, author_name, condition=lambda a: True, oldest_first=False):
         print(pins)
@@ -247,6 +249,7 @@ class ShowPinsPanel(AbstractPanel):
         
         list_of_StarredMessages.sort(reverse = not oldest_first)
         pages = []
+        overflow_pages = []
 
         A = [
             f"{i+1}) {list_of_StarredMessages[i]}\n"
@@ -270,14 +273,26 @@ class ShowPinsPanel(AbstractPanel):
             for i in range(1, numpages + 1):
                 end = min(3 * i, len(A))
                 s = list_printer(A[3 * (i - 1) : end])
-
+                s_overflow = 'Message too long, see attached .txt file.'
+                
                 x = (
                     delimiters["start"].format(STAR_EMOJI, author_name)
                     + s
                     + delimiters["end"].format(str(i), str(numpages))
                 )
+                
+                y = (
+                    delimiters["start"].format(STAR_EMOJI, author_name)
+                    + s_overflow
+                    + delimiters["end"].format(str(i), str(numpages))
+                )
+                
                 pages.append(x)
-                print(x)
+                overflow_pages.append({
+                    'reply_msg': y,
+                    'txt_contents', x
+                })
+                # print(x)
         else:
             numpages = 1
 
@@ -360,6 +375,9 @@ class ShowPinsPanel(AbstractPanel):
             channel = await bot.fetch_channel(self.channel_id)
         try:
             partial = discord.PartialMessage(channel=channel, id=int(self.message_id))
+            
+            # TODO: add a try catch block here...
+            # in case the message is too long to be sent.
             await partial.edit(content=self.pages[self.current_page - 1])
         except Exception as E:
             logger.warning("Exception : " + list_printer([str(z) for z in E.args]))

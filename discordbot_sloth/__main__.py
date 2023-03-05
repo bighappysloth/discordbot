@@ -385,27 +385,19 @@ async def _state(ctx, *, args: str):
             "start": f"**Pins for {ctx.author.name}**\n" + r"```",
             "end": r"```",
         }
-        # temp = dict(s)
-        # await ctx.reply(
-        #     delimiters_state["start"]
-        #     + json.dumps(temp['state'], sort_keys=True, indent=4)
-        #     + delimiters_state["end"]
-        # )
-
-        # await ctx.reply(
-        #     delimiters_pins["start"]
-        #     + json.dumps(temp['pins'], sort_keys=True, indent=4)
-        #     + delimiters_pins["end"]
-        # )
-        # print(str(s))
+        
         m = await ctx.reply('Fetching State')
         result = await s.write_to_txt()
+        
         logger.debug('Test')
         if result['status'] == 'success':
+        
             with result['Path'].open('rb') as fp:
+        
                 await m.add_files(discord.File(fp, 
                                      str(result['Path'])))
         else:
+        
             await m.edit(content = f'{result["status"]}: {result["msg"]}')
             
                 
