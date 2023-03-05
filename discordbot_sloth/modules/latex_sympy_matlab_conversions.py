@@ -19,7 +19,7 @@ async def matlab_to_sympy(x):
         r";": r"\\" + r"\\",
     }  # each r'\\' is one backslash
     h = RegexReplacer(settings=mapping)
-    temp = latex2sympy(await h.wrapenv(await h.decode(x), "bmatrix"))
+    temp = latex2sympy(h.wrapenv(h.decode(x), "bmatrix"))
     logger.debug(f"matlab2sympy execution: {temp}")
     return temp
 
@@ -119,5 +119,5 @@ async def xprint(m, verb=True, env="regular", latex_mode="inline", title=None):
 
     elif latex_mode == "title_display":
         z = r"\[" + f"{tex_title}{z}" + r"\]"
-    logger.debug(z + await h.newline(0, 1))
+    logger.debug(z + h.newline(0, 1))
     return z

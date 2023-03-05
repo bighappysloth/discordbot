@@ -197,7 +197,7 @@ async def matlab2latex(ctx, *, arg: str):
         temp = Configuration(u)
 
         result = temp.editEntry(
-            "xprint_settings.use_title", not temp.getEntry("xprint_settings.use_title")
+            "xprint_settings.use_title", not temp.getEntry("xprint_settings.use_title")["msg"]
         )
 
         await ctx.reply(f"{result['status']}: {result['msg']}")
@@ -209,18 +209,19 @@ async def matlab2latex(ctx, *, arg: str):
         # Split using shlex, because the title can contain spaces.
 
         xprint_args = {
-            "verb": temp.getEntry("xprint_settings.verb"),
-            "env": temp.getEntry("xprint_settings.env"),
-            "latex_mode": temp.getEntry("xprint_settings.latex_mode"),
+            "verb": temp.getEntry("xprint_settings.verb")["msg"],
+            "env": temp.getEntry("xprint_settings.env")["msg"],
+            "latex_mode": temp.getEntry("xprint_settings.latex_mode")["msg"],
         }
         matlab = arg
-        if temp.getEntry("xprint_settings.use_title"):
+        if temp.getEntry("xprint_settings.use_title")["msg"]:
 
             split = shlex.split(arg)
             logger.debug(f"split? given \n{split}")
             xprint_args["title"] = split[0]
             matlab = split[1:]
-
+            matlab = reduce(lambda a,b: str(a) + str(b), matlab)
+        
         x = await xprint(await matlab_to_sympy(matlab), **xprint_args)
 
         logger.debug(f"matlab2latex: {arg} --> {x}")  # result
