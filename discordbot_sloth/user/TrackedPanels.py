@@ -1,4 +1,5 @@
 import discord
+from pathlib import Path
 
 from discordbot_sloth.config import __DATA_PATH__
 from discordbot_sloth.helpers.check_dir import *
@@ -10,6 +11,8 @@ from discordbot_sloth.modules.latex_to_png import latex_to_png_converter
 from discordbot_sloth.user.AbstractPanel import AbstractPanel
 from discordbot_sloth.user.user_configuration import Configuration
 
+TXT_PATH = Path(__DATA_PATH__/'TXT')
+check_dir(TXT_PATH)
 
 class PinPanel(AbstractPanel):
     """Class that monitors the removal of reactions for a Pin
@@ -212,7 +215,7 @@ class LatexImage(AbstractPanel):
                 if Path(im_location):
                     with Path(im_location).open("rb") as fp:
                         await full.add_files(discord.File(fp, str(im_location)))
-            
+    
             else:  # png error
                 logger.warning(f'PNG Failure: {result["msg"]}')
                 await full.edit(content=formatting["png_fail"].format(result["msg"]))
@@ -369,22 +372,72 @@ class ShowPinsPanel(AbstractPanel):
         elif emoji == PAGE_EMOJIS["prev_page"]:
             if self.current_page - 1 in range(1, numpages + 1):
                 self.current_page = self.current_page - 1
-
+                
+        elif emoji == CHECKMARK_EMOJI:
+            # Exports to txt file
+            channel = bot.get_channel(self.channel_id)
+            if not channel:
+                channel = await bot.fetch_channel(self.channel_id)
+            try:
+                partial = discord.PartialMessage(channel=channel, id=int(self.message_id))
+                full = await partial.fetch()
+                
+                txt_path = TXT_PATH/ f'txt_{current_time}.txt'
+                txt_contents = list_printer(self.pages)
+                with txt_path.open(mode = 'w') as file:
+                    file.write(txt_contents)
+                    file.close()
+                    
+                # full = await full.remove_attachments(*full.attachments)    
+                
+                with txt_path.open(mode = 'rb') as fp:
+                    
+                    await full.add_files(discord.File(fp, str(txt_path)))
+            
+            except Exception as E:
+                c = "Exception : " + list_printer([str(z) for z in E.args])
+                await full.edit(contents = c)
+                logger.warning(c)
+            
+            return
+            
         channel = bot.get_channel(self.channel_id)
         if not channel:
             channel = await bot.fetch_channel(self.channel_id)
         try:
             partial = discord.PartialMessage(channel=channel, id=int(self.message_id))
+            full = await partial.fetch()
+            
             
             # TODO: add a try catch block here...
             # in case the message is too long to be sent.
-            await partial.edit(content=self.pages[self.current_page - 1])
+            try: 
+                await full.edit(content=self.pages[self.current_page - 1])
+            except HTTPException:
+                # put ellipsis
+                truncated = self.pages[self.current_page - 1][:100] + '\n...\n' + self.pages[self.current_page - 1][-100:]
+                await full.edit(content=truncated)
+                # Write to a temporary text file.
+                
+                # Not sure why we need two of these.
+                txt_path = TXT_PATH/ f'txt_{current_time}.txt'
+                with txt_path.open(mode = 'w') as file:
+                    file.write(self.pages[self.current_page - 1])
+                    file.close()
+                
+                full = await full.remove_attachments(*full.attachments)    
+                with txt_path.open(mode = 'rb') as fp:
+                    
+                    await full.add_files(discord.File(fp, str(txt_path)))
+            else:
+                full = await full.remove_attachments(*full.attachments)
+                
         except Exception as E:
             logger.warning("Exception : " + list_printer([str(z) for z in E.args]))
 
         # 2) Clear Reactions (if possible)
         try:
-            await partial.clear_reactions()
+            await full.clear_reactions()
         except Exception as E:
             pass
 
@@ -413,3 +466,7 @@ class ShowPinsPanel(AbstractPanel):
             out["memory"][k] = v
         for (k, v) in out.items():
             yield (k, v)
+    
+    
+    
+        

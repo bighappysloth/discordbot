@@ -161,7 +161,7 @@ class State:
             # }
 
             A = dict(self)
-            print(f"Dict for user {self.user}: {A}")
+            # print(f"Dict for user {self.user}: {A}")
             p = Path(State.state_path(self.user))
             logger.debug(f"Saving to {str(p)}")
             with p.open("w") as fw:

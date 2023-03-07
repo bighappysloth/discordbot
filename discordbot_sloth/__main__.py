@@ -396,6 +396,7 @@ async def _state(ctx, *, args: str):
         
                 await m.add_files(discord.File(fp, 
                                      str(result['Path'])))
+                await m.edit(content = f'{result["status"]}')
         else:
         
             await m.edit(content = f'{result["status"]}: {result["msg"]}')

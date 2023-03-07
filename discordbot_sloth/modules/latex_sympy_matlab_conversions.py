@@ -1,5 +1,5 @@
 import logging
-
+import re
 import sympy as sym
 from latex2sympy2 import latex2sympy
 
@@ -22,6 +22,29 @@ async def matlab_to_sympy(x):
     temp = latex2sympy(h.wrapenv(h.decode(x), "bmatrix"))
     logger.debug(f"matlab2sympy execution: {temp}")
     return temp
+
+
+
+def matrix_to_latex_v2(matrix_string):
+    # Extract matrix and vector substrings
+    regex = r"\[([^]]+)\]\[([^]]+)\]"
+    match = re.search(regex, matrix_string)
+    matrix_substr = match.group(1)
+    vector_substr = match.group(2)
+
+    # Convert matrix substring to LaTeX
+    matrix_str = matrix_substr.replace(";", " \\\\\n")
+    matrix_str = matrix_str.replace(",", " &")
+    matrix_str = "\\begin{bmatrix}\n" + matrix_str + "\n\\end{bmatrix}"
+
+    # Convert vector substring to LaTeX
+    vector_str = vector_substr.replace(",", " \\\\\n")
+    vector_str = "\\begin{bmatrix}\n" + vector_str + "\n\\end{bmatrix}"
+
+    # Combine matrix and vector LaTeX strings
+    latex_str = matrix_str + vector_str
+
+    return latex_str
 
 
 
