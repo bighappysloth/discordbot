@@ -429,7 +429,7 @@ class ShowPinsPanel(AbstractPanel):
                     file.seek(0)
                     file.write(self.pages[self.current_page - 1])
                     file.close()
-                logger.debug(f'Writing to {str(text_path)}')
+                logger.debug(f'Writing to {str(txt_path)}')
                 full = await full.remove_attachments(*full.attachments)    
                 with txt_path.open(mode = 'rb') as fp:
                     
