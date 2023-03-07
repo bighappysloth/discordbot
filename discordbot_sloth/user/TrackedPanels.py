@@ -384,7 +384,7 @@ class ShowPinsPanel(AbstractPanel):
                 partial = discord.PartialMessage(channel=channel, id=int(self.message_id))
                 full = await partial.fetch()
                 
-                txt_path = Path(TXT_PATH/ f'txt_{current_time}.txt')
+                txt_path = Path(TXT_PATH/ f'txt_{current_time()}.txt')
                 txt_contents = list_printer(self.pages)
                 with txt_path.open(mode = 'w') as file:
                     file.seek(0)
@@ -424,7 +424,7 @@ class ShowPinsPanel(AbstractPanel):
                 # Write to a temporary text file.
                 
                 # Not sure why we need two of these.
-                txt_path = Path(TXT_PATH/ f'txt_{current_time}.txt')
+                txt_path = Path(TXT_PATH/ f'txt_{current_time()}.txt')
                 with txt_path.open(mode = 'w') as file:
                     file.seek(0)
                     file.write(self.pages[self.current_page - 1])
