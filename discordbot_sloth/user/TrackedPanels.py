@@ -396,7 +396,7 @@ class ShowPinsPanel(AbstractPanel):
             
             except Exception as E:
                 c = "Exception : " + list_printer([str(z) for z in E.args])
-                await full.edit(contents = c)
+                await full.edit(content = c)
                 logger.warning(c)
             
             return
