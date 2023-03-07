@@ -11,7 +11,7 @@ from discordbot_sloth.modules.latex_to_png import latex_to_png_converter
 from discordbot_sloth.user.AbstractPanel import AbstractPanel
 from discordbot_sloth.user.user_configuration import Configuration
 
-TXT_PATH = Path(__DATA_PATH__/'TXT')
+TXT_PATH = Path(__DATA_PATH__/'txt_out/')
 check_dir(TXT_PATH)
 
 class PinPanel(AbstractPanel):
@@ -382,7 +382,7 @@ class ShowPinsPanel(AbstractPanel):
                 partial = discord.PartialMessage(channel=channel, id=int(self.message_id))
                 full = await partial.fetch()
                 
-                txt_path = TXT_PATH/ f'txt_{current_time}.txt'
+                txt_path = Path(TXT_PATH/ f'txt_{current_time}.txt')
                 txt_contents = list_printer(self.pages)
                 with txt_path.open(mode = 'w') as file:
                     file.write(txt_contents)
@@ -413,14 +413,14 @@ class ShowPinsPanel(AbstractPanel):
             # in case the message is too long to be sent.
             try: 
                 await full.edit(content=self.pages[self.current_page - 1])
-            except HTTPException:
+            except discord.HTTPException:
                 # put ellipsis
                 truncated = self.pages[self.current_page - 1][:100] + '\n...\n' + self.pages[self.current_page - 1][-100:]
                 await full.edit(content=truncated)
                 # Write to a temporary text file.
                 
                 # Not sure why we need two of these.
-                txt_path = TXT_PATH/ f'txt_{current_time}.txt'
+                txt_path = Path(TXT_PATH/ f'txt_{current_time}.txt')
                 with txt_path.open(mode = 'w') as file:
                     file.write(self.pages[self.current_page - 1])
                     file.close()
