@@ -2,6 +2,7 @@ import discord
 from pathlib import Path
 
 from discordbot_sloth.config import __DATA_PATH__
+from discordbot_sloth.user.State import __STATE_FOLDER_PATH__
 from discordbot_sloth.helpers.check_dir import *
 from discordbot_sloth.helpers.emoji_defaults import *
 from discordbot_sloth.helpers.EmojiReactor import react_to_message
@@ -11,7 +12,7 @@ from discordbot_sloth.modules.latex_to_png import latex_to_png_converter
 from discordbot_sloth.user.AbstractPanel import AbstractPanel
 from discordbot_sloth.user.user_configuration import Configuration
 
-TXT_PATH = Path(__DATA_PATH__/'txt_out/')
+TXT_PATH = Path(__STATE_FOLDER_PATH__/'txt_out')
 check_dir(TXT_PATH)
 
 class PinPanel(AbstractPanel):
