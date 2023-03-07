@@ -385,8 +385,10 @@ class ShowPinsPanel(AbstractPanel):
                 txt_path = Path(TXT_PATH/ f'txt_{current_time}.txt')
                 txt_contents = list_printer(self.pages)
                 with txt_path.open(mode = 'w') as file:
+                    file.seek(0)
                     file.write(txt_contents)
                     file.close()
+                logger.debug(f'Writing to {str(txt_path)}')
                     
                 # full = await full.remove_attachments(*full.attachments)    
                 
@@ -422,9 +424,10 @@ class ShowPinsPanel(AbstractPanel):
                 # Not sure why we need two of these.
                 txt_path = Path(TXT_PATH/ f'txt_{current_time}.txt')
                 with txt_path.open(mode = 'w') as file:
+                    file.seek(0)
                     file.write(self.pages[self.current_page - 1])
                     file.close()
-                
+                logger.debug(f'Writing to {str(text_path)}')
                 full = await full.remove_attachments(*full.attachments)    
                 with txt_path.open(mode = 'rb') as fp:
                     
