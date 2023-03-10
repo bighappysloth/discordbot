@@ -47,17 +47,16 @@ TEX_FILE_HEADER = {
     "tight": r"""\documentclass[preview]{standalone}
 \usepackage{import}
 \import{./}{imports}
-\import{./}{engineering_imports} % uncomment if necessary
 \begin{document}""",
+
     "regular": r"""\documentclass[preview, border=10pt, 6pt]{standalone}
 \usepackage{import}
 \import{./}{imports}
-\import{./}{engineering_imports} % uncomment if necessary
 \begin{document}""",
+
     "wide": r"""\documentclass[preview, border=20pt, 12pt]{standalone}
 \usepackage{import}
 \import{./}{imports}
-\import{./}{engineering_imports} % uncomment if necessary
 \begin{document}""",
 }
 
