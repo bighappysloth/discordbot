@@ -35,18 +35,28 @@
     showtabs=true,    
     showlines=false,
     tabsize=4,
-    gobble=0,%experimental,
+    gobble=0,   %experimental,
     captionpos=t
 }
 
 %Code
-\definecolor{light-gray}{gray}{0.95} \newcommand{\code}[1]{\colorbox{light-gray}{\texttt{#1}}}
+\definecolor{light-gray}{gray}{0.95} 
+% \newcommand{\code}[1]{\colorbox{light-gray}{\texttt{#1}}}
 
 %"mystyle" code listing set
 \lstset{style=mystyle}
 \usepackage{cprotect}
 
+% Remind cleverref to recognize lstlistings as well
+\crefname{lstlisting}{listing}{listings}
+\Crefname{lstlisting}{Listing}{Listings}
+
+\crefname{lstinput}{listing}{listings}
+\Crefname{lstinput}{Listing}{Listings}
+
+
 %Engineering Commands
 \newcommand{\pow}[1]{\times 10^{#1}}
 \newcommand{\sinc}{\operatorname{sinc}}
-  
+\providecommand{\dotted}[1]{\accentset{\bullet}{#1}}
+\providecommand{\ddotted}[1]{\accentset{\bullet\bullet}{#1}}
