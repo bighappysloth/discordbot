@@ -221,7 +221,6 @@ async def matlab2latex(ctx, *, arg: str):
         
         else:
             xprint_args = {
-                "use_v2":
                 "verb": temp.getEntry("xprint_settings.verb")["msg"],
                 "env": temp.getEntry("xprint_settings.env")["msg"],
                 "latex_mode": temp.getEntry("xprint_settings.latex_mode")["msg"],
