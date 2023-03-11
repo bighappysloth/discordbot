@@ -212,11 +212,10 @@ async def matlab2latex(ctx, *, arg: str):
         if (v2):
             
             xprint_args = {
-                "use_v2": v2,
                 "compact": temp.getEntry("matlab2latex.compact")["msg"],
                 "env": temp.getEntry("xprint_settings.env")["msg"],
             }
-            x = matlab_to_latex_matrices(arg.lstrip())
+            x = matlab_to_latex_matrices(arg.lstrip(), **xprint_args)
             logger.debug(f"matlab2latex(v2): {arg} --> {x}")  # result
         
         else:

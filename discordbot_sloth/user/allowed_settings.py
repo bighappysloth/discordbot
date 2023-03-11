@@ -113,7 +113,7 @@ ALLOWED_CONFIG = {
 
     },
     'matlab2latex': {
-        'use_v2': lambda x, y: helper_type_check(x, bool, y, usage_help = 'Whether to use v2 Matrix Converter or not'),
+        'use_v2': lambda x, y: helper_type_check(x, bool, y),
         'compact': lambda x, y: helper_type_check(x, bool, y),
     }
 
