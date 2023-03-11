@@ -142,7 +142,7 @@ class Configuration:
         try:
 
             temp = Configuration(user)
-            usage = int(temp.getEntry("usage"))
+            usage = int(temp.getEntry("usage")["msg"])
             logger.debug(f"old usage: {usage}")
 
             settings_path = user_settings_path(user)
