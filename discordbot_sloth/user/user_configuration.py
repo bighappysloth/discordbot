@@ -92,10 +92,11 @@ class Configuration:
                 selected_option, ALLOWED_CONFIG
             )
             try:
-                if new_value.lower() == 'true':
-                    new_value = True
-                elif new_value.lower() == 'false':
-                    new_value = False
+                if isinstance(new_value, str):
+                    if new_value.lower() == 'true':
+                        new_value = True
+                    elif new_value.lower() == 'false':
+                        new_value = False
                     
                 if entry_validation_test["status"] == "success":
                     entry_validation_test["msg"](new_value, selected_option)
