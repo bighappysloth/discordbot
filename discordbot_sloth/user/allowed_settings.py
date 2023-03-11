@@ -60,6 +60,8 @@ ALLOWED_CONFIG = {
     'framing': lambda x, y: helper_set_check(x, {'regular', 'tight', 'wide'}, y),
 
     'latex_preamble': lambda x, y: helper_type_check(x, str, y),
+    
+    'last_command': lambda x, y: helper_type_check(x, str, y),
 
     'usage': lambda x, y: helper_type_check(x, int, y),
 
@@ -110,5 +112,9 @@ ALLOWED_CONFIG = {
         'use_title': lambda x, y: helper_type_check(x, bool, y),
 
     },
+    'matlab2latex': {
+        'use_v2': lambda x, y: helper_type_check(x, bool, y, usage_help = 'Whether to use v2 Matrix Converter or not'),
+        'compact': lambda x, y: helper_type_check(x, bool, y),
+    }
 
 }

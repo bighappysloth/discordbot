@@ -153,12 +153,13 @@ class Configuration:
             }
 
     @staticmethod
-    def incrementUserConfig(user):
+    def incrementUserConfig(user, cmd):
         if user != __DEFAULT_USER__:
             x = Configuration(user)
             new_usage = x.getEntry("usage")["msg"] + 1
             x.editEntry("usage", new_usage, write=True)
             x.editEntry("last_used", current_time(), write=True)
+            x.editEntry("last_command", cmd, write = True)
             return
         raise ValueError("Default User cannot be incremented.")
 

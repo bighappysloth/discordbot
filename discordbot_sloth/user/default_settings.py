@@ -27,6 +27,7 @@ DEFAULT_CONFIG = {
     "latex_preamble": "",
     "usage": 0,
     "last_used": None,
+    "last_command": None,
     "background": "white",  # unused
     "png_dpi": 2400,
     "plot_samples": 100,
@@ -46,6 +47,10 @@ DEFAULT_CONFIG = {
         "env": "regular",
         "latex_mode": "inline",
         "use_title": False,
+    },
+    'matlab2latex': {
+        'use_v2': True,
+        'compact': False,
     },
 }
 

@@ -181,7 +181,7 @@ async def matlab2sympy(ctx, *, x: str):
     await ctx.reply(f"`{z}`")  # send result
 
 
-@bot.command(rest_is_raw=True)
+@bot.command(aliases=['m2l','matrix'], rest_is_raw=True)
 async def matlab2latex(ctx, *, arg: str):
     u = str(ctx.author.id)
     """
@@ -197,7 +197,7 @@ async def matlab2latex(ctx, *, arg: str):
         temp = Configuration(u)
 
         result = temp.editEntry(
-            "xprint_settings.use_title", not temp.getEntry("xprint_settings.use_title")["msg"]
+            "matlab2latex.use_v2", not temp.getEntry("matlab2latex.use_v2")["msg"]
         )
 
         await ctx.reply(f"{result['status']}: {result['msg']}")
@@ -208,24 +208,38 @@ async def matlab2latex(ctx, *, arg: str):
         # Now check if use_title is enabled.
         # Split using shlex, because the title can contain spaces.
 
-        xprint_args = {
-            "verb": temp.getEntry("xprint_settings.verb")["msg"],
-            "env": temp.getEntry("xprint_settings.env")["msg"],
-            "latex_mode": temp.getEntry("xprint_settings.latex_mode")["msg"],
-        }
-        matlab = arg
-        if temp.getEntry("xprint_settings.use_title")["msg"]:
-
-            split = shlex.split(arg)
-            logger.debug(f"split? given \n{split}")
-            xprint_args["title"] = split[0]
-            matlab = split[1:]
-            matlab = reduce(lambda a,b: str(a) + str(b), matlab)
+        v2 = temp.getEntry("matlab2latex.use_v2")["msg"]
+        if (v2):
+            
+            xprint_args = {
+                "use_v2": v2,
+                "compact": temp.getEntry("matlab2latex.compact")["msg"],
+                "env": temp.getEntry("xprint_settings.env")["msg"],
+            }
+            x = matlab_to_latex_matrices(arg.lstrip())
+            logger.debug(f"matlab2latex(v2): {arg} --> {x}")  # result
         
-        x = await xprint(await matlab_to_sympy(matlab), **xprint_args)
+        else:
+            xprint_args = {
+                "use_v2":
+                "verb": temp.getEntry("xprint_settings.verb")["msg"],
+                "env": temp.getEntry("xprint_settings.env")["msg"],
+                "latex_mode": temp.getEntry("xprint_settings.latex_mode")["msg"],
+            }
+            matlab = arg
+            if temp.getEntry("xprint_settings.use_title")["msg"]:
 
-        logger.debug(f"matlab2latex: {arg} --> {x}")  # result
-        await ctx.reply(f"`{x}`")  # send result
+                split = shlex.split(arg)
+                logger.debug(f"split? given \n{split}")
+                xprint_args["title"] = split[0]
+                matlab = split[1:]
+                matlab = reduce(lambda a,b: str(a) + str(b), matlab)
+        
+            x = await xprint(await matlab_to_sympy(matlab), **xprint_args)
+
+            logger.debug(f"matlab2latex(v1): {arg} --> {x}")  # result
+        
+        await ctx.reply(f"```latex\n{x}\n```")  # send result
 
 
 @bot.command()
@@ -649,7 +663,7 @@ async def on_command_completion(ctx):
     Increments the user's config.usage and config.last_used.
     """
     userid = str(ctx.author.id)
-    Configuration.incrementUserConfig(str(userid))
+    Configuration.incrementUserConfig(str(userid), ctx.command)
 
 
 

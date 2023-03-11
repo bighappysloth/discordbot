@@ -1,0 +1,31 @@
+import re
+from functools import reduce
+x = r"[a_{11},  a_{12}; a_{21} ,  a_{22}][b_1;b_2]"
+list_printer = lambda L: reduce(lambda b, c: f'{str(b)}\n{str(c)}', L)
+print_list = lambda L: print(list_printer(L))
+
+
+
+
+    
+def matlab_to_latex_matrices(s, env, compact):
+    
+    entries_to_latex = lambda entries, environment = 'bmatrix', compact = True: (f'\\begin{{{environment}}}\n' + ' \\\\ \n'.join([' & '.join(row) for row in entries]) + f'\n\\end{{{environment}}}').replace('\n', '' if compact else '\n') 
+    
+    def extract_matrices(s):
+        square_pattern = r'\[(.*?)\]'
+        return re.findall(square_pattern, s)
+
+    def extract_entries(m):
+        temp = m.lstrip('[').lstrip().rstrip(']').rstrip().split(';') # Removes whitepsace and splits by rows.
+        temp = [[entry.lstrip().rstrip() for entry in row.split(',')] for row in temp]
+        return temp
+    
+    # Extract all Matrices
+    M = extract_matrices(s)
+    M = [extract_entries(m) for m in M] # Extract individual entries
+    M = [entries_to_latex(entries, environment = env, compact = compact) for entries in M]
+    return list_printer(M) if not compact else ''.join(M)
+    
+if __name__ == '__main__':
+    pass

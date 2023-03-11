@@ -1,5 +1,6 @@
 import logging
 import re
+from functools import reduce
 import sympy as sym
 from latex2sympy2 import latex2sympy
 
@@ -25,26 +26,46 @@ async def matlab_to_sympy(x):
 
 
 
-def matrix_to_latex_v2(matrix_string):
-    # Extract matrix and vector substrings
-    regex = r"\[([^]]+)\]\[([^]]+)\]"
-    match = re.search(regex, matrix_string)
-    matrix_substr = match.group(1)
-    vector_substr = match.group(2)
+# def matrix_to_latex_v2(matrix_string):
+#     # Extract matrix and vector substrings
+#     regex = r"\[([^]]+)\]\[([^]]+)\]"
+#     match = re.search(regex, matrix_string)
+#     matrix_substr = match.group(1)
+#     vector_substr = match.group(2)
 
-    # Convert matrix substring to LaTeX
-    matrix_str = matrix_substr.replace(";", " \\\\\n")
-    matrix_str = matrix_str.replace(",", " &")
-    matrix_str = "\\begin{bmatrix}\n" + matrix_str + "\n\\end{bmatrix}"
+#     # Convert matrix substring to LaTeX
+#     matrix_str = matrix_substr.replace(";", " \\\\\n")
+#     matrix_str = matrix_str.replace(",", " &")
+#     matrix_str = "\\begin{bmatrix}\n" + matrix_str + "\n\\end{bmatrix}"
 
-    # Convert vector substring to LaTeX
-    vector_str = vector_substr.replace(",", " \\\\\n")
-    vector_str = "\\begin{bmatrix}\n" + vector_str + "\n\\end{bmatrix}"
+#     # Convert vector substring to LaTeX
+#     vector_str = vector_substr.replace(",", " \\\\\n")
+#     vector_str = "\\begin{bmatrix}\n" + vector_str + "\n\\end{bmatrix}"
 
-    # Combine matrix and vector LaTeX strings
-    latex_str = matrix_str + vector_str
+#     # Combine matrix and vector LaTeX strings
+#     latex_str = matrix_str + vector_str
 
-    return latex_str
+#     return latex_str
+
+
+def matlab_to_latex_matrices(s, env, compact):
+    
+    entries_to_latex = lambda entries, environment = 'bmatrix', compact = True: (f'\\begin{{{environment}}}\n' + ' \\\\ \n'.join([' & '.join(row) for row in entries]) + f'\n\\end{{{environment}}}').replace('\n', '' if compact else '\n') 
+    
+    def extract_matrices(s):
+        square_pattern = r'\[(.*?)\]'
+        return re.findall(square_pattern, s)
+
+    def extract_entries(m):
+        temp = m.lstrip('[').lstrip().rstrip(']').rstrip().split(';') # Removes whitepsace and splits by rows.
+        temp = [[entry.lstrip().rstrip() for entry in row.split(',')] for row in temp]
+        return temp
+    
+    # Extract all Matrices
+    M = extract_matrices(s)
+    M = [extract_entries(m) for m in M] # Extract individual entries
+    M = [entries_to_latex(entries, environment = env, compact = compact) for entries in M]
+    return list_printer(M) if not compact else ''.join(M)
 
 
 

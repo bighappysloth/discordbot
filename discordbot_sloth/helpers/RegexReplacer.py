@@ -10,7 +10,8 @@ from functools import reduce
 import re
 
 logger = logging.getLogger(__name__)
-
+list_printer = lambda x: reduce(lambda a, b: a + '\n' + b,x) if x else ''
+dict_printer = lambda x: list_printer([f'{z}: {x[z]}' for z in x]) if x else ''
 
 class RegexReplacer:
     """
@@ -89,8 +90,7 @@ class RegexReplacer:
         return "\\" + "begin{" + env + "}" + x + "\\" + "end{" + env + "}"
 
 
-list_printer = lambda x: reduce(lambda a, b: a + '\n' + b,x) if x else ''
-dict_printer = lambda x: list_printer([f'{z}: {x[z]}' for z in x]) if x else ''
+
 
 def merge_columns(*args, spacing=4, align='left'):
     """
