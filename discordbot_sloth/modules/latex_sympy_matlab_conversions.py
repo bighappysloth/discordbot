@@ -4,7 +4,7 @@ from functools import reduce
 import sympy as sym
 from latex2sympy2 import latex2sympy
 
-
+from discordbot_sloth.module_args.latex_args import matrix_environments
 from discordbot_sloth.helpers.RegexReplacer import *
 from discordbot_sloth.module_args.latex_args import *
 
@@ -64,7 +64,7 @@ def matlab_to_latex_matrices(s, env, compact):
     # Extract all Matrices
     M = extract_matrices(s)
     M = [extract_entries(m) for m in M] # Extract individual entries
-    M = [entries_to_latex(entries, environment = env, compact = compact) for entries in M]
+    M = [entries_to_latex(entries, environment = matrix_environments[env], compact = compact) for entries in M]
     return list_printer(M) if not compact else ''.join(M)
 
 

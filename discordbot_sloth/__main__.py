@@ -661,7 +661,7 @@ async def on_command_completion(ctx):
     Increments the user's config.usage and config.last_used.
     """
     userid = str(ctx.author.id)
-    Configuration.incrementUserConfig(str(userid), ctx.command)
+    Configuration.incrementUserConfig(str(userid), ctx.command.name)
 
 
 
