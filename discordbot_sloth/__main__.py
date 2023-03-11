@@ -332,9 +332,13 @@ async def _edit_config(ctx, *, arg: str):
 @bot.command(name="restore")
 async def _restore_config(ctx):
     u = str(ctx.author.id)
-    Configuration.restoreUserConfig(u)
-    await ctx.reply(f"Restored {ctx.author.name}'s config to defaults.")
-    logger.info(f"Restored {ctx.author.name}'s config to defaults.")
+    result = Configuration.restoreUserConfig(u)
+    if result['status'] == 'success':
+        await ctx.reply(f"Restored {ctx.author.name}'s config to defaults.")
+        logger.info(f"Restored {ctx.author.name}'s config to defaults.")
+    else: 
+        await ctx.reply(f"{result['status']}: {result['msg']}")
+        logger.info(f"{result['status']}: {result['msg']}")
 
 
 # New Functionality Below
