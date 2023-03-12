@@ -2,81 +2,90 @@
 \import{./}{packages.tex}
 \import{./}{headers.tex}
 \import{./}{docinfo.tex}
-\import{./}{engineering_imports.tex}
-% Commands
 
+% Commands
 
     % Essentials
     \renewcommand{\Re}{\operatorname{Re}} % Real Part
     \renewcommand{\Im}{\operatorname{Im}} % Imaginary Part
     \newcommand{\defined}{\coloneqq} % := sign
     
-
     \providecommand{\induces}{{\:\looparrowright\:}}
     \providecommand{\inducedby}{{\:\looparrowleft\:}}
 
-
-    % Fonts
-    \newcommand{\bb}[1]{\mathbb{#1}} %shortcut for mathbb
-    \renewcommand{\cal}[1]{\mathcal{#1}} %shortcut for mathcal
-    \renewcommand{\bf}[1]{\mathbf{#1}}
+    % Fonts remove this section soon.
+    % \newcommand{\bb}[1]{\mathbb{#1}} %shortcut for mathbb
+    % \renewcommand{\cal}[1]{\mathcal{#1}} %shortcut for mathcal
+    % \renewcommand{\bf}[1]{\mathbf{#1}}
     
-
     % Wiggle
-    \newcommand{\wig}[1]{\widetilde{#1}}
+    \providecommand{\wig}[1]{\widetilde{#1}}
     
-
     % Common Sets
-    \newcommand{\real}{\mathbb{R}}
-    \newcommand{\realn}{{\mathbb{R}^n}}
-    \newcommand{\nat}{\mathbb{N}}
-    \newcommand{\natplus}{\mathbb{N}}
+    \providecommand{\real}{\mathbb{R}}
+    \providecommand{\realn}{{\mathbb{R}^n}}
+    \providecommand{\nat}{\mathbb{N}}
+    \providecommand{\natplus}{\mathbb{N}}
     \newcommand{\integer}{\mathbb{Z}}
-    \newcommand{\rat}{\mathbb{Q}}
+    \providecommand{\rat}{\mathbb{Q}}
     \providecommand{\borel}{{\mathbb{B}}}
     
     
     % Operators
-    \newcommand{\range}{\operatorname{range}} %Range of a function
-    \newcommand{\dom}{\operatorname{dom}} %Domain of a Function
-    \newcommand{\codom}{\operatorname{codom}} % Codomain
-    \newcommand{\id}[1]{\operatorname{id}_{#1}} % Identity Mapping
-    \newcommand{\sgn}{\operatorname{sgn}} %Signum function
-    
-    \newcommand{\wt}{\operatorname{wt}} %Hamming weight
+    \providecommand{\range}{\operatorname{range}} %Range of a function
+    \providecommand{\dom}{\operatorname{dom}} %Domain of a Function
+    \providecommand{\codom}{\operatorname{codom}} % Codomain
     \newcommand{\image}{\operatorname{im}} %Image of a linear map or any map in general
     
-    \newcommand{\least}{\operatorname{least}} %Well Ordering Property
-    \providecommand{\diam}{\operatorname{diam}} %diameter of a set
+    \providecommand{\id}[1]{\operatorname{id}_{#1}} % Identity Mapping
     
-
-    % Norms
+    \providecommand{\sgn}{\operatorname{sgn}} %Signum function
+    \providecommand{\exp}{\operatorname{exp}} % Exponential Function
+    
+    \newcommand{\wt}{\operatorname{wt}} %Hamming weight
+    
+    
+    \providecommand{\least}{\operatorname{least}} % Well Ordering Property
+    
+    
+    % Norms and big norms.
     \newcommand{\norm}[1]{\lVert {#1} \rVert} % || . ||
     \newcommand{\bignorm}[1]{\left\lVert {#1} \right\rVert} % || . || but larger
-    
 
+    % Bigger Brackets    
+    \providecommand{\bigset}[1]{\biggl\{{#1}\biggr\}}
+    \providecommand{\bigbrackets}[1]{\biggl( {#1}\biggr)}
+    
     % Topology
-    \newcommand{\acc}{\operatorname{acc}} % Set of Accumulation Points
-    \newcommand{\abrackets}[1]{\langle {#1} \rangle} % Angled Brackets for Nets
-    \newcommand{\nb}[1]{\mathcal{N}_B({#1})} %N_b(x) is a neighbourhood of x
-    \newcommand{\Tau}{\mathcal{T}} % Big Tau Denoting Topological Space
-    \newcommand{\cl}[1]{\overline{#1}} % Closure of a set
-    \newcommand{\clc}[1]{(\overline{#1})^c} %  Complement of the Closure
-    \newcommand{\Epsilon}{\mathcal{E}} % Base, generating set for Topology and Sigma algebras
-    \newcommand{\cpt}{\musEighth} % Compact set, see old command \quaver does not scale properly in Math Mode.
-    
+    \providecommand{\acc}{\operatorname{acc}} % Set of Accumulation Points
+    \providecommand{\abrackets}[1]{\langle {#1} \rangle} % Angled Brackets for Nets
+    \providecommand{\nb}[1]{\mathcal{N}_B({#1})} % N_b(x) is a neighbourhood of x
+    \providecommand{\Tau}{\mathcal{T}} % Big Tau Denoting Topological Space
+    \providecommand{\cl}[1]{\overline{#1}} % Closure of a set
+    \providecommand{\clc}[1]{(\overline{#1})^c} %  Complement of the Closure
+    \providecommand{\Epsilon}{\mathcal{E}} % Base, generating set for Topology and Sigma algebras
+    \providecommand{\cpt}{\musEighth} % Compact set, see old command \quaver does not scale properly in Math Mode.
+    \providecommand{\diam}{\operatorname{diam}} %diameter of a set
 
+    % Increasing, Decreasing Sequences
+    \providecommand{\increasesto}{\nearrow}
+    \providecommand{\decreasesto}{\searrow}
+
+
+    % Condensation Points and Cardinality
+    \providecommand{\cond}{{\operatorname{cond}}}
+    \providecommand{\card}{\operatorname{card}}
+
+    
     % Fourier Analysis
     \newcommand{\szz}{\mathcal{S}} % Schwartz Space
     \newcommand{\cinf}{C^{\infty}} % We do not specify the domain
     \newcommand{\ccinf}{C_c^{\infty}} % We do not specify the domain
     \newcommand{\cnv}{\ast} % convolutions
     
-    
     % Projection Maps
     \newcommand{\pmap}[2]{\pi_{#1}({#2})} % projection maps 
     \newcommand{\pnv}[2]{\pi_{#1}^{-1}({#2})} %inverse projection maps
-    
     
     % Functions on a Topological Space
     \newcommand{\bc}[1]{\operatorname{BC}({#1})} %Bounded and Continuous Functions
@@ -84,31 +93,36 @@
     \newcommand{\cnot}[1]{\operatorname{C}_0({#1})} %Vanishes at Infinity
     \newcommand{\supp}[1]{\operatorname{supp}{(#1)}} %Support of a function
 
-    
     %Measure Theory
-    \providecommand{\mcal}{\mathcal{M}}
-    \providecommand{\ncal}{\mathcal{N}}
-
     
-    %Bigger Brackets    
-    \providecommand{\bigset}[1]{\biggl\{{#1}\biggr\}}
+    % Common Sets in Measure Theory
+    \providecommand{\acal}{\mathcal{A}}         % Algebra of Sets A
+    \providecommand{\mcal}{\mathcal{M}}         % Sigma Algebra M
+    \providecommand{\ncal}{\mathcal{N}}         % Sigma Algebra N
 
-    
+
+    % Measures
+    \providecommand{\mustar}{\mu^*}             % Outer Measure
+    \providecommand{\mubar}{\cl{\mu}}            % Completion
+    \providecommand{\munot}{\mu_0}               % Premeasure
+    \providecommand{\muStar}{\mu_*}              % Inner Measure
+
+
     %Linear Algebra
-    \providecommand{\diam}{\operatorname{diam}}
-    \providecommand{\dim}{\operatorname{dim}}
-    \providecommand{\rank}{\operatorname{rank}}
-    \providecommand{\col}{\operatorname{col}}
-    \providecommand{\row}{\operatorname{row}}
-    \providecommand{\lin}{\operatorname{lin}}
-    \providecommand{\span}{\operatorname{span}}
+    \providecommand{\diag}{\operatorname{diag}} % Diagonal Matrix
+    \providecommand{\dim}{\operatorname{dim}} % Dimension of a subspace
+    \providecommand{\defect}{\operatorname{def}} % Defect of a linear map
+    \providecommand{\rank}{\operatorname{rank}} % Rank of a Matrix
+    \providecommand{\col}{\operatorname{col}} % Column Space
+    \providecommand{\row}{\operatorname{row}} % Row space
+    \providecommand{\lin}{\operatorname{lin}} % Lin
+    \providecommand{\spn}{\operatorname{span}} % Span
+    \providecommand{\tr}{\operatorname{tr}} % Trace
 
-    
-    % Condensation Points and Cardinality
-    \providecommand{\cond}{{\operatorname{cond}}}
-    \providecommand{\card}{\operatorname{card}}
+    \providecommand{\poly}{\mathbb{P}} % Space of Polynomials
+    \providecommand{\ff}{\mathbb{F}} % Field
+    \providecommand{\entry}[2]{{{#1,\, #2}}} % Matrix Entries
 
-    
     % Some Bold Face Fonts
     \providecommand{\xx}{{\mathbf{X}}}
     \providecommand{\yy}{{\mathbf{S}}}
@@ -117,11 +131,19 @@
     \providecommand{\tt}{{\mathbf{T}}}
 
     
+
     % Shortcut for sequences
     \providecommand{\xn}{\{x_n\}_{n\geq 1}}
     \providecommand{\yn}{\{y_n\}_{n\geq 1}}
 
 
+
+    
+
+
+    
+    
+    
 % Settings
 \setlength{\parindent}{0pt} %default no indent
 
