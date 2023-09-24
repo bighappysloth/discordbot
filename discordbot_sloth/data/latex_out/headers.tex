@@ -1,35 +1,214 @@
 %Headers and Sections
 
-    %Want to show we want it to be numbered with the section at a later date
-    \newtheorem*{wts}{WTS}
-    
-    % \newtheorem*{answer}{Answer} removed
-    \newtheorem{theorem}{Theorem}[section]%Theorem
-    \newtheorem{corollary}{Corollary}[theorem]%Corollary, numbered by the theorem? resets the counter
-    
-    \newtheorem{lemma}[theorem]{Lemma} %Lemma
-    
-    \newtheorem*{remark}{Remark} %unnumbered remark
-    
-    % Problem Number for assignents, phantomsection prevents a compilation warning form
-    % hyperref, and \markright allows our fancyhead to read from the problem number.
-    \newcommand{\problem}[1]{\phantomsection\subsection*{Problem #1}\markright{Problem #1}\addcontentsline{toc}{subsection}{Problem #1}} 
-    
-    % Definition
-    \theoremstyle{definition}
-    \newtheorem*{definition}{Definition}
+% Colors
 
-    %What to remember
-    \newtheorem*{wtr}{What to Remember}
-    
-    % Custom Enumerate Environments
+\definecolor{tab-blue}{rgb}{0.341,0.471,0.643}
+\definecolor{tab-orange}{rgb}{0.894,0.580,0.267}
+\definecolor{tab-red}{rgb}{0.85,0.380,0.365}
+\definecolor{tab-teal}{rgb}{0.522,0.714,0.698}
+\definecolor{tab-green}{rgb}{0.416,0.624,0.345}
+\definecolor{tab-yellow}{rgb}{0.906,0.792,0.376}
+\definecolor{tab-purple}{rgb}{0.659,0.486,0.624}
+\definecolor{tab-pink}{rgb}{0.945,0.635,0.663}
+\definecolor{tab-brown}{rgb}{0.588,0.463,0.384}
+\definecolor{tab-grey}{rgb}{0.722,0.690,0.675}
 
-        % Labelling by a, b, c
-        \newenvironment{enumalpha}{\begin{enumerate}[label=(\alph*)]}{\end{enumerate}}
-        
-        % Labelling by i, ii, iii
-        \newenvironment{enumroman}{\begin{enumerate}[label=(\roman*)]}{\end{enumerate}}
+
+% Custom QED symbol
+\renewcommand\qedsymbol{$\blacksquare$}
+
+% Problem Number for assignments
+\newcounter{theproblem}
+
+\newcommand{\problem}[1]{%
+    \phantomsection\subsection*{Theorem #1}%
+    \markright{Theorem #1}%
+    \addcontentsline{toc}{section}{Theorem #1}%
+    \setcounter{secnumdepth}{1}%
+    \stepcounter{theproblem}
+}
+
+\newcommand{\fexercisesHeader}[1]{%
+    \phantomsection\section*{Exercises}%
+    \markright{Exercises}%
+    \addcontentsline{toc}{section}{Exercises}%
+    \setcounter{theproblem}{0}%
+    \setcounter{secnumdepth}{1}%
+}
+
+\newcommand{\exercise}[1]{%
+    \phantomsection\subsection*{Exercise #1}%
+    \markright{Exercise #1}%
+    \addcontentsline{toc}{subsection}{Exercise #1}%
+    \setcounter{secnumdepth}{0}%
+    \stepcounter{theproblem}
+}
+
+\newcommand{\topheader}[1]{%
+    \phantomsection\subsection*{#1}%
+    \markright{#1}%
+    \addcontentsline{toc}{section}{#1}%
+    \setcounter{secnumdepth}{1}%
+    \stepcounter{theproblem}
+}
+
+
+\newtheoremstyle{subtheorem}    % name
+    {1.5\topsep}        % space above
+    {1.5\topsep}        % space below
+    {\itshape}          % name of font to use in the body of the theorem
+    {1em}               % measure of space to indent
+    {\bfseries}         % name of head font
+    { }                 % punctuation between head and body
+    { }                 % space after theorem head; " " = normal interword space
+    {}
+
+% WTS, now numbered
+% \newtheorem{wts}{Proposition}[theproblem]
+
+\theoremstyle{subtheorem}                       % Lemma, Corollary follows Theorem 4.16.X
+
+
+% Yellow Boxes for definitions
+\mdfdefinestyle{definitionstyle}{%
+    %backgroundcolor=,
+    linewidth=1pt,
+    innerleftmargin=6pt,
+    innerrightmargin=6pt,
+    innertopmargin=6pt, % Adjusted value
+    innerbottommargin=6pt,
+    skipabove=5pt,
+    skipbelow=5pt,
+    topline=true, % Added option
+    bottomline=true,
+    backgroundcolor=tab-yellow!10
+}
+
+% Copy the same style but modify the colour only
+\mdfdefinestyle{theoremstyle}{%
+    style=definitionstyle,
+    backgroundcolor=tab-blue!10
+}
+
+
+\mdfdefinestyle{stepstyle}{%
+    style=definitionstyle,
+    backgroundcolor=tab-teal!10
+}
+\newcounter{thestep}
+\mdtheorem[style=stepstyle]{mysteps}{}[thestep]
+\renewcommand{\themysteps}{Step \arabic{thestep}}
+
+
+\NewDocumentEnvironment{step}{o}
+{
+    \stepcounter{thestep}
+    \IfNoValueTF{#1}
+    {
+        \begin{mysteps}
+    }
+    {
+        \begin{mysteps}[{#1}]
+    }
+}
+{
+    \end{mysteps}
+}
+
+\mdfdefinestyle{remarkstyle}{%
+    style=definitionstyle,
+    backgroundcolor=tab-blue!5,
+    leftline=true,
+    rightline=true,
+    topline=true,
+    bottomline=true,
+}
+
+\mdfdefinestyle{notestyle}{%
+    style=definitionstyle,
+    backgroundcolor=tab-orange!5,
+    leftline=true,
+    rightline=true,
+    topline=true,
+    bottomline=true,
+}
+
+\mdtheorem[style=definitionstyle]{definition}{Definition}[theproblem]
+\mdtheorem[style=theoremstyle]{wts}{Proposition}[theproblem]
+
+\mdtheorem[style=theoremstyle]{lemma}{Lemma}[theproblem]
+\mdtheorem[style=theoremstyle]{corollary}{Corollary}[theproblem]
+
+
+
+\mdtheorem[style=remarkstyle]{remark}{Remark}[theproblem]
+\mdtheorem[style=theoremstyle]{example}{Example}[theproblem]
+
+\mdtheorem[style=notestyle]{note}{Note}[theproblem]
+
+
+% Other header definitions or configurations
+%\newtheorem{definition}{Definition}[theproblem]         % Definition
+
+\theoremstyle{subtheorem}
+%What to remember
+\newtheorem*{wtr}{What to Remember}
+
+% Two custom enumerate environments.
+% The labels for these are (a), (iv) respectively.
+
+
+% enumalpha environment for 
+% a), b), c)
+\newenvironment{enumalpha}%
+    {\begin{enumerate}[label=(\alph*), leftmargin=*]}%
+    {\end{enumerate}}
+
+% enumroman environment for
+% i), ii), iii)
+\newenvironment{enumroman}%
+    {\begin{enumerate}[label=(\roman*), leftmargin=*]}%
+    {\end{enumerate}}
 
 
 %for putting chapter numbers after the title
-%\titleformat{\section}[hang]{\normalfont\Large\bfseries}{Chapter }{0em}{}{}
+\titleformat{\section}[hang]{%
+    \normalfont\Large\bfseries% 
+}%
+{}{0em}{}{}
+
+% Chapters
+\newcommand{\fchapter}[1]%
+{%
+    \phantomsection\chapter*{Chapter #1}%
+    \setcounter{theproblem}{0}%
+    \addcontentsline{toc}{chapter}{Chapter #1}\newpage% Chapter Number
+} 
+
+
+
+
+% Here we manage Clever Headers
+\crefname{lemma}{lem.}{lems.}
+\Crefname{lemma}{Lemma}{Lemmas}
+
+\crefname{corollary}{cor.}{cor.}
+\Crefname{corollary}{Corollary}{Corollaries}
+
+\crefname{problem}{theorem}{theorems}
+\Crefname{problem}{Theorem}{Theorems}
+
+\crefname{exercise}{exercise}{exercises}
+\Crefname{exercise}{Exercise}{Exercises}
+
+\crefname{definition}{def.}{defs.}
+\Crefname{definition}{Definition}{Definitions}
+
+\crefname{wts}{prop.}{props.}
+\Crefname{wts}{Proposition}{Propositions}
+
+\crefname{step}{step}{steps}
+\Crefname{step}{Step}{Steps}
+
+\crefname{note}{note}{notes}
+\Crefname{note}{Note}{Notes}

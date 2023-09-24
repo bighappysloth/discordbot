@@ -4,29 +4,61 @@
     \usepackage{amsmath}
     \usepackage{amssymb}
     \usepackage{amsfonts}
+
+    \usepackage{scalerel}
+
     
     %Custom Theorems
     \usepackage{amsthm}
 
     %Custom enumerate environments (roman numerals)
     \usepackage{enumitem}
+    % \usepackage{tensors} % tensors
     
     %Custom Title Sections
     \usepackage{titlesec}
 
     %Graphics/Images
     \usepackage{graphicx}
+    \usepackage{xcolor}
+
+    % Plots / Diagrams
+    \usepackage{tikz}
 
     %Font adjustment
     \usepackage{mlmodern}
+    % \usepackage{lxfonts}
     \usepackage[T1]{fontenc}
     
     %Forgot what these two do
     \usepackage{pifont}
     \usepackage{mathtools}
+
+    % Evaluated Bars
+    \usepackage{physics} 
+
+    % Accents
+    \usepackage{accents}
+
+    % O Wedge
+    \usepackage{stmaryrd}
+    
+    \usepackage[%
+    top=20mm,
+    tmargin=15mm,
+    bottom=25mm,
+    footskip=15mm,
+    left=20mm,
+    right=20mm,
+    includefoot]{geometry} 
+    
+    % Complicated Commands
+    \usepackage{xparse}
     
     %Fancy Headers
     \usepackage{fancyhdr}
+
+
     
     % Timezone management
     \usepackage{datetime}
@@ -36,25 +68,16 @@
     \usepackage{fontspec} % Is necessary to access OpenType fonts 
     \usepackage{lilyglyphs} 
     \usepackage{musicography} % compact set \cpt
+
+    % Boxed Theorems
+    \usepackage{mdframed}
+
+    % Diagrams
+
     
-    % Bigger dot acents
-    \usepackage{accents}
-
-
-    % Captions for Fifugres
-    \usepackage{caption}
-    \usepackage{subcaption}
+    %external references
+    \usepackage{xr}
     
-    % Protect align env from verbatim
-    \usepackage{cprotect}
-
-    % If else statements
-    \usepackage{xstring}
-
-
-    %multilne
-    \usepackage{breqn}
-
     %Hyperlinks in PDFs and Table of Contents, eqref and ref URLs
     \usepackage[]{hyperref}
     \hypersetup{
@@ -70,7 +93,5 @@
         pdfpagemode=UseOutlines,    % this is the option you were lookin for
         pdfpagelayout=TwoPageRight
     }
-    \usepackage[noabbrev]{cleveref}
-    
-
+    \usepackage{cleveref}
 

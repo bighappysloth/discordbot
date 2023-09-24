@@ -1,17 +1,24 @@
 \usepackage{import}
 \import{./}{packages.tex}
 \import{./}{headers.tex}
-\import{./}{docinfo.tex}
+
 
 % Commands
 
     % Essentials
     \renewcommand{\Re}{\operatorname{Re}} % Real Part
     \renewcommand{\Im}{\operatorname{Im}} % Imaginary Part
-    \newcommand{\defined}{\coloneqq} % := sign
+    \newcommand{\defined}{\overset{\Delta}{=}} % := sign
     
     \providecommand{\induces}{{\:\looparrowright\:}}
     \providecommand{\inducedby}{{\:\looparrowleft\:}}
+
+
+    % Relations
+    \providecommand{\lsim}{\precsim}
+    \providecommand{\gsim}{\succsim}
+    \providecommand{\Lsim}{\lesssim}
+    \providecommand{\Gsim}{\gtrsim}
 
     % Fonts remove this section soon.
     % \newcommand{\bb}[1]{\mathbb{#1}} %shortcut for mathbb
@@ -22,13 +29,16 @@
     \providecommand{\wig}[1]{\widetilde{#1}}
     
     % Common Sets
-    \providecommand{\real}{\mathbb{R}}
+    \renewcommand{\real}{\mathbb{R}}
     \providecommand{\realn}{{\mathbb{R}^n}}
+    \providecommand{\realm}{{\mathbb{R}^m}}
+    \providecommand{\realk}{{\mathbb{R}^k}}
     \providecommand{\nat}{\mathbb{N}}
-    \providecommand{\natplus}{\mathbb{N}}
-    \newcommand{\integer}{\mathbb{Z}}
+    \providecommand{\natplus}{\mathbb{N}^+}
+    \providecommand{\ints}{\mathbb{Z}}
     \providecommand{\rat}{\mathbb{Q}}
     \providecommand{\borel}{{\mathbb{B}}}
+    \providecommand{\complex}{{\mathbb{C}}}
     
     
     % Operators
@@ -49,7 +59,7 @@
     
     
     % Norms and big norms.
-    \newcommand{\norm}[1]{\lVert {#1} \rVert} % || . ||
+    %\newcommand{\norm}[1]{\lVert {#1} \rVert} % || . ||
     \newcommand{\bignorm}[1]{\left\lVert {#1} \right\rVert} % || . || but larger
 
     % Bigger Brackets    
@@ -58,15 +68,40 @@
     
     % Topology
     \providecommand{\acc}{\operatorname{acc}} % Set of Accumulation Points
-    \providecommand{\abrackets}[1]{\langle {#1} \rangle} % Angled Brackets for Nets
+    \newcommand{\abrackets}[2][\big]{%
+  \ensuremath{%
+    \mathopen{#1\langle} #2 \mathclose{#1\rangle}%
+  }%
+}
+
+
+    % Floor and ceiling operators
+    \DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+    \DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+    \providecommand{\ab}[1]{\langle {#1} \rangle} % Angled Brackets for Nets
+
+    
     \providecommand{\nb}[1]{\mathcal{N}_B({#1})} % N_b(x) is a neighbourhood of x
+    \providecommand{\N}[1]{\mathcal{N}(#1)} % A set is a neighbourhood of x
     \providecommand{\Tau}{\mathcal{T}} % Big Tau Denoting Topological Space
+    \providecommand{\Int}{\operatorname{Int}}
+    
+    % Operators
     \providecommand{\cl}[1]{\overline{#1}} % Closure of a set
     \providecommand{\clc}[1]{(\overline{#1})^c} %  Complement of the Closure
+    
+    % Sets in Topology
     \providecommand{\Epsilon}{\mathcal{E}} % Base, generating set for Topology and Sigma algebras
     \providecommand{\cpt}{\musEighth} % Compact set, see old command \quaver does not scale properly in Math Mode.
     \providecommand{\diam}{\operatorname{diam}} %diameter of a set
 
+    \providecommand{\osub}{\:\mathring{\subseteq}\:}
+    \providecommand{\osup}{\:\mathring{\supseteq}\:}
+    \providecommand{\oin}{\mathring{\in}}
+
+    \providecommand{\powerset}[1]{\mathbb{P}({#1})} % Space of Polynomials
+    
     % Increasing, Decreasing Sequences
     \providecommand{\increasesto}{\nearrow}
     \providecommand{\decreasesto}{\searrow}
@@ -79,8 +114,18 @@
     
     % Fourier Analysis
     \newcommand{\szz}{\mathcal{S}} % Schwartz Space
-    \newcommand{\cinf}{C^{\infty}} % We do not specify the domain
-    \newcommand{\ccinf}{C_c^{\infty}} % We do not specify the domain
+    \NewDocumentCommand{\cinf}{oo}{
+      C^{\infty}\IfNoValueF{#1}{({#1}\IfNoValueF{#2}{,\: {#2}})}
+    }
+    \NewDocumentCommand{\diffeo}{oo}{
+      {\mathcal{D}}\IfNoValueF{#1}{({#1}\IfNoValueF{#2}{,\: {#2}})}
+    }
+
+    \providecommand{\fourier}{\mathcal{F}}
+    \providecommand{\Torus}{\mathbb{T}}
+    \providecommand{\Torusn}{{\mathbb{T}^n}}
+    
+    %\newcommand{\ccinf}{C_c^{\infty}} % We do not specify the domain
     \newcommand{\cnv}{\ast} % convolutions
     
     % Projection Maps
@@ -118,14 +163,19 @@
     \providecommand{\lin}{\operatorname{lin}} % Lin
     \providecommand{\spn}{\operatorname{span}} % Span
     \providecommand{\tr}{\operatorname{tr}} % Trace
+    \providecommand{\Ker}{\operatorname{Ker}} % Kernel
+    \providecommand{\proj}{\operatorname{proj}}
 
     \providecommand{\poly}{\mathbb{P}} % Space of Polynomials
     \providecommand{\ff}{\mathbb{F}} % Field
     \providecommand{\entry}[2]{{{#1,\, #2}}} % Matrix Entries
 
+
     % Some Bold Face Fonts
     \providecommand{\xx}{{\mathbf{X}}}
-    \providecommand{\yy}{{\mathbf{S}}}
+    \providecommand{\yy}{{\mathbf{Y}}}
+    \providecommand{\zz}{{\mathbf{Z}}}
+    \providecommand{\ss}{{\mathbf{S}}}
     \providecommand{\ww}{{\mathbf{W}}}
     \providecommand{\uu}{{\mathbf{U}}}
     \providecommand{\tt}{{\mathbf{T}}}
@@ -136,18 +186,125 @@
     \providecommand{\xn}{\{x_n\}_{n\geq 1}}
     \providecommand{\yn}{\{y_n\}_{n\geq 1}}
 
+    % Abstract Algebra
+    \providecommand{\idg}{e_G}
+    \providecommand{\idh}{e_H}
 
 
-    
 
+    % Category Theory
+    \NewDocumentCommand{\Hom}{oo}{
+      {\operatorname{Hom}}\IfNoValueF{#1}{({#1}\IfNoValueF{#2}{,\: {#2}})}
+    }
+    \NewDocumentCommand{\End}{oo}{
+      {\operatorname{Hom}}\IfNoValueF{#1}{({#1}\IfNoValueF{#2}{,\: {#2}})}
+    }
 
-    
-    
+    % Lattice
+    \providecommand{\lub}{\operatorname{lub}}
+    \providecommand{\glb}{\operatorname{glb}}
+
+    % Isomorphisms
+    \providecommand{\Isomor}[1]{\xrightleftharpoons{\:\mathcal{#1}\:}}
+
+    % Morphism
+    \providecommand{\Mor}{\operatorname{Mor}}
     
 % Settings
 \setlength{\parindent}{0pt} %default no indent
 
 % \titleformat{\section}{\normalfont\Large\bfseries}{}{0em}{#1\thesection}
-\import{./}{engineering_imports.tex}
+
 %always put this at last
-\usepackage{subfiles}
+
+% main.manifolds additional macros
+% Additional shortcuts
+\providecommand{\half}{\mathbb{H}}
+\providecommand{\halfn}{{\mathbb{H}^n}}
+\providecommand{\halfm}{{\mathbb{H}^m}}
+% \providecommand{\df}{\mathcal{D}}
+
+
+% Shortcuts
+
+% Relations
+\providecommand{\htp}{\simeq}    % Homotopy
+\providecommand{\phtp}{\simeq_p} % Path Homotopy
+
+
+% Path and PathClass
+\NewDocumentCommand{\Path}{oo}{
+      {\operatorname{Path}}\IfNoValueF{#1}{({#1}\IfNoValueF{#2}{,\: {#2}})}
+    }
+\NewDocumentCommand{\Loop}{o}{
+  {\operatorname{Loop}}\IfNoValueF{#1}{({#1})}
+}
+\NewDocumentCommand{\PathClass}{oo}{
+      {\operatorname{PathClass}}\IfNoValueF{#1}{({#1}\IfNoValueF{#2}{,\: {#2}})}
+    }
+    
+\providecommand{\fgroup}[2]{\pi_{1}({#1},{#2})}
+\providecommand{\inbhd}{\overset{\mathring}{\in}} % in neighbourhood
+\providecommand{\opensubset}{\overset{\mathring}{\subseteq}} % open subset
+\providecommand{\opensupset}{\overset{\mathring}{\supseteq}} % open superset
+
+\providecommand{\Alt}[1]{\operatorname{Alt}(#1)}
+
+\NewDocumentCommand{\Ul}{moo}{
+  \IfNoValueTF{#3}
+    {{#1}_{\underline{#2}}}
+    {{#1}_{#2,\underline{#3}}}
+}
+
+\NewDocumentCommand{\UL}{moo}{
+  \IfNoValueTF{#3}
+    {{#1}_{\underline{#2}}}
+    {{#1}_{#2 \underline{#3}}}
+}
+
+\NewDocumentCommand{\UPL}{moo}{
+  \IfNoValueTF{#3}
+    {{#1}^{\underline{#2}}}
+    {{#1}^{#2 \underline{#3}}}
+}
+
+
+\providecommand{\hook}{\mathop{\lrcorner}} % x into omega, holding the first coordinate at x
+\providecommand{\vField}{\mathfrak{X}} % vector field 
+\providecommand{\cvField}{\mathfrak{X}} % covector field
+\def\isum{\mathop{\sum\nolimits{'}}} % increasing sum
+\providecommand{\rad}[1]{\operatorname{rad}({#1})} % radical of 
+\providecommand{\fourier}{\mathcal{F}}
+\providecommand{\Torus}{\mathbb{T}}
+\providecommand{\Torusn}{\mathbb{T}^n}
+\providecommand{\dzz}{\mathcal{D}}
+\providecommand{\hil}{\mathcal{H}}
+\providecommand{\cell}{\operatorname{cell}}
+
+% Drawing circles around math operators
+\newcommand\Bigcirc{\raisebox{-0.5mm}{\scalebox{1.5}{$\bigcirc$}}}
+
+% \bigowedge
+\makeatletter
+\newcommand*\bigowedge{\mathpalette\@bigowedge\relax}
+\newcommand*\@bigowedge[1]{%
+  \mathbin{%
+    \ooalign{%
+      $#1\m@th\Bigcirc$\cr
+      \hidewidth$#1\m@th\wedge$\hidewidth\cr
+    }%
+  }%
+}
+\makeatother
+
+\makeatletter
+\newcommand*\bigoprod{\mathpalette\@bigoprod\relax}
+\newcommand*\@bigoprod[1]{%
+  \mathbin{%
+    \ooalign{%
+      $#1\m@th{\raisebox{-0.35mm}{\scalebox{1.5}{$\bigcirc$}}}$\cr
+      \hidewidth$#1\m@th\Pi$\hidewidth\cr
+    }%
+  }%
+}
+\makeatother
